@@ -1,0 +1,104 @@
+/**
+ * AuthController
+ *
+ * @description :: Server-side logic for managing auths
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
+
+module.exports = {
+
+
+  /**
+   * `AuthController.index()`
+   */
+  index : function (req, res) {
+    return res.json(204, 'No direct access allowed.');
+  },
+
+
+  /**
+   * `AuthController.login()`
+   * 
+   * ----------------------------------------------------------------------------------
+   * @api {post} /api/v1/auth Login a user
+   * @apiName Login
+   * @apiDescription This is where a user is logged in, and a token generated and returned.
+   * @apiGroup Auth
+   *
+   * @apiParam {Number} username Username of the user.
+   * @apiParam {Number} password Password of the user.
+   *
+   * @apiSuccess {String} user Details of the logged in user.
+   * @apiSuccess {String} token  Access token for accessing all parts of the plartform.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "user": {},
+   *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM"
+   *     }
+   *
+   * 
+   * @apiError PasswordAndUsernameRequired Username and password required.
+   *
+   * @apiErrorExample Error-Response:
+   *     HTTP/1.1 404 Not Found
+   *     {
+   *       "status": "error",
+   *       "message": 'Username and password required.'
+   *     }
+   * 
+   * @apiError PasswordOrUsernameInvalid Username or password invalid.
+   *
+   * @apiErrorExample Error-Response:
+   *     HTTP/1.1 404 Not Found
+   *     {
+   *       "status": "error",
+   *       "message": 'username or password invalid.'
+   *     }
+   * 
+   */
+  login: function (req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+
+    if (!username || !password) {
+      return res.json(401, {status: 'error', err: 'username and password required'});
+    }
+
+    User.findOne({username: username}, function (err, user) {
+      if (!user) {
+        return res.json(401, {status: 'error', err: 'invalid username or password'});
+      }
+
+      
+
+      User.comparePassword(password, user, function (err, valid) {
+        if (err) {
+          return res.json(403, {status: 'error', err: 'forbidden'});
+        }
+
+        if (!valid) {
+          return res.json(401, {status: 'error', err: 'invalid username or password'});
+        } else {
+          res.json({
+            user: {
+              username: user.username,
+              email: user.email,
+              id: user.id,
+              role: user.role
+            },
+            token: jwToken.issue({
+              username: user.username,
+              email: user.email,
+              id: user.id,
+              role: user.role
+            })
+          });
+        }
+      });
+    });
+  },
+
+};
+

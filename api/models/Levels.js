@@ -1,0 +1,26 @@
+/**
+ * Levels.js
+ *
+ * @description :: Levels model holds the info for levels part of the membership plartform
+ * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
+ */
+
+module.exports = {
+
+  attributes: {
+
+    name: {
+      type: 'string',
+      required: true
+    },
+    description: {
+      type: 'text',
+      required: true
+    },
+    fee: {
+      type: 'integer',
+      required: true
+    }
+  }
+};
+
