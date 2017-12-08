@@ -19,7 +19,7 @@ module.exports = {
     },
     comments: {
       collection: 'forumComments',
-      via: 'owner'
+      via: 'post'
     },
     creator: {
       model: 'user',

@@ -7,16 +7,19 @@
 
 module.exports = {
 
-  attributes: {
+    attributes: {
 
-    comment: {
-      type: 'string',
-      required: true
-    },
-    owner: {
-      model: 'user',
-      required: true
+        comment: {
+            type: 'string',
+            required: true
+        },
+        owner: {
+            model: 'user',
+            required: true
+        },
+        post: {
+            model: 'forumPosts',
+            required: true
+        }
     }
-  }
 };
-

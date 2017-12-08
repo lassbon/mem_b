@@ -7,27 +7,26 @@
 
 module.exports = {
 
-  attributes: {
+    attributes: {
 
-    postText: {
-      type: 'text',
-      required: true
-    },
-    postImage: {
-      type: 'array'
-    },
-    owner: {
-      model: 'user',
-      required: true
-    },
-    likes: {
-      collection: 'socialPosts',
-      via: 'id'
-    },
-    comments: {
-      collection: 'socialComments',
-      via: 'post'
+        postText: {
+            type: 'text',
+            required: true
+        },
+        postImage: {
+            type: 'string'
+        },
+        owner: {
+            model: 'user',
+            required: true
+        },
+        likes: {
+            collection: 'socialPosts',
+            via: 'id'
+        },
+        comments: {
+            collection: 'socialComments',
+            via: 'post'
+        }
     }
-  }
 };
-

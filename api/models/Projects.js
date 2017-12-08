@@ -7,26 +7,26 @@
 
 module.exports = {
 
-  attributes: {
+    attributes: {
 
-    title: {
-      type: 'string',
-      required: true
-    }, 
-    banner: {
-      type: 'string',
-      required: true
-    },
-    description: {
-      type: 'text',
-      required: true
-    },
-    date: {
-      type: 'string'
-    }, 
-    venue: {
-      type: 'text'
+        title: {
+            type: 'string',
+            required: true,
+            unique: true
+        },
+        banner: {
+            type: 'string',
+            required: true
+        },
+        description: {
+            type: 'text',
+            required: true
+        },
+        date: {
+            type: 'string'
+        },
+        venue: {
+            type: 'text'
+        }
     }
-  }
 };
-

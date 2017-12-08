@@ -7,20 +7,23 @@
 
 module.exports = {
 
-  attributes: {
+    attributes: {
 
-    name: {
-      type: 'string',
-      required: true
-    },
-    description: {
-      type: 'text',
-      required: true
-    },
-    fee: {
-      type: 'integer',
-      required: true
+        name: {
+            type: 'string',
+            required: true,
+            unique: true
+        },
+        description: {
+            type: 'text',
+            required: true
+        },
+        fee: {
+            type: 'integer',
+            required: true
+        },
+        paystack: {
+            type: 'json'
+        }
     }
-  }
 };
-

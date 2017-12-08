@@ -19,52 +19,60 @@
 
 module.exports.policies = {
 
-  /***************************************************************************
-  *                                                                          *
-  * Default policy for all controllers and actions (`true` allows public     *
-  * access)                                                                  *
-  *                                                                          *
-  ***************************************************************************/
-  '*': ['isAuthenticated'], // Everything resctricted here
+    /***************************************************************************
+     *                                                                          *
+     * Default policy for all controllers and actions (`true` allows public     *
+     * access)                                                                  *
+     *                                                                          *
+     ***************************************************************************/
+    '*': ['isAuthenticated'], // Everything resctricted here
 
 
-  /***************************************************************************
-  *                                                                          *
-  * policy for excluding auth controller and actions from authentication check
-  *                                                                          *
-  *                                                                          *
-  ***************************************************************************/
+    /***************************************************************************
+     *                                                                          *
+     * policy for excluding auth controller and actions from authentication check
+     *                                                                          *
+     *                                                                          *
+     ***************************************************************************/
 
-  'UserController': {// We dont need authorization here, allowing public access
-    'create': true
-  },
+    'UserController': { // We dont need authorization here, allowing public access
+        'create': true
+    },
 
-  'AdminController': {// We dont need authorization here, allowing public access
-    'create': true
-  },
+    'AdminController': { // We dont need authorization here, allowing public access
+        'create': true
+    },
 
-  'AuthController': {
-    '*': true // We dont need authorization here, allowing public access
-  }
+    'AdminController': {
+        'forgotPassword': true // We dont need authorization here, allowing public access
+    },
 
-  /***************************************************************************
-  *                                                                          *
-  * Here's an example of mapping some policies to run before a controller    *
-  * and its actions                                                          *
-  *                                                                          *
-  ***************************************************************************/
-	// RabbitController: {
+    'AuthController': {
+        '*': true // We dont need authorization here, allowing public access
+    },
 
-		// Apply the `false` policy as the default for all of RabbitController's actions
-		// (`false` prevents all access, which ensures that nothing bad happens to our rabbits)
-		// '*': false,
+    'PaystackController': {
+        'verify': true // We dont need authorization here, allowing public access
+    }
 
-		// For the action `nurture`, apply the 'isRabbitMother' policy
-		// (this overrides `false` above)
-		// nurture	: 'isRabbitMother',
+    /***************************************************************************
+     *                                                                          *
+     * Here's an example of mapping some policies to run before a controller    *
+     * and its actions                                                          *
+     *                                                                          *
+     ***************************************************************************/
+    // RabbitController: {
 
-		// Apply the `isNiceToAnimals` AND `hasRabbitFood` policies
-		// before letting any users feed our rabbits
-		// feed : ['isNiceToAnimals', 'hasRabbitFood']
-	// }
+    // Apply the `false` policy as the default for all of RabbitController's actions
+    // (`false` prevents all access, which ensures that nothing bad happens to our rabbits)
+    // '*': false,
+
+    // For the action `nurture`, apply the 'isRabbitMother' policy
+    // (this overrides `false` above)
+    // nurture	: 'isRabbitMother',
+
+    // Apply the `isNiceToAnimals` AND `hasRabbitFood` policies
+    // before letting any users feed our rabbits
+    // feed : ['isNiceToAnimals', 'hasRabbitFood']
+    // }
 };

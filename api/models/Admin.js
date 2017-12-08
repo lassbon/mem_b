@@ -9,53 +9,69 @@ var bcrypt = require('bcrypt');
 
 module.exports = {
 
-  attributes: {
+    attributes: {
 
-    username:{
-        type: 'string',
-        required: 'true',
-        unique: true
+        username: {
+            type: 'string',
+            required: 'true',
+            unique: true
+        },
+        email: {
+            type: 'email',
+            required: 'true',
+            unique: true
+        },
+        password: {
+            type: 'string',
+            required: 'true'
+        },
+        firstname: {
+            type: 'string'
+        },
+        permission: {
+            type: 'string',
+            defaultsTo: 'low'
+        },
+        role: {
+            type: 'string',
+            required: 'true'
+        }
     },
-    email:{
-        type: 'email',
-        required: 'true',
-        unique: true
+
+    // Here we encrypt password before creating an Admin
+    beforeCreate: function(values, next) {
+        bcrypt.genSalt(10, function(err, salt) {
+            if (err) return next(err);
+            bcrypt.hash(values.password, salt, function(err, hash) {
+                if (err) return next(err);
+                values.password = hash;
+                next();
+            })
+        })
     },
-    password:{
-        type: 'string',
-        required: 'true'
+
+    // Here we encrypt password before creating an Admin
+    beforeUpdate: function(values, next) {
+        bcrypt.genSalt(10, function(err, salt) {
+            if (err) return next(err);
+            bcrypt.hash(values.password, salt, function(err, hash) {
+                if (err) return next(err);
+                values.password = hash;
+                next();
+            })
+        })
     },
-    firstname:{
-        type: 'string'
-    },
-    role:{
-        type: 'string',
-        required: 'true'
+
+    // Here we comare password with available hash
+    comparePassword: function(password, user, cb) {
+        bcrypt.compare(password, user.password, function(err, match) {
+
+            if (err) cb(err);
+            if (match) {
+                cb(null, true);
+            } else {
+                cb(err);
+            }
+        })
     }
-  }, 
-
-  // Here we encrypt password before creating a User
-  beforeCreate : function (values, next) {
-    bcrypt.genSalt(10, function (err, salt) {
-      if(err) return next(err);
-      bcrypt.hash(values.password, salt, function (err, hash) {
-        if(err) return next(err);
-        values.password = hash;
-        next();
-      })
-    })
-  },
-
-  // Here we comare password with available hash
-  comparePassword : function (password, user, cb) {
-    bcrypt.compare(password, user.password, function (err, match) {
-
-      if(err) cb(err);
-      if(match) {
-        cb(null, true);
-      } else {
-        cb(err);
-      }
-    })
-  }
 };

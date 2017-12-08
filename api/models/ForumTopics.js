@@ -7,19 +7,23 @@
 
 module.exports = {
 
-  attributes: {
+    attributes: {
 
-    title: {
-      type: 'string',
-      required: true
-    },
-    creator: {
-      model: 'user'
-    },
-    posts: {
-      collection: 'forumPosts',
-      via: 'topic'
+        title: {
+            type: 'string',
+            required: true,
+            unique: true
+        },
+        description: {
+            type: 'string',
+        },
+        creator: {
+            model: 'user',
+            required: true
+        },
+        posts: {
+            collection: 'forumPosts',
+            via: 'topic'
+        }
     }
-  }
 };
-

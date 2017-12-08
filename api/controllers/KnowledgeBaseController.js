@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
- /**
+/**
  * @apiDefine DocumentNotFoundError
  *
  * @apiError DocumentNotFound The Document was not found.
@@ -18,7 +18,7 @@
  *     }
  */
 
-  /** 
+/** 
  * @apiDefine DocumentIdNotProvidedError
  *
  * @apiError DocumentIdNotProvided No Document id provided.
@@ -31,7 +31,21 @@
  *     }
  */
 
- /**
+/** 
+ * @apiDefine UploaderIdNotProvidedError
+ *
+ * @apiError UploaderIdNotProvided No Uploader id provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Not Found
+ *     {
+ *       "status": "error",
+ *       "err": "No Uploader id provided!"
+ *     }
+ */
+
+
+/**
  * @apiDefine CategoryNotFoundError
  *
  * @apiError CategoryNotFound The Category was not found.
@@ -44,7 +58,7 @@
  *     }
  */
 
-  /** 
+/** 
  * @apiDefine CategoryIdNotProvidedError
  *
  * @apiError CategoryIdNotProvided No Category id provided.
@@ -58,379 +72,460 @@
  */
 
 module.exports = {
-	
 
 
-  /**
-   * `KnowledgeBaseController.create()`
-   * 
-   * ----------------------------------------------------------------------------------
-   * @api {post} /api/v1/knowledgebase Create a new document
-   * @apiName CreateDocument
-   * @apiDescription This is where a new document is created.
-   * @apiGroup Knowledgebase
-   *
-   * @apiParam {String} [title] Title of the document.
-   * @apiParam {String} [description] Full description of the document.
-   * @apiParam {String} [docUrl] Cloud storage url of the document.
-   * @apiParam {String} [uploader] Id of the user who uploaded the docment.
-   * @apiParam {String} views Number of times the document has been viewed.
-   * @apiParam {String} downloads Number of times the document has been downloaded.
-   *
-   * @apiSuccess {String} status Status of the response from API.
-   * @apiSuccess {String} message  Success message response from API.
-   *
-   * @apiSuccessExample Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "status": "success",
-   *       "id": "59dce9c16b54d91c38847825"
-   *     }
-   */
-  create: function (req, res) {
-  
-    KnowledgeBase.create(req.body).exec(function (err, doc) {
-      if (err) {
-        return res.json(err.status, {err: err});
-      }
-      
-      if (doc) {
-        res.json(200, {
-          status: 'success',
-          id: doc.id,
-        });
-      }
-    });
-  },
 
-
-  /**
-   * `KnowledgeBaseController.delete()`
-   * 
-   * ----------------------------------------------------------------------------------
-   * @api {delete} /api/v1/knowledgebase/:id Delete a document
-   * @apiName DeleteDocument
-   * @apiDescription This is where a document is deleted
-   * @apiGroup Knowledgebase
-   *
-   * @apiParam {Number} id Document ID.
-   *
-   * @apiSuccess {String} status Status of the response from API.
-   * @apiSuccess {String} message  Success message response from API.
-   *
-   * @apiSuccessExample Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "status": "success",
-   *       "message": "Document with id 59dce9d56b54d91c38847825 has been deleted'"
-   *     }
-   *
-   * @apiUse DocumentIdNotProvidedError
-   * 
-   * @apiUse DocumentNotFoundError
-   */
-  delete: function (req, res) {
-    if (!req.param('id')) {
-      return res.json(401, {status: 'error', err: 'No Document id provided!'});
-    }else{
-      KnowledgeBase.findOne({select: 'title', where : {id : req.param('id')}}).exec(function (err, doc){
-        if (err) {
-          return res.json(err.status, {err: err});
+    /**
+     * `KnowledgeBaseController.create()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/knowledgebase/document Create a new document
+     * @apiName CreateDocument
+     * @apiDescription This is where a new document is created.
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {String} title Title of the document.
+     * @apiParam {String} description Full description of the document.
+     * @apiParam {String} docUrl Cloud storage url of the document.
+     * @apiParam {String} uploader Id of the user who uploaded the docment.
+     * @apiParam {String} category Id of category the document will belong to.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "id": "59dce9c16b54d91c38847825"
+     *     }
+     * 
+     * @apiUse CategoryIdNotProvidedError
+     * 
+     * @apiUse UploaderIdNotProvidedError
+     */
+    create: function(req, res) {
+        if (!req.param('category')) {
+            return res.json(401, { status: "error", err: 'No category id provided!' });
         }
 
-        if(!doc){
-          return res.json(404, {status: 'error', message: 'No Document with such id existing'})
-        }else{
-          KnowledgeBase.destroy({id : req.param('id')}).exec(function (err){
+        if (!req.param('uploader')) {
+            return res.json(401, { status: "error", err: 'No uploader id provided!' });
+        }
+
+        KnowledgebaseDocuments.create(req.body).exec(function(err, doc) {
             if (err) {
-              return res.json(err.status, {err: err});
+                return res.json(err.status, { err: err });
             }
-    
-            return res.json(200, 'Document with id '+req.param('id')+' has been deleted');
-          });
-        }
-      });
-    }
-  },
 
-
-  /**
-   * `KnowledgeBaseController.update()`
-   * 
-   * ----------------------------------------------------------------------------------
-   * @api {put} /api/v1/knowledgebase/:id Update a document
-   * @apiName UpdateDocument
-   * @apiDescription This is where a document is updated
-   * @apiGroup Knowledgebase
-   *
-   * @apiParam {Number} id Document ID.
-   *
-   * @apiSuccess {String} status Status of the response from API.
-   * @apiSuccess {String} message  Success message response from API.
-   *
-   * @apiSuccessExample Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "status": "success",
-   *       "message": "Document with id 59dce9d56b54d91c38847825 has been updated'"
-   *     }
-   *
-   * @apiUse DocumentIdNotProvidedError
-   * 
-   * @apiUse DocumentNotFoundError
-   */
-  update: function (req, res) {
-    if(!req.param('id')){
-      return res.json(401, {status: 'error', err: 'No Document id provided!'});
-    }else{
-      KnowledgeBase.findOne({select: 'title', where : {id : req.param('id')}}).exec(function (err, doc){
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
-
-        if(!doc){
-          return res.json(404, {status: 'error', message: 'No Document with such id existing'})
-        }else{
-          KnowledgeBase.update({id: req.param('id')}, req.body).exec(function(err, data){
-            if(err){
-              return res.json(err.status, {err: err});
+            if (doc) {
+                res.json(200, {
+                    status: 'success',
+                    id: doc.id,
+                });
             }
-      
-            return res.json(200, 'Document with id '+req.param('id')+' has been updated');
-          });
-        }
-      });
-    }
-  },
-
-
-  /**
-   * `KnowledgeBaseController.get()`
-   * 
-   * ----------------------------------------------------------------------------------
-   * @api {get} /api/v1/knowledgebase/:id Get document(s)
-   * @apiName GetDocument
-   * @apiDescription This is where documents are retrieved.
-   * @apiGroup Knowledgebase
-   *
-   * @apiParam {Number} id Document id.
-   *
-   * @apiSuccess {String} document Document response from API.
-   *
-   * @apiSuccessExample Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "id": "59dce9d56b54d91c38847825",
-   *       ".........": "...................."
-   *        .................................
-   *     }
-   * 
-   * @apiUse DocumentNotFoundError
-   */
-  get: function (req, res) {
-    if(req.param('id')){
-      KnowledgeBase.findOne({id : req.param('id')}).exec(function (err, doc){
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
-
-        if(!doc){
-          return res.json(404, {status: 'error', message: 'No Document with such id existing'})
-        }else{
-          return res.json(200, doc);
-        }
-      });
-    }else{
-      KnowledgeBase.find().exec(function (err, doc){
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
-  
-        return res.json(200, doc);
-      });
-    }
-  },
-
-  /**
-   * `KnowledgeBaseController.createCategory()`
-   * 
-   * ----------------------------------------------------------------------------------
-   * @api {post} /api/v1/knowledgebase/category Create a new category
-   * @apiName CreateCategory
-   * @apiDescription This is where a new category is created.
-   * @apiGroup Knowledgebase
-   *
-   * @apiParam {String} [name] Name of the category.
-   * @apiParam {String} [description] Full description of the category.
-   *
-   * @apiSuccess {String} status Status of the response from API.
-   * @apiSuccess {String} message  Success message response from API.
-   *
-   * @apiSuccessExample Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "status": "success",
-   *       "id": "59dce9c16b54d91c38847825"
-   *     }
-   */
-  createCategory: function (req, res) {
-    Category.create(req.body).exec(function (err, category) {
-      if (err) {
-        return res.json(err.status, {err: err});
-      }
-      
-      if (doc) {
-        res.json(200, {
-          status: "success",
-          id: category.id,
         });
-      }
-    });
-  },
+    },
 
-  /**
-   * `KnowledgeBaseController.deleteCategory()`
-   * 
-   * ----------------------------------------------------------------------------------
-   * @api {delete} /api/v1/knowledgebase/category/:id Delete a category
-   * @apiName DeleteCategory
-   * @apiDescription This is where a category is deleted
-   * @apiGroup Knowledgebase
-   *
-   * @apiParam {Number} id Category ID.
-   *
-   * @apiSuccess {String} status Status of the response from API.
-   * @apiSuccess {String} message  Success message response from API.
-   *
-   * @apiSuccessExample Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "status": "success",
-   *       "message": "Category with id 59dce9d56b54d91c38847825 has been deleted'"
-   *     }
-   *
-   * @apiUse CategoryIdNotProvidedError
-   * 
-   * @apiUse CategoryNotFoundError
-   */
-  deleteCategory: function (req, res) {
-    if (!req.param('id')) {
-      return res.json(401, {status: 'error', err: 'No Category id provided!'});
-    }else{
-      Category.findOne({select: 'title', where : {id : req.param('id')}}).exec(function (err, doc){
-        if (err) {
-          return res.json(err.status, {err: err});
+    /**
+     * `KnowledgeBaseController.uploadDocument()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/knowledgebase/document/upload Upload a document
+     * @apiName UploadDocument
+     * @apiDescription This is where a knowledgebase document is uploaded (Make sure image file extension is either jpg or png).
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {String} document Document to be uploaded.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "docUrl": "https://accicloud.blob.core.windows.net/knowledgebase/27ba91b3-ab78-4240-aa6c-a1f32230227c.pdf"
+     *     }
+     *
+     * @apiError DocumentNotUploaded No document uploaded.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 401 Not Found
+     *     {
+     *       "status": "error",
+     *       "err": "No document uploaded!"
+     *     }
+     */
+    uploadDocument: function(req, res) {
+        if (req.method != 'POST') return res.notFound();
+
+        var container = 'knowledgebase';
+
+        azureBlob.createContainerIfNotExists(container, function() {
+            req.file('document')
+                .upload({
+                    maxBytes: 5000000,
+                    adapter: require('skipper-azure'),
+                    key: process.env.AZURE_STORAGE_ACCOUNT,
+                    secret: process.env.AZURE_STORAGE_ACCESS_KEY,
+                    container: container
+                }, function whenDone(err, uploadedFiles) {
+                    if (err) return res.negotiate(err);
+                    else if (uploadedFiles.length === 0) {
+                        return res.json(401, { status: 'error', err: 'No image uploaded!' });
+                    } else return res.ok({
+                        status: 'success',
+                        docUrl: process.env.AZURE_STORAGE_ACCOUNT_URL + container + '/' + uploadedFiles[0].fd
+                    });
+                });
+        });
+    },
+
+
+    /**
+     * `KnowledgeBaseController.delete()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {delete} /api/v1/knowledgebase/document/:id Delete a document
+     * @apiName DeleteDocument
+     * @apiDescription This is where a document is deleted
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {Number} id Document ID.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "Document with id 59dce9d56b54d91c38847825 has been deleted'"
+     *     }
+     *
+     * @apiUse DocumentIdNotProvidedError
+     * 
+     * @apiUse DocumentNotFoundError
+     */
+    delete: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Document id provided!' });
+        } else {
+            KnowledgebaseDocuments.findOne({ select: ['title', 'docUrl'], where: { id: req.param('id') } }).exec(function(err, doc) {
+                if (err) {
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!doc) {
+                    return res.json(404, { status: 'error', message: 'No Document with such id existing' })
+                } else {
+                    KnowledgebaseDocuments.destroy({ id: req.param('id') }).exec(function(err) {
+                        if (err) {
+                            return res.json(err.status, { err: err });
+                        }
+
+                        if (doc.docUrl) {
+                            var url = doc.docUrl;
+                            azureBlob.delete('knowledgebase', url.split('/').reverse()[0]);
+                        }
+
+                        return res.json(200, { status: 'success', message: 'Document with id ' + req.param('id') + ' has been deleted' });
+                    });
+                }
+            });
         }
+    },
 
-        if(!doc){
-          return res.json(404, {status: 'error', message: 'No Category with such id existing'});
-        }else{
-          Category.destroy({id : req.param('id')}).exec(function (err){
+
+    /**
+     * `KnowledgeBaseController.update()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {put} /api/v1/knowledgebase/document/:id Update a document
+     * @apiName UpdateDocument
+     * @apiDescription This is where a document is updated
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {Number} id Document ID.
+     * @apiParam {String} [title] Title of the document.
+     * @apiParam {String} [description] Full description of the document.
+     * @apiParam {String} [docUrl] Cloud storage url of the document.
+     * @apiParam {String} [uploader] Id of the user who uploaded the docment.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "Document with id 59dce9d56b54d91c38847825 has been updated'"
+     *     }
+     *
+     * @apiUse DocumentIdNotProvidedError
+     * 
+     * @apiUse DocumentNotFoundError
+     */
+    update: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Document id provided!' });
+        } else {
+            KnowledgebaseDocuments.findOne({ select: ['title', 'docUrl'], where: { id: req.param('id') } }).exec(function(err, doc) {
+                if (err) {
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!doc) {
+                    return res.json(404, { status: 'error', message: 'No Document with such id existing' })
+                } else {
+
+                    if (doc.docUrl && doc.docUrl !== req.param('docUrl')) {
+                        var url = doc.docUrl;
+                        azureBlob.delete('knowledgebase', url.split('/').reverse()[0]);
+                    }
+
+                    KnowledgebaseDocuments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                        if (err) {
+                            return res.json(err.status, { err: err });
+                        }
+
+                        return res.json(200, { status: 'success', message: 'Document with id ' + req.param('id') + ' has been updated' });
+                    });
+                }
+            });
+        }
+    },
+
+
+    /**
+     * `KnowledgeBaseController.get()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/knowledgebase/document/:id Get document(s)
+     * @apiName GetDocument
+     * @apiDescription This is where documents are retrieved.
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {Number} [id] Document id.
+     *
+     * @apiSuccess {String} document Document response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     * 
+     * @apiUse DocumentNotFoundError
+     */
+    getDoc: function(req, res) {
+        if (req.param('id')) {
+            KnowledgebaseDocuments.findOne({ id: req.param('id') }).exec(function(err, doc) {
+                if (err) {
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!doc) {
+                    return res.json(404, { status: 'error', message: 'No Document with such id existing' })
+                } else {
+                    return res.json(200, doc);
+                }
+            });
+        } else {
+            KnowledgebaseDocuments.find().exec(function(err, doc) {
+                if (err) {
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, doc);
+            });
+        }
+    },
+
+    /**
+     * `KnowledgeBaseController.createCategory()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/knowledgebase/category Create a new category
+     * @apiName CreateCategory
+     * @apiDescription This is where a new category is created.
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {String} name Name of the category.
+     * @apiParam {String} description Full description of the category.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "id": "59dce9c16b54d91c38847825"
+     *     }
+     */
+    createCategory: function(req, res) {
+        KnowledgebaseCategory.create(req.body).exec(function(err, category) {
             if (err) {
-              return res.json(err.status, {err: err});
+                return res.json(err.status, { err: err });
             }
-    
-            return res.json(200, {status: 'success', message: 'Category with id '+req.param('id')+' has been deleted'});
-          });
-        }
-      });
-    }
-  },
 
-  /**
-   * `KnowledgeBaseController.updateCategory()`
-   * 
-   * ----------------------------------------------------------------------------------
-   * @api {put} /api/v1/knowledgebase/category/:id Update a category
-   * @apiName UpdateCategory
-   * @apiDescription This is where a category is updated
-   * @apiGroup Knowledgebase
-   *
-   * @apiParam {Number} id Category ID.
-   *
-   * @apiSuccess {String} status Status of the response from API.
-   * @apiSuccess {String} message  Success message response from API.
-   *
-   * @apiSuccessExample Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "status": "success",
-   *       "message": "Category with id 59dce9d56b54d91c38847825 has been updated"
-   *     }
-   *
-   * @apiUse CategoryIdNotProvidedError
-   * 
-   * @apiUse CategoryNotFoundError
-   */
-  updateCategory: function (req, res) {
-    if(!req.param('id')){
-      return res.json(401, {status: 'error', err: 'No Category id provided!'});
-    }else{
-      Category.findOne({select: 'title', where : {id : req.param('id')}}).exec(function (err, doc){
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
-
-        if(!doc){
-          return res.json(404, {status: 'error', message: 'No Category with such id existing'});
-        }else{
-          Category.update({id: req.param('id')}, req.body).exec(function(err, data){
-            if(err){
-              return res.json(err.status, {err: err});
+            if (category) {
+                res.json(200, {
+                    status: "success",
+                    id: category.id,
+                });
             }
-      
-            return res.json(200, {status: 'success', message: 'Category with id '+req.param('id')+' has been updated'});
-          });
-        }
-      });
-    }
-  },
+        });
+    },
 
-  /**
-   * `KnowledgeBaseController.getCategory()`
-   * 
-   * ----------------------------------------------------------------------------------
-   * @api {get} /api/v1/knowledgebase/category/:id Get category(s)
-   * @apiName GetCategory
-   * @apiDescription This is where categories are retrieved.
-   * @apiGroup Knowledgebase
-   *
-   * @apiParam {Number} id Category id.
-   *
-   * @apiSuccess {String} category Category response from API.
-   *
-   * @apiSuccessExample Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "id": "59dce9d56b54d91c38847825",
-   *       ".........": "...................."
-   *        .................................
-   *     }
-   * 
-   * @apiUse CategoryNotFoundError
-   */
-  getCategory: function (req, res) {
-    if(req.param('id')){
-      Category.findOne({id : req.param('id')}).exec(function (err, doc){
-        if (err) {
-          return res.json(err.status, {err: err});
-        }
 
-        if(!doc){
-          return res.json(404, {status: 'error', message: 'No Category with such id existing'});
-        }else{
-          return res.json(200, doc);
+    /**
+     * `KnowledgeBaseController.deleteCategory()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {delete} /api/v1/knowledgebase/category/:id Delete a category
+     * @apiName DeleteCategory
+     * @apiDescription This is where a category is deleted
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {Number} id Category ID.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "Category with id 59dce9d56b54d91c38847825 has been deleted'"
+     *     }
+     *
+     * @apiUse CategoryIdNotProvidedError
+     * 
+     * @apiUse CategoryNotFoundError
+     */
+    deleteCategory: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Category id provided!' });
+        } else {
+            KnowledgebaseCategory.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, doc) {
+                if (err) {
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!doc) {
+                    return res.json(404, { status: 'error', message: 'No Category with such id existing' });
+                } else {
+                    KnowledgebaseCategory.destroy({ id: req.param('id') }).exec(function(err) {
+                        if (err) {
+                            return res.json(err.status, { err: err });
+                        }
+
+                        return res.json(200, { status: 'success', message: 'Category with id ' + req.param('id') + ' has been deleted' });
+                    });
+                }
+            });
         }
-      });
-    }else{
-      Category.find().exec(function (err, doc){
-        if (err) {
-          return res.json(err.status, {err: err});
+    },
+
+    /**
+     * `KnowledgeBaseController.updateCategory()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {put} /api/v1/knowledgebase/category/:id Update a category
+     * @apiName UpdateCategory
+     * @apiDescription This is where a category is updated
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {Number} id Category ID.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "Category with id 59dce9d56b54d91c38847825 has been updated"
+     *     }
+     *
+     * @apiUse CategoryIdNotProvidedError
+     * 
+     * @apiUse CategoryNotFoundError
+     */
+    updateCategory: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Category id provided!' });
+        } else {
+            KnowledgebaseCategory.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, doc) {
+                if (err) {
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!doc) {
+                    return res.json(404, { status: 'error', message: 'No Category with such id existing' });
+                } else {
+                    KnowledgebaseCategory.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                        if (err) {
+                            return res.json(err.status, { err: err });
+                        }
+
+                        return res.json(200, { status: 'success', message: 'Category with id ' + req.param('id') + ' has been updated' });
+                    });
+                }
+            });
         }
-  
-        return res.json(200, doc);
-      });
+    },
+
+    /**
+     * `KnowledgeBaseController.getCategory()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/knowledgebase/category/:id Get category(s)
+     * @apiName GetCategory
+     * @apiDescription This is where categories are retrieved.
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {Number} [id] Category id.
+     *
+     * @apiSuccess {String} category Category response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     * 
+     * @apiUse CategoryNotFoundError
+     */
+    getCategory: function(req, res) {
+        if (req.param('id')) {
+            KnowledgebaseCategory.findOne({ id: req.param('id') }).exec(function(err, doc) {
+                if (err) {
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!doc) {
+                    return res.json(404, { status: 'error', message: 'No Category with such id existing' });
+                } else {
+                    return res.json(200, doc);
+                }
+            });
+        } else {
+            KnowledgebaseCategory.find().exec(function(err, doc) {
+                if (err) {
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, doc);
+            });
+        }
     }
-  }
 
 };
