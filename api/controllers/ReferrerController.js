@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
- /**
+/**
  * @apiDefine UserNotFoundError
  *
  * @apiError UserNotFound The User was not found.
@@ -18,7 +18,7 @@
  *     }
  */
 
-  /** 
+/** 
  * @apiDefine UserIdNotProvidedError
  *
  * @apiError UserIdNotProvided No User id provided.
@@ -32,7 +32,7 @@
  */
 
 module.exports = {
-	
+
 
   /**
    * `ReferrerController.approve()`
@@ -59,38 +59,92 @@ module.exports = {
    * 
    * @apiUse UserNotFoundError
    */
-  approve: function (req, res) {
-    if(!req.param('id')){
-      return res.json(401, {status: 'error', err: 'No User id provided!'});
-    }else{
-      User.findOne({select: ['username', 'referred1', 'referred2'], where : {id : req.param('id')}}).exec(function (err, user){
+  approve: function(req, res) {
+    if (!req.param('id')) {
+      return res.json(401, { status: 'error', err: 'No User id provided!' });
+    } else {
+      User.findOne({ select: ['username', 'referred1', 'referred2', 'email'], where: { id: req.param('id') } }).exec(function(err, user) {
         if (err) {
-          return res.json(err.status, {err: err});
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
         }
 
-        if(!user){
-          return res.json(404, {status: 'error', message: 'No User with such id existing'});
-        }else{
-          if(user.referred1 === false){
-            User.update({id: req.param('id')}, {referred1: true}).exec(function(err, data){
-              if(err){
-                return res.json(err.status, {err: err});
+        if (!user) {
+          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+        } else {
+          if (user.referred1 === false) {
+            User.update({ id: req.param('id') }, { referred1: true }).exec(function(err, data) {
+              if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
               }
-              // TODO: send email to the user alerting him/her to the state of affairs
-              // TODO: send notification to the user alerting him/her to the state of affairs
+
+              // Send notification to the user alerting him/her on the state of affairs
+              Notifications.create({ id: req.param('id'), message: 'The first of your referees has approved your registration.' }).exec(function(err, info) {
+                if (err) {
+                  sails.log.error(err);
+                }
+              });
+
+              // Send email to the user alerting him/her to the state of affairs
+              var emailData = {
+                'email': process.env.SITE_EMAIL,
+                'from': process.env.SITE_NAME,
+                'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+                'body': 'Hello ' + user.company + '! <br><br> The first of your referees has approved your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+                'to': user.email
+              }
+
+              azureEmail.send(emailData, function(resp) {
+                if (resp === 'success') {
+                  return res.json(200, { status: 'success', message: 'The email was sent successfully.' });
+                }
+
+                if (resp === 'error') {
+                  sails.log.error(resp);
+                  return res.json(401, { status: 'error', err: 'There was an error while sending the email.' });
+                }
+              });
+
               // TODO: redirect the referrer to a success page
             });
-          }else if(user.referred2 === false){
-            User.update({id: req.param('id')}, {referred2: true}).exec(function(err, data){
-              if(err){
-                return res.json(err.status, {err: err});
+          } else if (user.referred2 === false) {
+            User.update({ id: req.param('id') }, { referred2: true }).exec(function(err, data) {
+              if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
               }
-  
-              // TODO: send email to the user alerting him/her to the state of affairs
-              // TODO: send notification to the user alerting him/her to the state of affairs
+
+              // Send notification to the user alerting him/her on the state of affairs
+              Notifications.create({ id: req.param('id'), message: 'The second of your referees has approved your registration.' }).exec(function(err, info) {
+                if (err) {
+                  sails.log.error(err);
+                }
+              });
+
+              // Send email to the user alerting him/her to the state of affairs
+              var emailData = {
+                'email': process.env.SITE_EMAIL,
+                'from': process.env.SITE_NAME,
+                'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+                'body': 'Hello ' + user.company + '! <br><br> The second of your referees has approved your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+                'to': user.email
+              }
+
+              azureEmail.send(emailData, function(resp) {
+                if (resp === 'success') {
+                  return res.json(200, { status: 'success', message: 'The email was sent successfully.' });
+                }
+
+                if (resp === 'error') {
+                  sails.log.error(resp);
+                  return res.json(401, { status: 'error', err: 'There was an error while sending the email.' });
+                }
+              });
+
               // TODO: redirect the referrer to a success page
             });
-          }else{
+          } else {
             // TODO: redirect the referrer to a warning page
           }
         }
@@ -124,18 +178,19 @@ module.exports = {
    * 
    * @apiUse UserNotFoundError
    */
-  reject: function (req, res) {
-    if(!req.param('id')){
-      return res.json(401, {status: 'error', err: 'No User id provided!'});
-    }else{
-      User.findOne({select: 'username', where : {id : req.param('id')}}).exec(function (err, user){
+  reject: function(req, res) {
+    if (!req.param('id')) {
+      return res.json(401, { status: 'error', err: 'No User id provided!' });
+    } else {
+      User.findOne({ select: 'username', where: { id: req.param('id') } }).exec(function(err, user) {
         if (err) {
-          return res.json(err.status, {err: err});
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
         }
 
-        if(!user){
-          return res.json(404, {status: 'error', message: 'No User with such id existing'});
-        }else{
+        if (!user) {
+          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+        } else {
           // TODO: send email to the user alerting him/her to the state of affairs
           // TODO: send notification to the user alerting him/her to the state of affairs
           // TODO: redirect the referrer to a rejection page
@@ -168,31 +223,32 @@ module.exports = {
    * 
    * @apiUse UserNotFoundError
    */
-  get: function (req, res) {
-    if(req.param('id')){
-      User.findOne().where({id : req.param('id'), or: [{referred1: false}, {referred2: false}]}).exec(function (err, user){
+  get: function(req, res) {
+    if (req.param('id')) {
+      User.findOne().where({ id: req.param('id'), or: [{ referred1: false }, { referred2: false }] }).exec(function(err, user) {
         if (err) {
-          return res.json(err.status, {err: err});
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
         }
 
-        if(!user){
-          return res.json(404, {status: 'error', message: 'No User with such id existing'});
-        }else{
+        if (!user) {
+          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+        } else {
           delete user.password; // delete the password from the returned user object
           return res.json(200, user);
         }
       });
-    }else{
-      User.find().where({role: 'User', or: [{referred1: false}, {referred2: false}]}).exec(function (err, user){
+    } else {
+      User.find().where({ role: 'User', or: [{ referred1: false }, { referred2: false }] }).exec(function(err, user) {
         if (err) {
-          return res.json(err.status, {err: err});
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
         }
 
         // delete the password from the returned user objects
-        var userData = user.map( function(item) { return delete item.password; } );
+        var userData = user.map(function(item) { return delete item.password; });
         return res.json(200, userData);
       });
     }
   }
 };
-

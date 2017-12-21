@@ -113,10 +113,15 @@ module.exports = {
 
         Training.create(req.body).exec(function(err, training) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
             // If training is created successfuly we return training id and title
             if (training) {
+
+                var who = jwToken.who(req.headers.authorization);
+                audit.log('training', who + ' created ' + training.title);
+
                 // NOTE: payload is { id: training.id}
                 res.json(200, {
                     status: 'success',
@@ -213,14 +218,16 @@ module.exports = {
         } else {
             Training.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, training) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!training) {
-                    return res.json(404, { status: 'error', message: 'No Training with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Training with such id existing' })
                 } else {
                     Training.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -228,6 +235,9 @@ module.exports = {
                             var url = training.banner;
                             azureBlob.delete('training', url.split('/').reverse()[0]);
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('training', who + ' deleted ' + training.title);
 
                         return res.json(200, { status: 'success', message: 'Training with id ' + req.param('id') + ' has been deleted' });
                     });
@@ -274,11 +284,12 @@ module.exports = {
         } else {
             Training.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, training) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!training) {
-                    return res.json(404, { status: 'error', message: 'No Training with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Training with such id existing' })
                 } else {
 
                     if (training.banner && training.banner !== req.param('banner')) {
@@ -288,8 +299,12 @@ module.exports = {
 
                     Training.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('training', who + ' edited ' + training.title);
 
                         return res.json(200, { status: 'success', message: 'Training with id ' + req.param('id') + ' has been updated' });
                     });
@@ -326,11 +341,12 @@ module.exports = {
         if (req.param('id')) {
             Training.findOne({ id: req.param('id') }).exec(function(err, training) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!training) {
-                    return res.json(404, { status: 'error', message: 'No Training with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Training with such id existing' })
                 } else {
                     return res.json(200, training);
                 }
@@ -338,6 +354,7 @@ module.exports = {
         } else {
             Training.find().exec(function(err, training) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -394,6 +411,7 @@ module.exports = {
 
         TrainingPayment.create(req.body).exec(function(err, payment) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
             // If trainig is created successfuly we return payment id
@@ -441,14 +459,16 @@ module.exports = {
         } else {
             TrainingPayments.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, training) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!training) {
-                    return res.json(404, { status: 'error', message: 'No Payment with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Payment with such id existing' })
                 } else {
                     TrainingPayments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -486,11 +506,12 @@ module.exports = {
         if (req.param('id')) {
             TrainingPayments.findOne({ id: req.param('id') }).exec(function(err, payment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!payment) {
-                    return res.json(404, { status: 'error', message: 'No Trainig with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Trainig with such id existing' })
                 } else {
                     return res.json(200, payment);
                 }
@@ -498,6 +519,7 @@ module.exports = {
         } else {
             TrainingPayments.find().exec(function(err, payments) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 

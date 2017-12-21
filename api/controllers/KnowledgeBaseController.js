@@ -214,14 +214,16 @@ module.exports = {
         } else {
             KnowledgebaseDocuments.findOne({ select: ['title', 'docUrl'], where: { id: req.param('id') } }).exec(function(err, doc) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!doc) {
-                    return res.json(404, { status: 'error', message: 'No Document with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Document with such id existing' })
                 } else {
                     KnowledgebaseDocuments.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -273,11 +275,12 @@ module.exports = {
         } else {
             KnowledgebaseDocuments.findOne({ select: ['title', 'docUrl'], where: { id: req.param('id') } }).exec(function(err, doc) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!doc) {
-                    return res.json(404, { status: 'error', message: 'No Document with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Document with such id existing' })
                 } else {
 
                     if (doc.docUrl && doc.docUrl !== req.param('docUrl')) {
@@ -287,6 +290,7 @@ module.exports = {
 
                     KnowledgebaseDocuments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -325,11 +329,12 @@ module.exports = {
         if (req.param('id')) {
             KnowledgebaseDocuments.findOne({ id: req.param('id') }).exec(function(err, doc) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!doc) {
-                    return res.json(404, { status: 'error', message: 'No Document with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Document with such id existing' })
                 } else {
                     return res.json(200, doc);
                 }
@@ -337,6 +342,7 @@ module.exports = {
         } else {
             KnowledgebaseDocuments.find().exec(function(err, doc) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -370,6 +376,7 @@ module.exports = {
     createCategory: function(req, res) {
         KnowledgebaseCategory.create(req.body).exec(function(err, category) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
@@ -414,14 +421,16 @@ module.exports = {
         } else {
             KnowledgebaseCategory.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, doc) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!doc) {
-                    return res.json(404, { status: 'error', message: 'No Category with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Category with such id existing' });
                 } else {
                     KnowledgebaseCategory.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -463,14 +472,16 @@ module.exports = {
         } else {
             KnowledgebaseCategory.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, doc) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!doc) {
-                    return res.json(404, { status: 'error', message: 'No Category with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Category with such id existing' });
                 } else {
                     KnowledgebaseCategory.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -508,11 +519,12 @@ module.exports = {
         if (req.param('id')) {
             KnowledgebaseCategory.findOne({ id: req.param('id') }).exec(function(err, doc) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!doc) {
-                    return res.json(404, { status: 'error', message: 'No Category with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Category with such id existing' });
                 } else {
                     return res.json(200, doc);
                 }
@@ -520,6 +532,7 @@ module.exports = {
         } else {
             KnowledgebaseCategory.find().exec(function(err, doc) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 

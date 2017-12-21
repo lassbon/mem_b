@@ -20,11 +20,6 @@ module.exports = {
         event: {
             model: 'events',
             required: true
-        },
-        status: {
-            type: 'string',
-            defaultsTo: 'pending',
-            enum: ['pending', 'approved', 'denied', 'free']
         }
     }
 };

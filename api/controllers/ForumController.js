@@ -126,6 +126,7 @@ module.exports = {
         } else {
             ForumTopics.create(req.body).exec(function(err, topic) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -174,14 +175,16 @@ module.exports = {
         } else {
             ForumTopics.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, topic) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!topic) {
-                    return res.json(404, { status: 'error', message: 'No Topic with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Topic with such id existing' });
                 } else {
                     ForumTopics.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -224,14 +227,16 @@ module.exports = {
         } else {
             ForumTopics.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, topic) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!topic) {
-                    return res.json(404, { status: 'error', message: 'No Topic with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Topic with such id existing' });
                 } else {
                     ForumTopics.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -269,11 +274,12 @@ module.exports = {
         if (req.param('id')) {
             ForumTopics.findOne({ id: req.param('id') }).populate('posts').exec(function(err, topic) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!topic) {
-                    return res.json(404, { status: 'error', message: 'No Topic with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Topic with such id existing' })
                 } else {
                     return res.json(200, topic);
                 }
@@ -281,6 +287,7 @@ module.exports = {
         } else {
             ForumTopics.find().populate('posts').exec(function(err, topics) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -329,6 +336,7 @@ module.exports = {
         } else {
             ForumPosts.create(req.body).exec(function(err, post) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -377,14 +385,16 @@ module.exports = {
         } else {
             ForumPosts.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, post) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!post) {
-                    return res.json(404, { status: 'error', message: 'No Post with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Post with such id existing' });
                 } else {
                     ForumPosts.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -427,14 +437,16 @@ module.exports = {
         } else {
             ForumPosts.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, post) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!post) {
-                    return res.json(404, { status: 'error', message: 'No Post with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Post with such id existing' });
                 } else {
                     ForumPosts.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -472,11 +484,12 @@ module.exports = {
         if (req.param('id')) {
             ForumPosts.findOne({ id: req.param('id') }).populate('comments').exec(function(err, post) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!post) {
-                    return res.json(404, { status: 'error', message: 'No Post with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Post with such id existing' })
                 } else {
                     return res.json(200, post);
                 }
@@ -484,6 +497,7 @@ module.exports = {
         } else {
             ForumPosts.find().populate('comments').exec(function(err, posts) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -537,6 +551,7 @@ module.exports = {
 
         ForumComments.create(req.body).exec(function(err, comment) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
@@ -581,14 +596,16 @@ module.exports = {
         } else {
             ForumComments.findOne({ select: 'comment', where: { id: req.param('id') } }).exec(function(err, comment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!comment) {
-                    return res.json(404, { status: 'error', message: 'No Comment with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
                 } else {
                     ForumComments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -630,14 +647,16 @@ module.exports = {
         } else {
             ForumComments.findOne({ select: 'comment', where: { id: req.param('id') } }).exec(function(err, comment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!comment) {
-                    return res.json(404, { status: 'error', message: 'No Comment with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
                 } else {
                     ForumComments.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -674,11 +693,12 @@ module.exports = {
         if (req.param('id')) {
             ForumComments.findOne({ id: req.param('id') }).exec(function(err, comment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!comment) {
-                    return res.json(204, { status: 'error', message: 'No Comment with such id existing' })
+                    return res.json(204, { status: 'error', err: 'No Comment with such id existing' })
                 } else {
                     return res.json(200, comment);
                 }
@@ -686,6 +706,7 @@ module.exports = {
         } else {
             ForumComments.find().exec(function(err, comments) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 

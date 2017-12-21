@@ -28,7 +28,7 @@ module.exports = {
         },
         donationPayments: {
             collection: 'donationPayments',
-            via: 'donation'
+            via: 'donationId'
         },
         status: {
             type: 'string',

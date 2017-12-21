@@ -1,7 +1,7 @@
 /**
- * isAuthenticated
+ * isAdmin
  *
- * @description :: Policy to check if user is authorized with JSON web token
+ * @description :: Policy to check user role (if user or admin)
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Policies
  */
 
@@ -19,12 +19,18 @@ module.exports = function(req, res, next) {
     }
 
     jwToken.verify(token, function(err, token) {
-        if (err) { 
-            sails.log.error(err); 
-            return res.json(401, { status: 'error', err: 'Invalid Token!' }); 
+        if (err) {
+            sails.log.error(err);
+            return res.json(401, { status: 'error', err: 'Invalid Token!' });
         }
-        
-        req.token = token; // This is the decrypted token or the payload you provided
-        next();
+
+        // we try to deny access to no admin account holders to the admin backend
+        if (token.role && token.role == 'Admin') {
+            req.token = token; // This is the decrypted token or the payload you provided
+            next();
+        }else{
+            sails.log.error(err);
+            return res.json(401, { status: 'error', err: 'Admin access denied!' });
+        }
     });
 };

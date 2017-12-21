@@ -116,10 +116,14 @@ module.exports = {
 
         Admin.create(req.body).exec(function(err, admin) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
             // If user created successfuly we return user and token as response
             if (admin) {
+                
+                audit.log('admin', admin.username + ' created.' );
+
                 // NOTE: payload is { id: user.id}
                 res.json(200, {
                     status: "success",
@@ -162,6 +166,7 @@ module.exports = {
         } else {
             Admin.findOne({ select: 'username', where: { id: req.param('id') } }).exec(function(err, admin) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -170,10 +175,14 @@ module.exports = {
                 } else {
                     Admin.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
-                        return res.json(200, 'Admin with id ' + req.param('id') + ' has been deleted');
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('admin', who + ' deleted '+ admin.username );
+
+                        return res.json(200, { status: 'success', message: 'Admin with id ' + req.param('id') + ' has been deleted'});
                     });
                 }
             });
@@ -217,6 +226,7 @@ module.exports = {
         } else {
             Admin.findOne({ select: 'username', where: { id: req.param('id') } }).exec(function(err, admin) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -225,10 +235,14 @@ module.exports = {
                 } else {
                     Admin.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
-                        return res.json(200, 'Admin with id ' + req.param('id') + ' has been updated');
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('admin', who + ' updated '+ admin.username );
+
+                        return res.json(200, { status: 'success', message: 'Admin with id ' + req.param('id') + ' has been updated'});
                     });
                 }
             });
@@ -263,6 +277,7 @@ module.exports = {
         if (req.param('id')) {
             Admin.findOne({ id: req.param('id') }).exec(function(err, admin) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -278,6 +293,7 @@ module.exports = {
             var role = 'Admin';
             Admin.find({ role: role }).exec(function(err, admins) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -286,8 +302,6 @@ module.exports = {
                 });
 
                 return res.json(200, admins);
-
-                console.log(admins);
             });
         }
     },
@@ -324,6 +338,7 @@ module.exports = {
         } else {
             Admin.findOne({ select: ['email', 'password'], where: { email: req.param('email') } }).exec(function(err, admin) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -345,7 +360,7 @@ module.exports = {
                         }
 
                         if (resp === 'error') {
-                            return res.json(401, { status: 'error', message: 'There was an error while sending your password reset email.' });
+                            return res.json(401, { status: 'error', err: 'There was an error while sending your password reset email.' });
                         }
                     });
                 }
@@ -384,7 +399,10 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No token provided!' });
         } else {
             jwToken.verify(req.param('token'), function(err, token) {
-                if (err) return res.json(401, { status: 'error', err: 'Invalid Token!' });
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(401, { status: 'error', err: 'Invalid Token!' });
+                }
 
                 if (req.param('password') !== req.param('confirmPassword')) {
                     return res.json(401, { status: "error", err: 'Password doesn\'t match, What a shame!' });
@@ -392,6 +410,7 @@ module.exports = {
 
                 Admin.update({ email: token.email }, { password: req.param('password') }).exec(function(err, data) {
                     if (err) {
+                        sails.log.error(err);
                         return res.json(err.status, { err: err });
                     }
 

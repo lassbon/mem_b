@@ -7,7 +7,7 @@
 
 module.exports = {
 
-    attributes: {
+    attributes: { 
 
         amount: {
             type: 'integer',
@@ -17,14 +17,9 @@ module.exports = {
             model: 'user',
             required: true
         },
-        donation: {
+        donationId: {
             model: 'donation',
             required: true
-        },
-        status: {
-            type: 'string',
-            defaultsTo: 'pending',
-            enum: ['pending', 'approved', 'denied']
         }
     }
 };

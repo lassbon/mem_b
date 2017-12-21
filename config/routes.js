@@ -128,7 +128,7 @@ module.exports.routes = {
     'POST /api/v1/donation/payment': 'DonationController.createPayment',
     'PUT /api/v1/donation/payment/:id': 'DonationController.updatePayment',
     'GET /api/v1/donation/payment/:id': 'DonationController.getPayment',
-    'GET /api/v1/donation/payment': 'DonationController.getPayment',
+    'GET /api/v1/donation-payment': 'DonationController.getPayment',
 
     /**
      * Levels routes
@@ -159,7 +159,7 @@ module.exports.routes = {
      * Verifier routes
      */
     'POST /api/v1/verifier': 'VerifierController.verify',
-    'DELETE /api/v1/verifier': 'VerifierController.reject',
+    'DELETE /api/v1/verifier/:id': 'VerifierController.reject',
     'GET /api/v1/verifier/:id': 'VerifierController.get',
     'GET /api/v1/verifier': 'VerifierController.get',
 
@@ -208,6 +208,9 @@ module.exports.routes = {
     'POST /api/v1/social/post/like': 'SocialController.likePost',
     'POST /api/v1/social/post/unlike': 'SocialController.unlikePost',
 
+    // Social feed routes
+    'GET /api/v1/social/feed/:id': 'SocialController.getFeed',
+
     /**
      * Forum routes
      */
@@ -232,6 +235,12 @@ module.exports.routes = {
     'GET /api/v1/forum/comment/:id': 'ForumController.getComment',
     'GET /api/v1/forum/comment': 'ForumController.getComment',
 
-    // Payments routes
+    // Paystack routes
     'POST /api/v1/paystack': 'PaystackController.verify',
+
+    // Payment routes
+    'GET /api/v1/payments': 'PaymentsController.get',
+
+    // Audit routes
+    'GET /api/v1/audit': 'AuditController.get',
 };

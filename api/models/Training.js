@@ -34,7 +34,7 @@ module.exports = {
         },
         trainingPayments: {
             collection: 'trainingPayments',
-            via: 'training'
+            via: 'trainingId'
         }
     }
 };

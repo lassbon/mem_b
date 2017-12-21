@@ -26,6 +26,7 @@ module.exports.policies = {
      *                                                                          *
      ***************************************************************************/
     '*': ['isAuthenticated'], // Everything resctricted here
+    //'*': ['isAdmin'], // Everything resctricted here
 
 
     /***************************************************************************
@@ -36,15 +37,16 @@ module.exports.policies = {
      ***************************************************************************/
 
     'UserController': { // We dont need authorization here, allowing public access
-        'create': true
-    },
-
-    'AdminController': { // We dont need authorization here, allowing public access
-        'create': true
+        'create': true,
+        'delete': ['isHigh', 'isAdmin']
     },
 
     'AdminController': {
-        'forgotPassword': true // We dont need authorization here, allowing public access
+        '*': ['isAdmin', 'isAuthenticated'],
+        'forgotPassword': true,
+        'create': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        'delete': ['isAdmin', 'isSuper', 'isAuthenticated'],
+        'get': ['isAdmin', 'isSuper', 'isAuthenticated']
     },
 
     'AuthController': {
@@ -52,8 +54,60 @@ module.exports.policies = {
     },
 
     'PaystackController': {
-        'verify': true // We dont need authorization here, allowing public access
-    }
+        'verify': true
+    },
+
+    'PaymentsController': {
+        'get': ['isAdmin', 'isHigh', 'isAuthenticated'],
+    },
+
+    'AuditController': {
+        '*': ['isAdmin', 'isSuper', 'isAuthenticated']
+    },
+
+    'ProjectController': {
+        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
+        'get': ['isUser', 'isAuthenticated']
+    },
+
+    'TrainingController': {
+        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
+        'get': ['isUser', 'isAuthenticated']
+    },
+
+    'EventsController': {
+        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
+        'get': ['isUser', 'isAuthenticated']
+    },
+
+    'DonationController': {
+        '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        'get': ['isUser', 'isAuthenticated']
+    },
+
+    'LevelsController': {
+        '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        'get': ['isUser', 'isAuthenticated'],
+    },
+
+    'KnowledgeBaseController': {
+        '*': ['isAdmin', 'isAuthenticated'],
+        'get': ['isUser', 'isAuthenticated'],
+
+        'create': ['isUser', 'isAuthenticated'],
+        'uploadDocument': ['isUser', 'isAuthenticated'],
+        'update': ['isUser', 'isAuthenticated'],
+        'delete': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        'getDoc': ['isUser', 'isAuthenticated'],
+    },
+
+    'ApproverController': {
+        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
+    },
+
+    'VerifierController': {
+        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
+    },
 
     /***************************************************************************
      *                                                                          *
@@ -69,7 +123,7 @@ module.exports.policies = {
 
     // For the action `nurture`, apply the 'isRabbitMother' policy
     // (this overrides `false` above)
-    // nurture	: 'isRabbitMother',
+    // nurture  : 'isRabbitMother',
 
     // Apply the `isNiceToAnimals` AND `hasRabbitFood` policies
     // before letting any users feed our rabbits

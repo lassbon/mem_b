@@ -117,6 +117,7 @@ module.exports = {
 
         User.create(req.body).exec(function(err, user) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
             // If user created successfuly we return user and token as response
@@ -164,25 +165,28 @@ module.exports = {
     uploadImage: function(req, res) {
         if (req.method != 'POST') return res.notFound();
 
-        var container = 'user';
+        var container = 'userprofile';
 
-        req.file('image')
-            .upload({
-                maxBytes: 5000000,
-                adapter: require('skipper-azure'),
-                key: process.env.AZURE_STORAGE_ACCOUNT,
-                secret: process.env.AZURE_STORAGE_ACCESS_KEY,
-                container: container
-            }, function whenDone(err, uploadedFiles) {
-                if (err) return res.negotiate(err);
-                else if (uploadedFiles.length === 0) {
-                    return res.json(401, { status: 'error', err: 'No image uploaded!' });
-                } else return res.ok({
-                    status: 'success',
-                    bannerUrl: process.env.AZURE_STORAGE_ACCOUNT_URL + container + '/' + uploadedFiles[0].fd
+        azureBlob.createContainerIfNotExists(container, function() {
+            req.file('image')
+                .upload({
+                    maxBytes: 5000000,
+                    adapter: require('skipper-azure'),
+                    key: process.env.AZURE_STORAGE_ACCOUNT,
+                    secret: process.env.AZURE_STORAGE_ACCESS_KEY,
+                    container: container
+                }, function whenDone(err, uploadedFiles) {
+                    if (err) { 
+                        sails.log.error(err);
+                        return res.negotiate(err);
+                    } else if (uploadedFiles.length === 0) {
+                        return res.json(401, { status: 'error', err: 'No image uploaded!' });
+                    } else return res.ok({
+                        status: 'success',
+                        bannerUrl: process.env.AZURE_STORAGE_ACCOUNT_URL + container + '/' + uploadedFiles[0].fd
+                    });
                 });
-            });
-
+        });
     },
 
 
@@ -217,14 +221,16 @@ module.exports = {
         } else {
             User.findOne({ select: ['username', 'profileImage'], where: { id: req.param('id') } }).exec(function(err, user) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!user) {
-                    return res.json(404, { status: 'error', message: 'No User with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No User with such id existing' });
                 } else {
                     User.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -232,6 +238,9 @@ module.exports = {
                             var url = user.profileImage;
                             azureBlob.delete('user', url.split('/').reverse()[0]);
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('user', who + ' deleted '+ user.company );
 
                         return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been deleted' });
                     });
@@ -272,11 +281,12 @@ module.exports = {
         } else {
             User.findOne({ select: ['username', 'profileImage'], where: { id: req.param('id') } }).exec(function(err, user) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!user) {
-                    return res.json(404, { status: 'error', message: 'No User with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No User with such id existing' })
                 } else {
 
                     if (user.profileImage && user.profileImage !== req.param('image')) {
@@ -286,8 +296,12 @@ module.exports = {
 
                     User.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('user', who + ' edited '+ user.company );
 
                         return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been updated' });
                     });
@@ -324,20 +338,21 @@ module.exports = {
         if (req.param('id')) {
             User.findOne({ id: req.param('id') }).exec(function(err, user) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!user) {
-                    return res.json(404, { status: 'error', message: 'No User with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No User with such id existing' })
                 } else {
                     delete user.password;
                     return res.json(200, user);
                 }
             });
         } else {
-            var role = 'User';
-            User.find({ role: role }).exec(function(err, user) {
+            User.find().exec(function(err, user) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -378,6 +393,7 @@ module.exports = {
         } else {
             User.findOne({ select: ['email', 'password', 'username'], where: { email: req.param('email') } }).exec(function(err, user) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -438,7 +454,10 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No token provided!' });
         } else {
             jwToken.verify(req.param('token'), function(err, token) {
-                if (err) return res.json(401, { status: 'error', err: 'Invalid Token!' });
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(401, { status: 'error', err: 'Invalid Token!' });
+                }
 
                 if (req.param('password') !== req.param('confirmPassword')) {
                     return res.json(401, { status: "error", err: 'Password doesn\'t match, What a shame!' });
@@ -446,8 +465,12 @@ module.exports = {
 
                 User.update({ email: token.email }, { password: req.param('password') }).exec(function(err, data) {
                     if (err) {
+                        sails.log.error(err);
                         return res.json(err.status, { err: err });
                     }
+
+                    var who = jwToken.who(req.headers.authorization);
+                    audit.log('user', who + ' changed password' );
 
                     return res.json(200, { status: 'success', message: 'Password successfully changed.' });
                 });

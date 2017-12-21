@@ -17,14 +17,9 @@ module.exports = {
             model: 'user',
             required: true
         },
-        training: {
+        trainingId: {
             model: 'training',
             required: true
-        },
-        status: {
-            type: 'string',
-            defaultsTo: 'pending',
-            enum: ['pending', 'approved', 'denied', 'free']
         }
     }
 };

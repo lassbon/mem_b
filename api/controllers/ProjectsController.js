@@ -73,10 +73,15 @@ module.exports = {
 
         Projects.create(req.body).exec(function(err, project) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
             // If project is created successfuly we return project id and title
             if (project) {
+
+                var who = jwToken.who(req.headers.authorization);
+                audit.log('project', who + ' created ' + project.title);
+
                 // NOTE: payload is { id: project.id}
                 res.json(200, {
                     status: 'success',
@@ -130,8 +135,10 @@ module.exports = {
                     secret: process.env.AZURE_STORAGE_ACCESS_KEY,
                     container: container
                 }, function whenDone(err, uploadedFiles) {
-                    if (err) return res.negotiate(err);
-                    else if (uploadedFiles.length === 0) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.negotiate(err);
+                    } else if (uploadedFiles.length === 0) {
                         return res.json(401, { status: 'error', err: 'No image uploaded!' });
                     } else return res.ok({
                         status: 'success',
@@ -139,7 +146,6 @@ module.exports = {
                     });
                 });
         });
-
     },
 
 
@@ -174,14 +180,16 @@ module.exports = {
         } else {
             Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, project) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!project) {
-                    return res.json(404, { status: 'error', message: 'No Project with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Project with such id existing' })
                 } else {
                     Projects.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -189,6 +197,9 @@ module.exports = {
                             var url = project.banner;
                             azureBlob.delete('project', url.split('/').reverse()[0]);
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('project', who + ' deleted ' + project.title);
 
                         return res.json(200, { status: 'success', message: 'Project with id ' + req.param('id') + ' has been deleted' });
                     });
@@ -234,11 +245,12 @@ module.exports = {
         } else {
             Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, project) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!project) {
-                    return res.json(404, { status: 'error', message: 'No Project with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Project with such id existing' })
                 } else {
 
                     if (project.banner && project.banner !== req.param('banner')) {
@@ -248,8 +260,12 @@ module.exports = {
 
                     Projects.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('project', who + ' edited ' + project.title);
 
                         return res.json(200, { status: 'success', message: 'Project with id ' + req.param('id') + ' has been updated' });
                     });
@@ -286,6 +302,7 @@ module.exports = {
         if (req.param('id')) {
             Projects.findOne({ id: req.param('id') }).exec(function(err, project) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -298,6 +315,7 @@ module.exports = {
         } else {
             Projects.find().exec(function(err, project) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 

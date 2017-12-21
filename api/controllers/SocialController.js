@@ -1,3 +1,5 @@
+var nestedPop = require('nested-pop');
+
 /**
  * SocialController
  *
@@ -153,8 +155,10 @@ module.exports = {
 
         SocialConnections.create(req.body).exec(function(err, friendRequest) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
+
             if (friendRequest) {
                 res.json(200, { status: 'success', message: 'Friend request sent' });
             }
@@ -200,14 +204,16 @@ module.exports = {
 
         SocialConnections.findOne({ select: 'requester', where: { requester: req.param('requester'), requestee: req.param('requestee') } }).exec(function(err, requester) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
             if (!requester) {
-                return res.json(404, { status: 'error', message: 'No User with such requester id existing' })
+                return res.json(404, { status: 'error', err: 'No User with such requester id existing' })
             } else {
                 SocialConnections.destroy({ requester: req.param('requester'), requestee: req.param('requestee') }).exec(function(err) {
                     if (err) {
+                        sails.log.error(err);
                         return res.json(err.status, { err: err });
                     }
 
@@ -257,16 +263,20 @@ module.exports = {
 
         User.findOne({ select: 'username', where: { id: req.param('requestee') } }).populate('friends').exec(function(err, user) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
             if (!user) {
-                return res.json(404, { status: 'error', message: 'No User with such requestee id existing' });
+                return res.json(404, { status: 'error', err: 'No User with such requestee id existing' });
             } else {
 
                 user.friends.remove(req.param('requester'));
                 user.save(function(err) {
-                    if (err) return res.json(err.status, { err: err });
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
 
                     return res.json(200, { status: 'success', message: 'Friendship terminated' });
                 });
@@ -314,16 +324,20 @@ module.exports = {
 
         User.findOne({ select: 'username', where: { id: req.param('requestee') } }).populate('friends').exec(function(err, user) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
             if (!user) {
-                return res.json(404, { status: 'error', message: 'No User with such id existing' });
+                return res.json(404, { status: 'error', err: 'No User with such id existing' });
             } else {
 
                 user.friends.add(req.param('requester'));
                 user.save(function(err) {
-                    if (err) return res.json(err.status, { err: err });
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
 
                     return res.json(200, { status: 'success', message: 'Friend request accepted' });
                 });
@@ -382,6 +396,7 @@ module.exports = {
         }
         SocialPosts.create(req.body).exec(function(err, post) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
@@ -434,8 +449,10 @@ module.exports = {
                 secret: process.env.AZURE_STORAGE_ACCESS_KEY,
                 container: container
             }, function whenDone(err, uploadedFiles) {
-                if (err) return res.negotiate(err);
-                else if (uploadedFiles.length === 0) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.negotiate(err);
+                } else if (uploadedFiles.length === 0) {
                     return res.json(401, { status: 'error', err: 'No image uploaded!' });
                 } else return res.ok({
                     status: 'success',
@@ -478,6 +495,7 @@ module.exports = {
         } else {
             SocialPosts.findOne({ select: ['postText', 'postImage'], where: { id: req.param('id') } }).exec(function(err, post) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -492,6 +510,7 @@ module.exports = {
 
                     SocialPosts.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -533,6 +552,7 @@ module.exports = {
         } else {
             SocialPosts.findOne({ select: ['postText', 'postImage'], where: { id: req.param('id') } }).exec(function(err, post) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -541,6 +561,7 @@ module.exports = {
                 } else {
                     SocialPosts.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -594,11 +615,12 @@ module.exports = {
         if (req.param('id')) {
             SocialPosts.findOne({ id: req.param('id') }).populate('comments').populate('likes').exec(function(err, post) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!post) {
-                    return res.json(204, { status: 'error', message: 'No Post with such id existing' })
+                    return res.json(204, { status: 'error', err: 'No Post with such id existing' })
                 } else {
                     return res.json(200, post);
                 }
@@ -606,6 +628,7 @@ module.exports = {
         } else {
             SocialPosts.find().populate('comments').populate('likes').paginate({ page: page, limit: limit }).exec(function(err, posts) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -659,6 +682,7 @@ module.exports = {
         } else {
             SocialPosts.find({ postText: { 'contains': req.param('searchTerm') } }).populate('comments').populate('likes').paginate({ page: page, limit: limit }).exec(function(err, posts) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -699,16 +723,20 @@ module.exports = {
         } else {
             SocialPosts.findOne({ select: 'postText', where: { id: req.param('id') } }).populate('likes').exec(function(err, post) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!post) {
-                    return res.json(200, { status: 'error', message: 'No Post with such id existing' });
+                    return res.json(200, { status: 'error', err: 'No Post with such id existing' });
                 } else {
 
                     post.likes.remove(req.param('liker'));
                     post.save(function(err) {
-                        if (err) return res.json(err.status, { err: err });
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
 
                         return res.json(200, { status: 'success', message: 'Post unliked' });
                     });
@@ -749,6 +777,7 @@ module.exports = {
         } else {
             SocialPosts.findOne({ select: 'postText', where: { id: req.param('id') } }).populate('likes').exec(function(err, post) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -758,7 +787,10 @@ module.exports = {
 
                     post.likes.add(req.param('liker'));
                     post.save(function(err) {
-                        if (err) return res.json(err.status, { err: err });
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
 
                         return res.json(200, { status: 'success', message: 'Post liked' });
                     });
@@ -826,6 +858,7 @@ module.exports = {
 
         SocialComments.create(req.body).exec(function(err, comment) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
@@ -870,14 +903,16 @@ module.exports = {
         } else {
             SocialComments.findOne({ select: 'comment', where: { id: req.param('id') } }).exec(function(err, comment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!comment) {
-                    return res.json(404, { status: 'error', message: 'No Comment with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
                 } else {
                     SocialComments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -919,14 +954,16 @@ module.exports = {
         } else {
             SocialComments.findOne({ select: 'comment', where: { id: req.param('id') } }).exec(function(err, comment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!comment) {
-                    return res.json(404, { status: 'error', message: 'No Comment with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
                 } else {
                     SocialComments.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -965,11 +1002,12 @@ module.exports = {
         if (req.param('id')) {
             SocialComments.findOne({ id: req.param('id') }).exec(function(err, comment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!comment) {
-                    return res.json(204, { status: 'error', message: 'No Comment with such id existing' })
+                    return res.json(204, { status: 'error', err: 'No Comment with such id existing' })
                 } else {
                     return res.json(200, comment);
                 }
@@ -977,11 +1015,92 @@ module.exports = {
         } else {
             SocialComments.find().exec(function(err, posts) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 return res.json(200, posts);
             });
+        }
+    },
+
+    /**
+     * `SocialController.getFeed()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/social/feed/:id Get user's feed
+     * @apiName GetFeed
+     * @apiDescription This is where a user's feed is retrieved.
+     * @apiGroup Social
+     *
+     * @apiParam {Number} id User id.
+     *
+     * @apiSuccess {String} comment Postresponse from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     * 
+     */
+    getFeed: function(req, res) {
+        var offset, limit = 0;
+
+        if (req.param('offset')) {
+            offset = req.param('offset');
+        }
+
+        if (req.param('limit')) {
+            limit = req.param('limit');
+        }
+
+        if (req.param('id')) {
+
+            User.findOne({ select: ['username', 'friends'], where: { id: req.param('id') } })
+                .populate('friends')
+                .limit(limit)
+                .skip(offset)
+                .exec(function(err, user) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!user) {
+                        return res.json(204, { status: 'error', err: 'No user with such id existing' });
+                    } else {
+
+                        var friends = [];
+                        user.friends.forEach(function(friend) {
+                            friends.push(friend.id);
+                        });
+
+                        // check if the user has any friends yet
+                        if (friends.length > 0) {
+                            SocialPosts.find({
+                                    id: friends
+                                }).populate('comments')
+                                .populate('likes')
+                                .limit(limit)
+                                .skip(offset)
+                                .sort('createdAt DESC')
+                                .exec(function(err, posts) {
+                                    if (err) {
+                                        sails.log.error(err);
+                                        return res.json(err.status, { err: err });
+                                    }
+
+                                    return res.json(200, posts);
+                                });
+                        } else {
+                            return res.json(204, { status: 'error', err: 'User has no friends yet' });
+                        }
+                    }
+
+                });
         }
     },
 
@@ -1029,6 +1148,7 @@ module.exports = {
         } else {
             SocialComments.find({ comment: { 'contains': req.param('searchTerm') } }).paginate({ page: page, limit: limit }).exec(function(err, comments) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 

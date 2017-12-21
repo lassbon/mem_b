@@ -65,14 +65,16 @@ module.exports = {
     }else{
       User.findOne({select: 'username', where : {id : req.param('id')}}).exec(function (err, user){
         if (err) {
+          sails.log.error(err);
           return res.json(err.status, {err: err});
         }
 
         if(!user){
-          return res.json(404, {status: 'error', message: 'No User with such id existing'});
+          return res.json(404, {status: 'error', err: 'No User with such id existing'});
         }else{
           User.update({id: req.param('id')}, {approved: true}).exec(function(err, data){
             if(err){
+              sails.log.error(err);
               return res.json(err.status, {err: err});
             }
 
@@ -116,6 +118,7 @@ module.exports = {
     }else{
       User.findOne({select: 'username', where : {id : req.param('id')}}).exec(function (err, user){
         if (err) {
+          sails.log.error(err);
           return res.json(err.status, {err: err});
         }
 
@@ -124,10 +127,11 @@ module.exports = {
         }else{
           User.update({id: req.param('id')}, {rejected: true}).exec(function(err, data){
             if(err){
+              sails.log.error(err);
               return res.json(err.status, {err: err});
             }
 
-            // TODO: send email to the user alerting him/her to the state of affairs
+            // TODO: send email to the user alerting him/her on the state of affairs
             return res.json(200, {status: 'success', message: 'User with id '+req.param('id')+' has been rejected'});
           });
         }
@@ -163,6 +167,7 @@ module.exports = {
     if(req.param('id')){
       User.findOne({id : req.param('id'), approved: false}).exec(function (err, user){
         if (err) {
+          sails.log.error(err);
           return res.json(err.status, {err: err});
         }
 
@@ -176,6 +181,7 @@ module.exports = {
     }else{
       User.find({approved: false}).exec(function (err, user){
         if (err) {
+          sails.log.error(err);
           return res.json(err.status, {err: err});
         }
 

@@ -1,7 +1,7 @@
 /**
- * Payment.js
+ * Notifications.js
  *
- * @description :: 
+ * @description :: Notifications model holds the info for notifications part of the membership plartform
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
@@ -9,28 +9,21 @@ module.exports = {
 
     attributes: {
 
-        memberId: {
+        userId: {
+            type: 'string',
+            required: true,
+        },
+        message: {
             type: 'string',
             required: true
-        },
-        name: {
-            type: 'string'
         },
         type: {
             type: 'string',
-            required: true
+            defaultsTo: 'notification'
         },
-        source: {
+        from: {
             type: 'string',
             required: true
-        },
-        data: {
-            type: 'json',
-            required: true
-        },
-        amount: {
-            type: 'string',
-            required: true
-        },
+        }
     }
 };

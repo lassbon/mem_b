@@ -66,14 +66,16 @@ module.exports = {
     }else{
       User.findOne({select: 'username', where : {id : req.param('id')}}).exec(function (err, user){
         if (err) {
+          sails.log.error(err);
           return res.json(err.status, {err: err});
         }
 
         if(!user){
-          return res.json(401, {status: 'error', message: 'No User with such id existing'});
+          return res.json(401, {status: 'error', err: 'No User with such id existing'});
         }else{
           User.update({id: req.param('id')}, {verified: true}).exec(function(err, data){
             if(err){
+              sails.log.error(err);
               return res.json(err.status, {err: err});
             }
 
@@ -118,14 +120,16 @@ module.exports = {
     }else{
       User.findOne({select: 'username', where : {id : req.param('id')}}).exec(function (err, user){
         if (err) {
+          sails.log.error(err);
           return res.json(err.status, {err: err});
         }
 
         if(!user){
-          return res.json(401, {status: 'error', message: 'No User with such id existing'});
+          return res.json(401, {status: 'error', err: 'No User with such id existing'});
         }else{
           User.update({id: req.param('id')}, {rejected: true}).exec(function(err, data){
             if(err){
+              sails.log.error(err);
               return res.json(err.status, {err: err});
             }
 
@@ -167,6 +171,7 @@ module.exports = {
     if(req.param('id')){
       User.findOne({id : req.param('id'), verified: false}).exec(function (err, user){
         if (err) {
+          sails.log.error(err);
           return res.json(err.status, {err: err});
         }
 
@@ -180,6 +185,7 @@ module.exports = {
     }else{
       User.find({verified: false}).exec(function (err, user){
         if (err) {
+          sails.log.error(err);
           return res.json(err.status, {err: err});
         }
 

@@ -113,8 +113,13 @@ module.exports = {
 
         Events.create(req.body).exec(function(err, event) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
+
+            var who = jwToken.who(req.headers.authorization);
+            audit.log('event', who + ' created ' + event.title);
+
             // If event is created successfuly we return event id
             if (event) {
                 // NOTE: payload is { id: event.id}
@@ -213,14 +218,16 @@ module.exports = {
         } else {
             Events.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, event) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!event) {
-                    return res.json(404, { status: 'error', message: 'No Event with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Event with such id existing' })
                 } else {
                     Events.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -228,6 +235,9 @@ module.exports = {
                             var url = event.banner;
                             azureBlob.delete('event', url.split('/').reverse()[0]);
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('event', who + ' deleted ' + event.title);
 
                         return res.json(200, { status: 'success', message: 'Event with id ' + req.param('id') + ' has been deleted' });
                     });
@@ -274,11 +284,12 @@ module.exports = {
         } else {
             Events.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, event) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!event) {
-                    return res.json(404, { status: 'error', message: 'No Event with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Event with such id existing' })
                 } else {
 
                     if (event.banner && event.banner !== req.param('banner')) {
@@ -288,8 +299,12 @@ module.exports = {
 
                     Events.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('event', who + ' edited ' + event.title);
 
                         return res.json(200, { status: 'success', message: 'Event with id ' + req.param('id') + ' has been updated' });
                     });
@@ -326,11 +341,12 @@ module.exports = {
         if (req.param('id')) {
             Events.findOne({ id: req.param('id') }).exec(function(err, event) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!event) {
-                    return res.json(404, { status: 'error', message: 'No Event with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Event with such id existing' })
                 } else {
                     return res.json(200, event);
                 }
@@ -338,6 +354,7 @@ module.exports = {
         } else {
             Events.find().exec(function(err, event) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -394,6 +411,7 @@ module.exports = {
 
         EventsPayment.create(req.body).exec(function(err, payment) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
             // If event is created successfuly we return payment id
@@ -441,14 +459,16 @@ module.exports = {
         } else {
             EventsPayments.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, event) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!event) {
-                    return res.json(404, { status: 'error', message: 'No Payment with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Payment with such id existing' })
                 } else {
                     EventsPayments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -486,11 +506,12 @@ module.exports = {
         if (req.param('id')) {
             EventsPayments.findOne({ id: req.param('id') }).exec(function(err, payment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!payment) {
-                    return res.json(404, { status: 'error', message: 'No Event with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Event with such id existing' })
                 } else {
                     return res.json(200, payment);
                 }
@@ -498,6 +519,7 @@ module.exports = {
         } else {
             EventsPayments.find().exec(function(err, payments) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 

@@ -87,6 +87,7 @@ module.exports = {
 
             User.comparePassword(password, user, function(err, valid) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(403, { status: 'error', err: 'forbidden' });
                 }
 
@@ -157,6 +158,7 @@ module.exports = {
 
             Admin.comparePassword(password, admin, function(err, valid) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(403, { status: 'error', err: 'forbidden' });
                 }
 
@@ -168,13 +170,15 @@ module.exports = {
                             username: admin.username,
                             email: admin.email,
                             id: admin.id,
-                            role: admin.role
+                            role: admin.role,
+                            permission: admin.permission
                         },
                         token: jwToken.issue({
                             username: admin.username,
                             email: admin.email,
                             id: admin.id,
-                            role: admin.role
+                            role: admin.role,
+                            permission: admin.permission
                         })
                     });
                 }

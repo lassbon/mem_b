@@ -41,10 +41,10 @@ module.exports = {
      * `LevelsController.create()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {post} /api/v1/projects/post Create a new project
-     * @apiName CreateProject
-     * @apiDescription This is where a new project is created.
-     * @apiGroup Projects
+     * @api {post} /api/v1/projects/post Create a new level
+     * @apiName CreateLevel
+     * @apiDescription This is where a new level is created.
+     * @apiGroup Levels
      *
      * @apiParam {String} name Name of the membership level.
      * @apiParam {String} fee Fee for the memebership level.
@@ -72,6 +72,7 @@ module.exports = {
 
         Levels.create(req.body).exec(function(err, level) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { status: 'error', err: err });
             }
 
@@ -84,6 +85,7 @@ module.exports = {
                     .then(function(body) {
                         Levels.update({ id: level.id }, { paystack: body }).exec(function(err, data) {
                             if (err) {
+                                sails.log.error(err);
                                 return res.json(err.status, { status: 'error', err: err });
                             }
 
@@ -134,6 +136,7 @@ module.exports = {
         } else {
             Levels.findOne({ select: 'name', where: { id: req.param('id') } }).exec(function(err, level) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -142,6 +145,7 @@ module.exports = {
                 } else {
                     Levels.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -186,14 +190,16 @@ module.exports = {
         } else {
             Levels.findOne({ select: 'name', where: { id: req.param('id') } }).exec(function(err, level) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!level) {
-                    return res.json(404, { status: 'error', message: 'No Level with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Level with such id existing' })
                 } else {
                     Levels.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -205,6 +211,7 @@ module.exports = {
                             .then(function(body) {
                                 Levels.update({ id: req.param('id') }, { "paystack.data.name": req.body.name, "paystack.data.amount": req.body.fee }).exec(function(err, data) {
                                     if (err) {
+                                        sails.log.error(err);
                                         return res.json(err.status, { status: 'error', err: err });
                                     }
 
@@ -213,6 +220,7 @@ module.exports = {
                             })
                             .catch(function(error) {
                                 if (error) {
+                                    sails.log.error(error);
                                     return res.json(401, { status: 'error', err: error });
                                 }
                             });
@@ -250,11 +258,12 @@ module.exports = {
         if (req.param('id')) {
             Levels.findOne({ id: req.param('id') }).exec(function(err, level) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!level) {
-                    return res.json(404, { status: 'error', message: 'No Level with such id existing' })
+                    return res.json(404, { status: 'error', err: 'No Level with such id existing' })
                 } else {
                     return res.json(200, level);
                 }
@@ -262,6 +271,7 @@ module.exports = {
         } else {
             Levels.find().exec(function(err, level) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 

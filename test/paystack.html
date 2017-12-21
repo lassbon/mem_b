@@ -1,0 +1,51 @@
+<form >
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <button type="button" onclick="payWithPaystack()"> Pay </button> 
+</form>
+ 
+<script>
+  function payWithPaystack(){
+    var handler = PaystackPop.setup({
+      key: 'pk_test_29cf8e5e061acc51789cea04daaf4ca60acc6b80',
+      email: 'lemuel@karixchange.com',
+      amount: 10000,
+      ref: ''+Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+      metadata: {
+         custom_fields: [
+            {
+                display_name: "Payment For",
+                variable_name: "donation title",
+                value: "donation_1234567890"
+            },
+            // {
+            //     display_name: "Payment For",
+            //     variable_name: "event name",
+            //     value: "event_1234567890"
+            // },
+            // {
+            //     display_name: "Payment For",
+            //     variable_name: "training title",
+            //     value: "training_1234567890"
+            // },
+            // {
+            //     display_name: "Payment For",
+            //     variable_name: "registration",
+            //     value: "registration"
+            // },
+            {
+                display_name: "Membership ID",
+                variable_name: "membership_id",
+                value: "2348012345678"
+            }
+         ]
+      },
+      callback: function(response){
+          alert('success. transaction ref is ' + response.reference);
+      },
+      onClose: function(){
+          alert('window closed');
+      }
+    });
+    handler.openIframe();
+  }
+</script>

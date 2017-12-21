@@ -124,10 +124,15 @@ module.exports = {
 
         Donation.create(req.body).exec(function(err, donation) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
             // If donation is created successfuly we return donation id and title
             if (donation) {
+
+                var who = jwToken.who(req.headers.authorization);
+                audit.log('donation', who + ' created "' + donation.title + '" donation');
+
                 // NOTE: payload is { id: donation.id}
                 res.json(200, {
                     status: 'success',
@@ -225,6 +230,7 @@ module.exports = {
         } else {
             Donation.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, donation) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -233,6 +239,7 @@ module.exports = {
                 } else {
                     Donation.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -240,6 +247,9 @@ module.exports = {
                             var url = donation.banner;
                             azureBlob.delete('donation', url.split('/').reverse()[0]);
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('donation', who + ' deleted '+ donation.title + ' donation' );
 
                         return res.json(200, { status: 'success', message: 'Donation with id ' + req.param('id') + ' has been deleted' });
                     });
@@ -284,6 +294,7 @@ module.exports = {
         } else {
             Donation.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, donation) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -295,10 +306,15 @@ module.exports = {
                         var url = donation.banner;
                         azureBlob.delete('donation', url.split('/').reverse()[0]);
                     }
+
                     Donation.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
+
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('donation', who + ' updated '+ donation.username );
 
                         return res.json(200, { status: 'success', message: 'Donation with id ' + req.param('id') + ' has been updated' });
                     });
@@ -335,6 +351,7 @@ module.exports = {
         if (req.param('id')) {
             Donation.findOne({ id: req.param('id') }).exec(function(err, donation) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -347,6 +364,7 @@ module.exports = {
         } else {
             Donation.find().exec(function(err, donations) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -403,6 +421,7 @@ module.exports = {
 
         DonationPayment.create(req.body).exec(function(err, donation) {
             if (err) {
+                sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
             // If donation is successful, we return donation id
@@ -449,6 +468,7 @@ module.exports = {
         } else {
             DonationPayments.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, payment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -457,6 +477,7 @@ module.exports = {
                 } else {
                     DonationPayments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
+                            sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
@@ -494,6 +515,7 @@ module.exports = {
         if (req.param('id')) {
             DonationPayments.findOne({ id: req.param('id') }).exec(function(err, payment) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
@@ -506,6 +528,7 @@ module.exports = {
         } else {
             DonationPayments.find().exec(function(err, payments) {
                 if (err) {
+                    sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
