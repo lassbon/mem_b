@@ -84,6 +84,9 @@ module.exports = {
      * @apiParam {String} companyRepPhone2 Phonenumber of second company representative.
      * @apiParam {String} companyRepEmail2 Email of second company representative.
      * @apiParam {String} tradeGroup Trade group of company.
+     * @apiParam {String} annualReturn Annual return of company.
+     * @apiParam {String} annualProfits Annual profits of company.
+     * @apiParam {String} employees Employee count of company.
      * @apiParam {String} referrer1 Email of first referrer.
      * @apiParam {String} referrer2 Email of second referrer.
      * @apiParam {String} [profileImage] Profile image for the company/member.

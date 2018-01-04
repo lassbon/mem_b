@@ -118,6 +118,16 @@ module.exports.routes = {
     'GET /api/v1/events/payment': 'EventsController.getPayment',
 
     /**
+     * Advert routes
+     */
+    // 'POST /api/v1/advert': 'AdvertController.createAdvert',
+    // 'POST /api/v1/advert/upload': 'AdvertController.uploadBanner',
+    // 'PUT /api/v1/advert/:id': 'AdvertController.updateAdvert',
+    // 'DELETE /api/v1/advert/:id': 'AdvertController.deleteAdvert',
+    // 'GET /api/v1/advert/:id': 'AdvertController.getAdvert',
+    // 'GET /api/v1/advert': 'AdvertController.getAdvert',
+
+    /**
      * Donation routes
      */
     'POST /api/v1/donation': 'DonationController.createDonation',
@@ -247,6 +257,8 @@ module.exports.routes = {
     'GET /api/v1/payments/donations': 'PaymentsController.donations',
     'GET /api/v1/payments/events': 'PaymentsController.events',
     'GET /api/v1/payments/trainings': 'PaymentsController.trainings',
+    'GET /api/v1/payments/registrations': 'PaymentsController.registrations',
+    'GET /api/v1/payments/memberships': 'PaymentsController.memberships',
 
     // Audit routes
     'GET /api/v1/audit': 'AuditController.get',
