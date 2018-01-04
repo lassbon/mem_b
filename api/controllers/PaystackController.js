@@ -147,12 +147,24 @@ module.exports = {
                             // Check if payment is for an event
                             if (events.test(payment_for) === true) {
                                 var eventId = payment_for.split('_')[1];
-                                EventPayments.create({ amount: event.data.amount, payer: memberId, trainingId: trainingId }).exec(function(err, info) {
+                                EventsPayments.create({ amount: event.data.amount, payer: memberId, trainingId: trainingId }).exec(function(err, info) {
                                     if (err) {
                                         sails.log.error(err);
                                     }
 
                                     audit.log('event', user.company + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
+                                });
+                            }
+
+                            // Check if payment is for registration
+                            if (registration.test(payment_for) === true) {
+                                var regId = payment_for.split('_')[1];
+                                RegistrationPayments.create({ amount: event.data.amount, payer: memberId }).exec(function(err, info) {
+                                    if (err) {
+                                        sails.log.error(err);
+                                    }
+
+                                    audit.log('registration', user.company + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
                                 });
                             }
 

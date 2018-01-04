@@ -1,3 +1,6 @@
+var json2xls = require('json2xls');
+var fs = require('fs');
+
 /**
  * DonationController
  *
@@ -535,7 +538,38 @@ module.exports = {
                 return res.json(200, payments);
             });
         }
-    }
+    },
 
-    //TODO: Build in an API function to deletepayments if needed.
+    /**
+     * `PaymentsController.getExcel()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/:id Get Payment Excel document
+     * @apiName GetExcel
+     * @apiDescription This is payment records are obtained in excel format.
+     * @apiGroup Payments
+     */
+    getExcel: function(req, res) {
+
+        DonationPayments.find().exec(function(err, payments) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            //return res.json(200, payments);
+
+            var xls = json2xls(payments);
+            //console.log(payments);
+            fs.writeFile('assets/tmp/payments.xlsx', xls, function(err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.attachment('assets/tmp/payments.xlsx');
+            });
+
+        });
+    }
 };

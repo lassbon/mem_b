@@ -29,6 +29,7 @@
         "grunt-sails-linker": "~0.10.1",
         "grunt-sync": "0.5.2",
         "include-all": "^1.0.0",
+        "json2xls": "^0.1.2",
         "jsonwebtoken": "^8.1.0",
         "nested-pop": "^0.1.4",
         "node-mailjet": "^3.2.1",

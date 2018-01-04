@@ -71,16 +71,16 @@ module.exports = {
      * 
      */
     userLogin: function(req, res) {
-        var username = req.body.username;
+        var email = req.body.email;
         var password = req.body.password;
 
-        if (!username || !password) {
-            return res.json(401, { status: 'error', err: 'username and password required' });
+        if (!email || !password) {
+            return res.json(401, { status: 'error', err: 'email and password required' });
         }
 
-        User.findOne({ username: username }, function(err, user) {
+        User.findOne({ email: email }, function(err, user) {
             if (!user) {
-                return res.json(401, { status: 'error', err: 'invalid username or password' });
+                return res.json(401, { status: 'error', err: 'invalid email or password' });
             }
 
 
@@ -92,7 +92,7 @@ module.exports = {
                 }
 
                 if (!valid) {
-                    return res.json(401, { status: 'error', err: 'invalid username or password' });
+                    return res.json(401, { status: 'error', err: 'invalid email or password' });
                 } else {
                     res.json({
                         user: {

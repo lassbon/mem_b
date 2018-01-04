@@ -109,6 +109,11 @@ module.exports.policies = {
         '*': ['isAdmin', 'isLow', 'isAuthenticated'],
     },
 
+    'PaymentsController': {
+        //'*': ['isAdmin', 'isLow', 'isAuthenticated'],
+        'getExcel': true,
+    },
+
     /***************************************************************************
      *                                                                          *
      * Here's an example of mapping some policies to run before a controller    *
