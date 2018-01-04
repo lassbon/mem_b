@@ -366,15 +366,117 @@ module.exports = {
                         return res.json(err.status, { err: err });
                     }
 
-                    var eventTotal = 0;
-                    trainings.forEach(function(event) {
-                        eventTotal += event.amount;
+                    var trainingTotal = 0;
+                    trainings.forEach(function(training) {
+                        trainingTotal += training.amount;
                     });
 
                     var paymentData = {};
                     paymentData.trainings = trainings;
                     paymentData.count = count;
                     paymentData.total = trainingTotal;
+
+                    return res.json(200, paymentData);
+                });
+            });
+    },
+
+    /**
+     * `PaymentsController.registrations()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/registrations Get registration payments
+     * @apiName Registrations
+     * @apiDescription This is where registration payment records are obtained.
+     * @apiGroup Payments
+     */
+    registrations: function(req, res) {
+
+        var offset, limit = 0;
+
+        var field = req.param('field');
+
+        if (req.param('offset')) {
+            offset = req.param('offset');
+        }
+
+        if (req.param('limit')) {
+            limit = req.param('limit');
+        }
+
+        RegistrationPayments.find().limit(limit)
+            .skip(offset).exec(function(err, registrations) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                RegistrationPayments.count().exec(function(err, count) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    var registrationTotal = 0;
+                    registrations.forEach(function(registration) {
+                        registrationTotal += registration.amount;
+                    });
+
+                    var paymentData = {};
+                    paymentData.registrations = registrations;
+                    paymentData.count = count;
+                    paymentData.total = registrationTotal;
+
+                    return res.json(200, paymentData);
+                });
+            });
+    },
+
+    /**
+     * `PaymentsController.memberships()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/memberships Get registration payments
+     * @apiName Memberships
+     * @apiDescription This is where registration payment records are obtained.
+     * @apiGroup Payments
+     */
+    memberships: function(req, res) {
+
+        var offset, limit = 0;
+
+        var field = req.param('field');
+
+        if (req.param('offset')) {
+            offset = req.param('offset');
+        }
+
+        if (req.param('limit')) {
+            limit = req.param('limit');
+        }
+
+        MembershipPayments.find().limit(limit)
+            .skip(offset).exec(function(err, memberships) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                MembershipPayments.count().exec(function(err, count) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    var membershipTotal = 0;
+                    memberships.forEach(function(membership) {
+                        membershipTotal += membership.amount;
+                    });
+
+                    var paymentData = {};
+                    paymentData.memberships = memberships;
+                    paymentData.count = count;
+                    paymentData.total = membershipTotal;
 
                     return res.json(200, paymentData);
                 });

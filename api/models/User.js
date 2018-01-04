@@ -18,8 +18,8 @@ module.exports = {
         },
         username: {
             type: 'string',
-            required: true,
-            unique: true
+            //required: true,
+            //unique: true
         },
         email: {
             type: 'email',
@@ -32,7 +32,7 @@ module.exports = {
         },
         bizNature: {
             type: 'string',
-            required: true
+            //required: true
         },
         company: {
             type: 'string',
@@ -40,19 +40,19 @@ module.exports = {
         },
         phone: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepName1: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepPhone1: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepEmail1: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepName2: {
             type: 'string',
@@ -60,19 +60,31 @@ module.exports = {
         },
         companyRepPhone2: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepEmail2: {
             type: 'string',
-            required: true
+            //required: true
         },
         address: {
             type: 'text',
-            required: true
+            //required: true
         },
         tradeGroup: {
             type: 'string',
-            required: true
+            //required: true
+        },
+        annualReturn: {
+            type: 'string',
+            //required: true
+        },
+        annualProfit: {
+            type: 'string',
+            //required: true
+        },
+        employees: {
+            type: 'string',
+            //required: true
         },
         profileImage: {
             type: 'string',
@@ -135,11 +147,11 @@ module.exports = {
         },
         referrer1: {
             type: 'string',
-            required: 'true'
+            //required: 'true'
         },
         referrer2: {
             type: 'string',
-            required: 'true'
+            //required: 'true'
         },
 
         // Add a reference to KnowledgeBase
