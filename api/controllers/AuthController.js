@@ -6,6 +6,32 @@
  */
 
 /**
+ * @apiDefine PasswordAndEmailRequiredError
+ *
+ * @apiError PasswordAndEmailRequired Email and password required.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "status": "error",
+ *       "message": 'Email and password required.'
+ *     }
+ */
+
+/**
+ * @apiDefine PasswordOrEmailInvalidError
+ *
+ * @apiError PasswordOrEmailInvalid Email or password invalid.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "status": "error",
+ *       "message": 'Email or password invalid.'
+ *     }
+ */
+
+ /**
  * @apiDefine PasswordAndUsernameRequiredError
  *
  * @apiError PasswordAndUsernameRequired Username and password required.
@@ -51,7 +77,7 @@ module.exports = {
      * @apiDescription This is where a user is logged in, and a token generated and returned.
      * @apiGroup Auth
      *
-     * @apiParam {Number} username Username of the user.
+     * @apiParam {Number} email Username of the user.
      * @apiParam {Number} password Password of the user.
      *
      * @apiSuccess {String} user Details of the logged in user.
@@ -65,9 +91,9 @@ module.exports = {
      *     }
      *
      * 
-     * @apiUse PasswordOrUsernameInvalidError
+     * @apiUse PasswordOrEmailInvalidError
      * 
-     * @apiUse PasswordAndUsernameRequiredError
+     * @apiUse PasswordAndEmailRequiredError
      * 
      */
     userLogin: function(req, res) {
@@ -102,7 +128,6 @@ module.exports = {
                             role: user.role
                         },
                         token: jwToken.issue({
-                            username: user.username,
                             email: user.email,
                             id: user.id,
                             role: user.role

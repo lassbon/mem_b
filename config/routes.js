@@ -244,6 +244,7 @@ module.exports.routes = {
     'GET /api/v1/payments/excel': 'DonationController.getExcel',
     'GET /api/v1/payments/donations': 'PaymentsController.donations',
     'GET /api/v1/payments/events': 'PaymentsController.events',
+    'GET /api/v1/payments/trainings': 'PaymentsController.trainings',
 
     // Audit routes
     'GET /api/v1/audit': 'AuditController.get',
