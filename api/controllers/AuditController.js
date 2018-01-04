@@ -66,7 +66,18 @@ module.exports = {
                         return res.json(err.status, { err: err });
                     }
 
-                    return res.json(200, audits);
+                    Audit.count().exec(function(err, count) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
+
+                        var auditData = {};
+                        auditData.audits = audits;
+                        auditData.count = count;
+
+                        return res.json(200, auditData);
+                    });
                 });
         } else {
 
@@ -77,7 +88,18 @@ module.exports = {
                         return res.json(err.status, { err: err });
                     }
 
-                    return res.json(200, audits);
+                    Audit.count().exec(function(err, count) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
+
+                        var auditData = {};
+                        auditData.audits = audits;
+                        auditData.count = count;
+
+                        return res.json(200, auditData);
+                    });
                 });
         }
     }
