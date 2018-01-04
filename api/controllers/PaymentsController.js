@@ -239,14 +239,44 @@ module.exports = {
      */
     donations: function(req, res) {
 
-        DonationPayments.find().exec(function(err, donations) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
+        var offset, limit = 0;
 
-            return res.json(200, donations);
-        });
+        var field = req.param('field');
+
+        if (req.param('offset')) {
+            offset = req.param('offset');
+        }
+
+        if (req.param('limit')) {
+            limit = req.param('limit');
+        }
+
+        DonationPayments.find().limit(limit)
+            .skip(offset).exec(function(err, donations) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                DonationPayments.count().exec(function(err, count) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    var donationTotal = 0;
+                    donations.forEach(function(donation) {
+                        donationTotal += donation.amount;
+                    });
+
+                    var paymentData = {};
+                    paymentData.donations = donations;
+                    paymentData.count = count;
+                    paymentData.total = donationTotal;
+
+                    return res.json(200, paymentData);
+                });
+            });
     },
 
     /**
@@ -260,13 +290,94 @@ module.exports = {
      */
     events: function(req, res) {
 
-        EventsPayments.find().exec(function(err, events) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
+        var offset, limit = 0;
 
-            return res.json(200, events);
-        });
+        var field = req.param('field');
+
+        if (req.param('offset')) {
+            offset = req.param('offset');
+        }
+
+        if (req.param('limit')) {
+            limit = req.param('limit');
+        }
+
+        EventsPayments.find().limit(limit)
+            .skip(offset).exec(function(err, events) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                EventsPayments.count().exec(function(err, count) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    var eventTotal = 0;
+                    events.forEach(function(event) {
+                        eventTotal += event.amount;
+                    });
+
+                    var paymentData = {};
+                    paymentData.events = events;
+                    paymentData.count = count;
+                    paymentData.total = eventTotal;
+
+                    return res.json(200, paymentData);
+                });
+            });
+    },
+
+    /**
+     * `PaymentsController.trainings()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/trainings Get event payments
+     * @apiName Trainings
+     * @apiDescription This is where training payment records are obtained.
+     * @apiGroup Payments
+     */
+    trainings: function(req, res) {
+
+        var offset, limit = 0;
+
+        var field = req.param('field');
+
+        if (req.param('offset')) {
+            offset = req.param('offset');
+        }
+
+        if (req.param('limit')) {
+            limit = req.param('limit');
+        }
+
+        TrainingPayments.find().limit(limit)
+            .skip(offset).exec(function(err, trainings) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                TrainingPayments.count().exec(function(err, count) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    var eventTotal = 0;
+                    trainings.forEach(function(event) {
+                        eventTotal += event.amount;
+                    });
+
+                    var paymentData = {};
+                    paymentData.trainings = trainings;
+                    paymentData.count = count;
+                    paymentData.total = trainingTotal;
+
+                    return res.json(200, paymentData);
+                });
+            });
     },
 };
