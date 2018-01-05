@@ -108,9 +108,11 @@ module.exports = {
      */
     create: function(req, res) {
 
-        if (req.body.password !== req.body.confirmPassword) {
-            return res.json(401, { status: 'error', err: 'Password doesn\'t match, What a shame!' });
-        }
+        console.log(req.param('email'));
+
+        // if (req.body.password !== req.body.confirmPassword) {
+        //     return res.json(401, { status: 'error', err: 'Password doesn\'t match, What a shame!' });
+        // }
 
         // remove the confirmPassword element from the body object before saving to DB
         delete req.body.confirmPassword;
@@ -127,7 +129,7 @@ module.exports = {
             if (user) {
                 // NOTE: payload is { id: user.id}
                 res.json(200, {
-                    username: user.username,
+                    email: user.email,
                     id: user.id,
                     role: user.role
                 });

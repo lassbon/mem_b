@@ -14,7 +14,7 @@ module.exports = {
 
         membershipId: {
             type: 'string',
-            required: true
+            // required: true
         },
         username: {
             type: 'string',
@@ -36,7 +36,7 @@ module.exports = {
         },
         company: {
             type: 'string',
-            required: true
+            // required: true
         },
         phone: {
             type: 'string',
@@ -56,7 +56,7 @@ module.exports = {
         },
         companyRepName2: {
             type: 'string',
-            required: true
+            // required: true
         },
         companyRepPhone2: {
             type: 'string',
