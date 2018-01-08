@@ -108,7 +108,7 @@ module.exports = {
      */
     create: function(req, res) {
 
-        console.log(req.param('email'));
+        console.log(req.param(req.body));
 
         // if (req.body.password !== req.body.confirmPassword) {
         //     return res.json(401, { status: 'error', err: 'Password doesn\'t match, What a shame!' });
