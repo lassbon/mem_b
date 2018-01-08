@@ -14,7 +14,7 @@ module.exports = {
 
         membershipId: {
             type: 'string',
-            // required: true
+            required: true
         },
         username: {
             type: 'string',
@@ -32,43 +32,43 @@ module.exports = {
         },
         bizNature: {
             type: 'string',
-            //required: true
+            required: true
         },
         company: {
             type: 'string',
-            // required: true
+            required: true
         },
         phone: {
             type: 'string',
-            //required: true
+            required: true
         },
         companyRepName1: {
             type: 'string',
-            //required: true
+            required: true
         },
         companyRepPhone1: {
             type: 'string',
-            //required: true
+            required: true
         },
         companyRepEmail1: {
             type: 'string',
-            //required: true
+            required: true
         },
         companyRepName2: {
             type: 'string',
-            // required: true
+            required: true
         },
         companyRepPhone2: {
             type: 'string',
-            //required: true
+            required: true
         },
         companyRepEmail2: {
             type: 'string',
-            //required: true
+            required: true
         },
         address: {
             type: 'text',
-            //required: true
+            required: true
         },
         tradeGroup: {
             type: 'string',
@@ -147,11 +147,11 @@ module.exports = {
         },
         referrer1: {
             type: 'string',
-            //required: 'true'
+            required: 'true'
         },
         referrer2: {
             type: 'string',
-            //required: 'true'
+            required: 'true'
         },
 
         // Add a reference to KnowledgeBase
