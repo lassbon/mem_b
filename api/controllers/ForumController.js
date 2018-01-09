@@ -714,4 +714,47 @@ module.exports = {
             });
         }
     },
+
+    /**
+     * `ForumController.getCount()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/forumcount Get forum counts
+     * @apiName GetCount
+     * @apiDescription This is where forum counts are obtained.
+     * @apiGroup Forum
+     */
+    getCount: function(req, res) {
+
+        var forumCounts = {};
+
+        ForumTopics.count().exec(function(err, topics) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            forumCounts.topics = topics;
+
+            ForumPosts.count().exec(function(err, posts) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                forumCounts.posts = posts;
+
+                ForumComments.count().exec(function(err, comments) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    forumCounts.comments = comments;
+
+                    return res.json(200, forumCounts);
+                });
+            });
+        });
+    },
 };

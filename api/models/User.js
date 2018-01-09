@@ -16,11 +16,6 @@ module.exports = {
             type: 'string',
             required: true
         },
-        username: {
-            type: 'string',
-            //required: true,
-            //unique: true
-        },
         email: {
             type: 'email',
             required: true,
@@ -32,27 +27,39 @@ module.exports = {
         },
         bizNature: {
             type: 'string',
-            //required: true
+            required: true
         },
         company: {
             type: 'string',
             required: true
         },
+        companyCOIUrl: {
+            type: 'string',
+            required: true
+        },
         phone: {
             type: 'string',
-            //required: true
+            required: true
         },
         companyRepName1: {
             type: 'string',
-            //required: true
+            required: true
         },
         companyRepPhone1: {
             type: 'string',
-            //required: true
+            required: true
         },
         companyRepEmail1: {
             type: 'string',
-            //required: true
+            required: true
+        },
+        companyRepPassportUrl1: {
+            type: 'string',
+            required: true
+        },
+        companyRepCVUrl1: {
+            type: 'string',
+            required: true
         },
         companyRepName2: {
             type: 'string',
@@ -60,31 +67,39 @@ module.exports = {
         },
         companyRepPhone2: {
             type: 'string',
-            //required: true
+            required: true
         },
         companyRepEmail2: {
             type: 'string',
-            //required: true
+            required: true
+        },
+        companyRepPassportUrl2: {
+            type: 'string',
+            required: true
+        },
+        companyRepCVUrl2: {
+            type: 'string',
+            required: true
         },
         address: {
             type: 'text',
-            //required: true
+            required: true
         },
         tradeGroup: {
             type: 'string',
-            //required: true
+            required: true
         },
         annualReturn: {
             type: 'string',
-            //required: true
+            required: true
         },
         annualProfit: {
             type: 'string',
-            //required: true
+            required: true
         },
         employees: {
             type: 'string',
-            //required: true
+            required: true
         },
         profileImage: {
             type: 'string',
@@ -147,11 +162,11 @@ module.exports = {
         },
         referrer1: {
             type: 'string',
-            //required: 'true'
+            required: 'true'
         },
         referrer2: {
             type: 'string',
-            //required: 'true'
+            required: 'true'
         },
 
         // Add a reference to KnowledgeBase

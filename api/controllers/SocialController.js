@@ -1155,6 +1155,39 @@ module.exports = {
                 return res.json(200, { page: page, limit: limit, result: comments });
             });
         }
-    }
+    },
 
+    /**
+     * `SocialController.getCount()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/socialcount Get social counts
+     * @apiName GetCount
+     * @apiDescription This is where social counts are obtained.
+     * @apiGroup Social
+     */
+    getCount: function(req, res) {
+
+        var socialCounts = {};
+
+        SocialPosts.count().exec(function(err, posts) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            socialCounts.posts = posts;
+
+            SocialComments.count().exec(function(err, comments) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                socialCounts.comments = comments;
+
+                return res.json(200, socialCounts);
+            });
+        });
+    },
 };

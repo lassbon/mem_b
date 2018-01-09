@@ -182,6 +182,26 @@ module.exports = {
         });
     },
 
+    /**
+     * `KnowledgeBaseController.getCount()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/knowledgebase/doccount Get document count
+     * @apiName GetCount
+     * @apiDescription This is where document count is obtained.
+     * @apiGroup KnowledgeBase
+     */
+    getCount: function(req, res) {
+        KnowledgebaseDocuments.count().exec(function(err, docCount) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            return res.json(200, docCount.toString());
+        });
+    },
+
 
     /**
      * `KnowledgeBaseController.delete()`

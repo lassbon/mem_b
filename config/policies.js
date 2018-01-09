@@ -46,7 +46,8 @@ module.exports.policies = {
         'forgotPassword': true,
         'create': ['isAdmin', 'isHigh', 'isAuthenticated'],
         'delete': ['isAdmin', 'isSuper', 'isAuthenticated'],
-        'get': ['isAdmin', 'isSuper', 'isAuthenticated']
+        'get': ['isAdmin', 'isSuper', 'isAuthenticated'],
+        'getCount': ['isAdmin', 'isLow', 'isAuthenticated']
     },
 
     'AuthController': {

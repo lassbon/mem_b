@@ -76,6 +76,7 @@ module.exports.routes = {
     'DELETE /api/v1/user/:id': 'UserController.delete',
     'GET /api/v1/user/:id': 'UserController.get',
     'GET /api/v1/user': 'UserController.get',
+    'GET /api/v1/usercount': 'UserController.getCount',
 
     /**
      * Projects routes
@@ -120,12 +121,12 @@ module.exports.routes = {
     /**
      * Advert routes
      */
-    // 'POST /api/v1/advert': 'AdvertController.createAdvert',
-    // 'POST /api/v1/advert/upload': 'AdvertController.uploadBanner',
-    // 'PUT /api/v1/advert/:id': 'AdvertController.updateAdvert',
-    // 'DELETE /api/v1/advert/:id': 'AdvertController.deleteAdvert',
-    // 'GET /api/v1/advert/:id': 'AdvertController.getAdvert',
-    // 'GET /api/v1/advert': 'AdvertController.getAdvert',
+    'POST /api/v1/advert': 'AdvertController.createAdvert',
+    'POST /api/v1/advert/upload': 'AdvertController.uploadBanner',
+    'PUT /api/v1/advert/:id': 'AdvertController.updateAdvert',
+    'DELETE /api/v1/advert/:id': 'AdvertController.deleteAdvert',
+    'GET /api/v1/advert/:id': 'AdvertController.getAdvert',
+    'GET /api/v1/advert': 'AdvertController.getAdvert',
 
     /**
      * Donation routes
@@ -160,6 +161,7 @@ module.exports.routes = {
     'DELETE /api/v1/knowledgebase/document/:id': 'KnowledgeBaseController.delete',
     'GET /api/v1/knowledgebase/document/:id': 'KnowledgeBaseController.getDoc',
     'GET /api/v1/knowledgebase/document': 'KnowledgeBaseController.getDoc',
+    'GET /api/v1/doccount': 'KnowledgeBaseController.getCount',
 
     'POST /api/v1/knowledgebase/category': 'KnowledgeBaseController.createCategory',
     'PUT /api/v1/knowledgebase/category/:id': 'KnowledgeBaseController.updateCategory',
@@ -194,6 +196,9 @@ module.exports.routes = {
     /**
      * Social routes
      */
+
+     'GET /api/v1/socialcount': 'SocialController.getCount',
+
     'POST /api/v1/social/request': 'SocialController.request',
     'POST /api/v1/social/accept': 'SocialController.accept',
     'POST /api/v1/social/remove': 'SocialController.remove',
@@ -225,7 +230,10 @@ module.exports.routes = {
 
     /**
      * Forum routes
-     */
+    */
+
+    'GET /api/v1/forumcount': 'ForumController.getCount',
+
     // Forum topic routes
     'POST /api/v1/forum/topic': 'ForumController.createTopic',
     'DELETE /api/v1/forum/topic/:id': 'ForumController.deleteTopic',

@@ -167,6 +167,7 @@ module.exports = {
             });
 
             totals.donation = donationTotal;
+            totals.donationCount = donations.length;
 
             TrainingPayments.find().exec(function(err, trainings) {
                 if (err) {
@@ -180,6 +181,7 @@ module.exports = {
                 });
 
                 totals.training = trainingTotal;
+                totals.trainingCount = trainings.length;
 
                 RegistrationPayments.find().exec(function(err, registrations) {
                     if (err) {
@@ -193,6 +195,7 @@ module.exports = {
                     });
 
                     totals.registration = registrationTotal;
+                    totals.registrationCount = registrations.length;
 
                     MembershipPayments.find().exec(function(err, memberships) {
                         if (err) {
@@ -206,6 +209,7 @@ module.exports = {
                         });
 
                         totals.membership = membershipTotal;
+                        totals.membershipCount = memberships.length;
 
                         EventsPayments.find().exec(function(err, events) {
                             if (err) {
@@ -219,6 +223,7 @@ module.exports = {
                             });
 
                             totals.event = eventTotal;
+                            totals.eventCount = events.length;
                         });
                     });
                 });

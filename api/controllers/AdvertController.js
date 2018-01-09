@@ -34,20 +34,17 @@
 module.exports = {
 
     /**
-     * `TrainingController.createTraining()`
+     * `AdvertController.createAdvert()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {post} /api/v1/training Create a new training
-     * @apiName CreateTraining
-     * @apiDescription This is where a new training is created.
-     * @apiGroup Training
+     * @api {post} /api/v1/advert Create a new advert
+     * @apiName CreateAdvert
+     * @apiDescription This is where a new advert is created.
+     * @apiGroup Advert
      *
-     * @apiParam {String} title Title of the training.
-     * @apiParam {String} banner Cloud Url of Picture banner for the training.
-     * @apiParam {String} description Full description of the training.
-     * @apiParam {String} [date] Date/Duration of the training.
-     * @apiParam {String} [venue] Venue of the training.
-     * @apiParam {String} fee Fee for the training.
+     * @apiParam {String} title Title of the advert.
+     * @apiParam {String} banner Cloud Url of Picture banner for the advert.
+     * @apiParam {String} url URL of the advert.
      *
      * @apiSuccess {String} status Status of the response from API.
      * @apiSuccess {String} message  Success message response from API.
@@ -59,45 +56,45 @@ module.exports = {
      *       "id": "59dce9c16b54d91c38847825"
      *     }
      *
-     * @apiError TrainingInfoNotComplete Training info not complete.
+     * @apiError AdvertInfoNotComplete Advert info not complete.
      *
      * @apiErrorExample Error-Response:
      *     HTTP/1.1 401 Not Found
      *     {
      *       "status": "error",
-     *       "err": "No { title | banner | description | fee} provided!"
+     *       "err": "No { title | banner | url | fee} provided!"
      *     }
      */
-    createTraining: function(req, res) {
+    createAdvert: function(req, res) {
 
-        Training.create(req.body).exec(function(err, training) {
+        Advert.create(req.body).exec(function(err, advert) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
-            // If training is created successfuly we return training id and title
-            if (training) {
+            // If advert is created successfuly we return advert id and title
+            if (advert) {
 
                 var who = jwToken.who(req.headers.authorization);
-                audit.log('training', who + ' created ' + training.title);
+                audit.log('advert', who + ' created ' + advert.title);
 
-                // NOTE: payload is { id: training.id}
+                // NOTE: payload is { id: advert.id}
                 res.json(200, {
                     status: 'success',
-                    id: training.id
+                    id: advert.id
                 });
             }
         });
     },
 
     /**
-     * `TrainingController.uploadBanner()`
+     * `AdvertController.uploadBanner()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {post} /api/v1/training/upload Upload a training banner
+     * @api {post} /api/v1/advert/upload Upload a advert banner
      * @apiName UploadBanner
-     * @apiDescription This is where a training image banner is uploaded (Make sure image file extension is either jpg or png).
-     * @apiGroup Training
+     * @apiDescription This is where a advert image banner is uploaded (Make sure image file extension is either jpg or png).
+     * @apiGroup Advert
      *
      * @apiParam {String} banner Banner image file to be uploaded.
      *
@@ -108,10 +105,10 @@ module.exports = {
      *     HTTP/1.1 200 OK
      *     {
      *       "status": "success",
-     *       "bannerUrl": "https://accicloud.blob.core.windows.net/training/27ba91b3-ab78-4240-aa6c-a1f32230227c.jpg"
+     *       "bannerUrl": "https://accicloud.blob.core.windows.net/advert/27ba91b3-ab78-4240-aa6c-a1f32230227c.jpg"
      *     }
      *
-     * @apiError TrainingImageNotUploaded No image uploaded.
+     * @apiError AdvertImageNotUploaded No image uploaded.
      *
      * @apiErrorExample Error-Response:
      *     HTTP/1.1 401 Not Found
@@ -123,7 +120,7 @@ module.exports = {
     uploadBanner: function(req, res) {
         if (req.method != 'POST') return res.notFound();
 
-        var container = 'training';
+        var container = 'advert';
 
         azureBlob.createContainerIfNotExists(container, function() {
             req.file('banner')
@@ -147,15 +144,15 @@ module.exports = {
 
 
     /**
-     * `TrainingController.deleteTraining()`
+     * `AdvertController.deleteAdvert()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {delete} /api/v1/training/:id Delete a training
-     * @apiName DeleteTraining
-     * @apiDescription This is where a training is deleted
-     * @apiGroup Training
+     * @api {delete} /api/v1/advert/:id Delete a advert
+     * @apiName DeleteAdvert
+     * @apiDescription This is where an advert is deleted
+     * @apiGroup Advert
      *
-     * @apiParam {Number} id Training Id.
+     * @apiParam {Number} id Advert Id.
      *
      * @apiSuccess {String} status Status of the response from API.
      * @apiSuccess {String} message  Success message response from API.
@@ -164,41 +161,41 @@ module.exports = {
      *     HTTP/1.1 200 OK
      *     {
      *       "status": "success",
-     *       "message": "Training with id 59dce9d56b54d91c38847825 has been deleted'"
+     *       "message": "Advert with id 59dce9d56b54d91c38847825 has been deleted'"
      *     }
      *
-     * @apiUse TrainingIdNotProvidedError
+     * @apiUse AdvertIdNotProvidedError
      * 
-     * @apiUse TrainingNotFoundError
+     * @apiUse AdvertNotFoundError
      */
-    deleteTraining: function(req, res) {
+    deleteAdvert: function(req, res) {
         if (!req.param('id')) {
-            return res.json(401, { status: 'error', err: 'No Training id provided!' });
+            return res.json(401, { status: 'error', err: 'No Advert id provided!' });
         } else {
-            Training.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, training) {
+            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, advert) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                if (!training) {
-                    return res.json(404, { status: 'error', err: 'No Training with such id existing' })
+                if (!advert) {
+                    return res.json(404, { status: 'error', err: 'No Advert with such id existing' })
                 } else {
-                    Training.destroy({ id: req.param('id') }).exec(function(err) {
+                    Advert.destroy({ id: req.param('id') }).exec(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
-                        if (training.banner) {
-                            var url = training.banner;
-                            azureBlob.delete('training', url.split('/').reverse()[0]);
+                        if (advert.banner) {
+                            var url = advert.banner;
+                            azureBlob.delete('advert', url.split('/').reverse()[0]);
                         }
 
                         var who = jwToken.who(req.headers.authorization);
-                        audit.log('training', who + ' deleted ' + training.title);
+                        audit.log('advert', who + ' deleted ' + advert.title);
 
-                        return res.json(200, { status: 'success', message: 'Training with id ' + req.param('id') + ' has been deleted' });
+                        return res.json(200, { status: 'success', message: 'Advert with id ' + req.param('id') + ' has been deleted' });
                     });
                 }
             });
@@ -207,20 +204,17 @@ module.exports = {
 
 
     /**
-     * `TrainingController.updateTraining()`
+     * `AdvertController.updateAdvert()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {put} /api/v1/training/:id Update a training
-     * @apiName UpdateTraining
-     * @apiDescription This is where a training is updated.
-     * @apiGroup Training
+     * @api {put} /api/v1/advert/:id Update a advert
+     * @apiName UpdateAdvert
+     * @apiDescription This is where a advert is updated.
+     * @apiGroup Advert
      *
-     * @apiParam {String} [title] Title of the training.
-     * @apiParam {String} [banner] Cloud Url of Picture banner for the training.
-     * @apiParam {String} [description] Full description of the training.
-     * @apiParam {String} [date] Date/Duration of the training.
-     * @apiParam {String} [venue] Venue of the training.
-     * @apiParam {String} [fee] Fee for the training.
+     * @apiParam {String} [title] Title of the advert.
+     * @apiParam {String} [banner] Cloud Url of Picture banner for the advert.
+     * @apiParam {String} [url] Url of the advert.
      *
      * @apiSuccess {String} status Status of the response from API.
      * @apiSuccess {String} message  Success message response from API.
@@ -229,43 +223,43 @@ module.exports = {
      *     HTTP/1.1 200 OK
      *     {
      *       "status": "success",
-     *       "message": "Training with id 59dce9d56b54d91c38847825 has been updated'"
+     *       "message": "Advert with id 59dce9d56b54d91c38847825 has been updated'"
      *     }
      * 
      *
-     * @apiUse TrainingIdNotProvidedError
+     * @apiUse AdvertIdNotProvidedError
      * 
-     * @apiUse TrainingNotFoundError
+     * @apiUse AdvertNotFoundError
      */
-    updateTraining: function(req, res) {
+    updateAdvert: function(req, res) {
         if (!req.param('id')) {
-            return res.json(401, { status: 'error', err: 'No Training id provided!' });
+            return res.json(401, { status: 'error', err: 'No Advert id provided!' });
         } else {
-            Training.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, training) {
+            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, advert) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                if (!training) {
-                    return res.json(404, { status: 'error', err: 'No Training with such id existing' })
+                if (!advert) {
+                    return res.json(404, { status: 'error', err: 'No Advert with such id existing' })
                 } else {
 
-                    if (training.banner && training.banner !== req.param('banner')) {
-                        var url = training.banner;
-                        azureBlob.delete('training', url.split('/').reverse()[0]);
+                    if (advert.banner && advert.banner !== req.param('banner')) {
+                        var url = advert.banner;
+                        azureBlob.delete('advert', url.split('/').reverse()[0]);
                     }
 
-                    Training.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                    Advert.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
                         var who = jwToken.who(req.headers.authorization);
-                        audit.log('training', who + ' edited ' + training.title);
+                        audit.log('advert', who + ' edited ' + advert.title);
 
-                        return res.json(200, { status: 'success', message: 'Training with id ' + req.param('id') + ' has been updated' });
+                        return res.json(200, { status: 'success', message: 'Advert with id ' + req.param('id') + ' has been updated' });
                     });
                 }
             });
@@ -274,17 +268,17 @@ module.exports = {
 
 
     /**
-     * `TrainingController.getTraining()`
+     * `AdvertController.getAdvert()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/training/:id Get training(s)
-     * @apiName GetTraining
-     * @apiDescription This is where trainings are retrieved.
-     * @apiGroup Training
+     * @api {get} /api/v1/advert/:id Get advert(s)
+     * @apiName GetAdvert
+     * @apiDescription This is where adverts are retrieved.
+     * @apiGroup Advert
      *
-     * @apiParam {Number} id Training id.
+     * @apiParam {Number} id Advert id.
      *
-     * @apiSuccess {String} training Post response from API.
+     * @apiSuccess {String} advert Post response from API.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -294,30 +288,30 @@ module.exports = {
      *        .................................
      *     }
      * 
-     * @apiUse TrainingNotFoundError
+     * @apiUse AdvertNotFoundError
      */
-    getTraining: function(req, res) {
+    getAdvert: function(req, res) {
         if (req.param('id')) {
-            Training.findOne({ id: req.param('id') }).exec(function(err, training) {
+            Advert.findOne({ id: req.param('id') }).exec(function(err, advert) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                if (!training) {
-                    return res.json(404, { status: 'error', err: 'No Training with such id existing' })
+                if (!advert) {
+                    return res.json(404, { status: 'error', err: 'No Advert with such id existing' })
                 } else {
-                    return res.json(200, training);
+                    return res.json(200, advert);
                 }
             });
         } else {
-            Training.find().exec(function(err, training) {
+            Advert.find().exec(function(err, advert) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                return res.json(200, training);
+                return res.json(200, advert);
             });
         }
     }
