@@ -116,9 +116,17 @@ module.exports = {
      */
     create: function(req, res) {
 
+<<<<<<< HEAD
         if (req.body.password !== req.body.confirmPassword) {
             return res.json(401, { status: 'error', err: 'Passwords doesn\'t match, What a shame!' });
         }
+=======
+        console.log(req.param(req.body));
+
+        // if (req.body.password !== req.body.confirmPassword) {
+        //     return res.json(401, { status: 'error', err: 'Password doesn\'t match, What a shame!' });
+        // }
+>>>>>>> 07ec470eefa42b6fb03bc1c0e1e6382c2ecab430
 
         // remove the confirmPassword element from the body object before saving to DB
         delete req.body.confirmPassword;
@@ -182,7 +190,7 @@ module.exports = {
                 });
 
                 res.json(200, {
-                    username: user.username,
+                    email: user.email,
                     id: user.id,
                     role: user.role
                 });
