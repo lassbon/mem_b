@@ -183,15 +183,18 @@ module.exports = {
         }
       });
     }else{
-      User.find({verified: false}).exec(function (err, user){
+      User.find({verified: false}).exec(function (err, users){
         if (err) {
           sails.log.error(err);
           return res.json(err.status, {err: err});
         }
 
         // delete the password from the returned user objects
-        var userData = user.map( function(item) { return delete item.password; } );
-        return res.json(200, userData);
+        users.forEach(function(user){
+          delete user.password;
+        });
+
+        return res.json(200, users);
       });
     }
   }

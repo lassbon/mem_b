@@ -26,7 +26,7 @@ module.exports.policies = {
      *                                                                          *
      ***************************************************************************/
     '*': ['isAuthenticated'], // Everything resctricted here
-    //'*': ['isAdmin'], // Everything resctricted here
+    '*': ['isAdmin'], // Everything resctricted here
 
 
     /***************************************************************************
@@ -111,8 +111,8 @@ module.exports.policies = {
     },
 
     'PaymentsController': {
-        //'*': ['isAdmin', 'isLow', 'isAuthenticated'],
-        'getExcel': true,
+        '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        //'*': true,
     },
 
     /***************************************************************************

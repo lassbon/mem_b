@@ -113,32 +113,179 @@ module.exports = {
      * `PaymentsController.getExcel()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/payments/:id Get Payment Excel document
+     * @api {get} /api/v1/payments/excel Get Payment Excel document
      * @apiName GetExcel
      * @apiDescription This is where payment records are obtained in excel format.
      * @apiGroup Payments
      */
     getExcel: function(req, res) {
-
         Payment.find().exec(function(err, payments) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
-            //return res.json(200, payments);
+            var xls = json2xls(payments);
+
+            fs.writeFileSync('assets/tmp/payments2.xlsx', xls, 'binary');
+
+            res.download('assets/tmp/payments2.xlsx', function(err) {
+                if (err) {
+                    return res.serverError(err)
+                } else {
+                    return res.ok();
+                }
+            });
+        });
+    },
+
+    /**
+     * `PaymentsController.getDonationExcel()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/donation/excel Get donation payment Excel document
+     * @apiName GetDonationExcel
+     * @apiDescription This is where donation payment records are obtained in excel format.
+     * @apiGroup Payments
+     */
+    getDonationExcel: function(req, res) {
+        DonationPayments.find().exec(function(err, payments) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
 
             var xls = json2xls(payments);
-            console.log(payments);
-            fs.writeFile('assets/tmp/payments.xlsx', xls, function(err) {
+
+            fs.writeFileSync('assets/tmp/donationPayments.xlsx', xls, 'binary');
+
+            res.download('assets/tmp/donationPayments.xlsx', function(err) {
                 if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.serverError(err)
+                } else {
+                    return res.ok();
                 }
-
-                return res.attachment('assets/tmp/payments.xlsx');
             });
+        });
+    },
 
+    /**
+     * `PaymentsController.getEventExcel()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/event/excel Get event payment Excel document
+     * @apiName GetEventExcel
+     * @apiDescription This is where event payment records are obtained in excel format.
+     * @apiGroup Payments
+     */
+    getEventExcel: function(req, res) {
+        EventsPayments.find().exec(function(err, payments) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            var xls = json2xls(payments);
+
+            fs.writeFileSync('assets/tmp/eventPayments.xlsx', xls, 'binary');
+
+            res.download('assets/tmp/eventPayments.xlsx', function(err) {
+                if (err) {
+                    return res.serverError(err)
+                } else {
+                    return res.ok();
+                }
+            });
+        });
+    },
+
+    /**
+     * `PaymentsController.getTrainingExcel()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/training/excel Get training payment Excel document
+     * @apiName GetTrainingExcel
+     * @apiDescription This is where training payment records are obtained in excel format.
+     * @apiGroup Payments
+     */
+    getTrainingExcel: function(req, res) {
+        TrainingPayments.find().exec(function(err, payments) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            var xls = json2xls(payments);
+
+            fs.writeFileSync('assets/tmp/trainingPayments.xlsx', xls, 'binary');
+
+            res.download('assets/tmp/trainingPayments.xlsx', function(err) {
+                if (err) {
+                    return res.serverError(err)
+                } else {
+                    return res.ok();
+                }
+            });
+        });
+    },
+
+    /**
+     * `PaymentsController.getRegistrationExcel()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/registration/excel Get registration payment Excel document
+     * @apiName GetRegistrationExcel
+     * @apiDescription This is where registration payment records are obtained in excel format.
+     * @apiGroup Payments
+     */
+    getRegistrationExcel: function(req, res) {
+        RegistrationPayments.find().exec(function(err, payments) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            var xls = json2xls(payments);
+
+            fs.writeFileSync('assets/tmp/registrationPayments.xlsx', xls, 'binary');
+
+            res.download('assets/tmp/registrationPayments.xlsx', function(err) {
+                if (err) {
+                    return res.serverError(err)
+                } else {
+                    return res.ok();
+                }
+            });
+        });
+    },
+
+    /**
+     * `PaymentsController.getMembershipExcel()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/membership/excel Get membership payment Excel document
+     * @apiName GetMembershipExcel
+     * @apiDescription This is where membership payment records are obtained in excel format.
+     * @apiGroup Payments
+     */
+    getMembershipExcel: function(req, res) {
+        MembershipPayments.find().exec(function(err, payments) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            var xls = json2xls(payments);
+
+            fs.writeFileSync('assets/tmp/membershipPayments.xlsx', xls, 'binary');
+
+            res.download('assets/tmp/membershipPayments.xlsx', function(err) {
+                if (err) {
+                    return res.serverError(err)
+                } else {
+                    return res.ok();
+                }
+            });
         });
     },
 

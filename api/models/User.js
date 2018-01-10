@@ -14,95 +14,95 @@ module.exports = {
 
         membershipId: {
             type: 'string',
-            required: true
+            //required: true
         },
         email: {
             type: 'email',
-            required: true,
+            //required: true,
             unique: true
         },
         password: {
             type: 'string',
-            required: true
+            //required: true
         },
         bizNature: {
             type: 'string',
-            required: true
+            //required: true
         },
         company: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyCOIUrl: {
             type: 'string',
-            required: true
+            //required: true
         },
         phone: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepName1: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepPhone1: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepEmail1: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepPassportUrl1: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepCVUrl1: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepName2: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepPhone2: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepEmail2: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepPassportUrl2: {
             type: 'string',
-            required: true
+            //required: true
         },
         companyRepCVUrl2: {
             type: 'string',
-            required: true
+            //required: true
         },
         address: {
             type: 'text',
-            required: true
+            //required: true
         },
         tradeGroup: {
             type: 'string',
-            required: true
+            //required: true
         },
         annualReturn: {
             type: 'string',
-            required: true
+            //required: true
         },
         annualProfit: {
             type: 'string',
-            required: true
+            //required: true
         },
         employees: {
             type: 'string',
-            required: true
+            //required: true
         },
         profileImage: {
-            type: 'string',
+            //type: 'string',
         },
         role: {
             type: 'string',
@@ -162,11 +162,19 @@ module.exports = {
         },
         referrer1: {
             type: 'string',
-            required: 'true'
+            //required: 'true'
         },
         referrer2: {
             type: 'string',
-            required: 'true'
+            //required: 'true'
+        },
+        referrerMemberId1: {
+            type: 'string',
+            //required: 'true'
+        },
+        referrerMemberId2: {
+            type: 'string',
+            //required: 'true'
         },
 
         // Add a reference to KnowledgeBase

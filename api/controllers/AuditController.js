@@ -1,3 +1,6 @@
+var json2xls = require('json2xls');
+var fs = require('fs');
+
 /**
  * AuditController
  *
@@ -102,5 +105,35 @@ module.exports = {
                     });
                 });
         }
-    }
+    }, 
+
+    /**
+     * `AuditController.getExcel()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/audit/excel Get audit Excel document
+     * @apiName GetExcel
+     * @apiDescription This is where audit records are obtained in excel format.
+     * @apiGroup Audit
+     */
+    getExcel: function(req, res) {
+        Audit.find().exec(function(err, audits) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            var xls = json2xls(audits);
+
+            fs.writeFileSync('assets/tmp/audit.xlsx', xls, 'binary');
+
+            res.download('assets/tmp/audit.xlsx', function(err) {
+                if (err) {
+                    return res.serverError(err)
+                } else {
+                    return res.ok();
+                }
+            });
+        });
+    },
 };

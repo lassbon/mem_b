@@ -31,6 +31,8 @@
         "include-all": "^1.0.0",
         "json2xls": "^0.1.2",
         "jsonwebtoken": "^8.1.0",
+        "mongo-to-csv": "^1.0.1",
+        "mongo-xlsx": "^1.0.12",
         "nested-pop": "^0.1.4",
         "node-mailjet": "^3.2.1",
         "node-regexp": "^0.1.1",
