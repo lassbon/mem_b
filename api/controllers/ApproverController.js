@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
- /**
+/**
  * @apiDefine UserNotFoundError
  *
  * @apiError UserNotFound The User was not found.
@@ -18,7 +18,7 @@
  *     }
  */
 
-  /** 
+/** 
  * @apiDefine UserIdNotProvidedError
  *
  * @apiError UserIdNotProvided No User id provided.
@@ -59,27 +59,46 @@ module.exports = {
    * 
    * @apiUse UserNotFoundError
    */
-  approve: function (req, res) {
-    if(!req.param('id')){
-      return res.json(401, {status: 'error', err: 'No User id provided!'});
-    }else{
-      User.findOne({select: 'username', where : {id : req.param('id')}}).exec(function (err, user){
+  approve: function(req, res) {
+    if (!req.param('id')) {
+      return res.json(401, { status: 'error', err: 'No User id provided!' });
+    } else {
+      User.findOne({ select: 'username', where: { id: req.param('id') } }).exec(function(err, user) {
         if (err) {
           sails.log.error(err);
-          return res.json(err.status, {err: err});
+          return res.json(err.status, { err: err });
         }
 
-        if(!user){
-          return res.json(404, {status: 'error', err: 'No User with such id existing'});
-        }else{
-          User.update({id: req.param('id')}, {approved: true}).exec(function(err, data){
-            if(err){
+        if (!user) {
+          return res.json(404, { status: 'error', err: 'No User with such id existing' });
+        } else {
+          User.update({ id: req.param('id') }, { approved: true }).exec(function(err, data) {
+            if (err) {
               sails.log.error(err);
-              return res.json(err.status, {err: err});
+              return res.json(err.status, { err: err });
             }
 
+            // Send email to the user alerting him/her to the state of affairs
+            var emailData = {
+              'email': process.env.SITE_EMAIL,
+              'from': process.env.SITE_NAME,
+              'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+              'body': 'Hello ' + user.company + '! <br><br> Your registration process has begun.<br><br> Kindly execise patience as your apointed referees aprove your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+              'to': user.email
+            }
+
+            azureEmail.send(emailData, function(resp) {
+              if (resp === 'success') {
+                sails.log.info('The email was sent successfully.');
+              }
+
+              if (resp === 'error') {
+                sails.log.error(resp);
+              }
+            });
+
             // TODO: send email to the user alerting him/her to the state of affairs
-            return res.json(200, {status: 'success', message: 'User with id '+req.param('id')+' has been approved'});
+            return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been approved' });
           });
         }
       });
@@ -112,27 +131,27 @@ module.exports = {
    * 
    * @apiUse UserNotFoundError
    */
-  reject: function (req, res) {
-    if(!req.param('id')){
-      return res.json(401, {status: 'error', err: 'No User id provided!'});
-    }else{
-      User.findOne({select: 'username', where : {id : req.param('id')}}).exec(function (err, user){
+  reject: function(req, res) {
+    if (!req.param('id')) {
+      return res.json(401, { status: 'error', err: 'No User id provided!' });
+    } else {
+      User.findOne({ select: 'username', where: { id: req.param('id') } }).exec(function(err, user) {
         if (err) {
           sails.log.error(err);
-          return res.json(err.status, {err: err});
+          return res.json(err.status, { err: err });
         }
 
-        if(!user){
-          return res.json(404, {status: 'error', message: 'No User with such id existing'});
-        }else{
-          User.update({id: req.param('id')}, {rejected: true}).exec(function(err, data){
-            if(err){
+        if (!user) {
+          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+        } else {
+          User.update({ id: req.param('id') }, { rejected: true }).exec(function(err, data) {
+            if (err) {
               sails.log.error(err);
-              return res.json(err.status, {err: err});
+              return res.json(err.status, { err: err });
             }
 
             // TODO: send email to the user alerting him/her on the state of affairs
-            return res.json(200, {status: 'success', message: 'User with id '+req.param('id')+' has been rejected'});
+            return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been rejected' });
           });
         }
       });
@@ -163,30 +182,30 @@ module.exports = {
    * 
    * @apiUse UserNotFoundError
    */
-  get: function (req, res) {
-    if(req.param('id')){
-      User.findOne({id : req.param('id'), approved: false}).exec(function (err, user){
+  get: function(req, res) {
+    if (req.param('id')) {
+      User.findOne({ id: req.param('id'), approved: false }).exec(function(err, user) {
         if (err) {
           sails.log.error(err);
-          return res.json(err.status, {err: err});
+          return res.json(err.status, { err: err });
         }
 
-        if(!user){
-          return res.json(404, {status: 'error', message: 'No User with such id existing'});
-        }else{
+        if (!user) {
+          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+        } else {
           delete user.password; // delete the password from the returned user object
           return res.json(200, user);
         }
       });
-    }else{
-      User.find({approved: false}).exec(function (err, users){
+    } else {
+      User.find({ approved: false }).exec(function(err, users) {
         if (err) {
           sails.log.error(err);
-          return res.json(err.status, {err: err});
+          return res.json(err.status, { err: err });
         }
 
         // delete the password from the returned user objects
-        users.forEach(function(user){
+        users.forEach(function(user) {
           delete user.password;
         });
 
@@ -195,4 +214,3 @@ module.exports = {
     }
   }
 };
-

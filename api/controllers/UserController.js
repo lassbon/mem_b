@@ -64,7 +64,7 @@ module.exports = {
      * `UserController.create()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {post} /api/v1/projects/post Create a new user
+     * @api {post} /api/v1/user Create a new user
      * @apiName CreateUser
      * @apiDescription This is where a new user is created.
      * @apiGroup User
@@ -94,8 +94,6 @@ module.exports = {
      * @apiParam {String} employees Employee count of company.
      * @apiParam {String} referrer1 Email of first referrer.
      * @apiParam {String} referrer2 Email of second referrer.
-
-     * @apiParam {String} referrerUrl Url to redirect the referee to (must have a trailing slash).
 
      * @apiParam {String} [profileImage] Profile image for the company/member.
      * 
@@ -135,51 +133,24 @@ module.exports = {
             // If user created successfuly we return user and token as response
             if (user) {
 
-                // Send email to the user alerting him/her to the state of affairs
-                var emailData = {
-                    'email': process.env.SITE_EMAIL,
-                    'from': process.env.SITE_NAME,
-                    'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-                    'body': 'Hello ' + user.company + '! <br><br> Your registration process has begun.<br><br> Kindly execise patience as your apointed referees aprove your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-                    'to': user.email
-                }
+                // // Send email to the user alerting him/her to the state of affairs
+                // var emailData = {
+                //     'email': process.env.SITE_EMAIL,
+                //     'from': process.env.SITE_NAME,
+                //     'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+                //     'body': 'Hello ' + user.company + '! <br><br> Your registration process has begun.<br><br> Kindly execise patience as your apointed referees aprove your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+                //     'to': user.email
+                // }
 
-                azureEmail.send(emailData, function(resp) {
-                    if (resp === 'success') {
-                        sails.log.info('The email was sent successfully.');
-                    }
+                // azureEmail.send(emailData, function(resp) {
+                //     if (resp === 'success') {
+                //         sails.log.info('The email was sent successfully.');
+                //     }
 
-                    if (resp === 'error') {
-                        sails.log.error(resp);
-                    }
-                });
-
-                // Send action email to the users apointed referees
-                var refEmailData = {
-                    'email': process.env.SITE_EMAIL,
-                    'from': process.env.SITE_NAME,
-                    'subject': 'Action required on ' + process.env.SITE_NAME + ' membership registration for ' + user.company,
-
-                    'body': 'Hello!<br><br>' +
-                        user.company + 'Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
-                        'Click on the appropriate button to APPROVE or REJECT the applicant for membership.<br><br>' +
-                        '<a href=" ' + refereeUrl + user.id + ' " style="color: green;">APPROVE</a>.<br><br>' +
-                        '<a href=" ' + refereeUrl + user.id + ' " style="color: red;">REJECT</a>.<br><br>' +
-                        'Thank you for your time.<br><br>' +
-                        process.env.SITE_NAME,
-
-                    'to': [req.body.referrer1, req.body.referrer2]
-                }
-
-                azureEmail.send(refEmailData, function(resp) {
-                    if (resp === 'success') {
-                        sails.log.error('The email was sent successfully.');
-                    }
-
-                    if (resp === 'error') {
-                        sails.log.error(resp);
-                    }
-                });
+                //     if (resp === 'error') {
+                //         sails.log.error(resp);
+                //     }
+                // });
 
                 res.json(200, {
                     email: user.email,
@@ -222,6 +193,68 @@ module.exports = {
                 return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
             } else {
                 return res.json(200, { status: 'success', message: 'The referee is valid' });
+            }
+        });
+    },
+
+    /**
+     * `UserController.alertReferee()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {delete} /api/v1/alertreferee Alert a referee
+     * @apiName AlertReferee
+     * @apiDescription This is where a referee is alerted to confirm a new membership applicant.
+     * @apiGroup User
+     *
+     * @apiParam {Number} email Email of the referee to be validated.
+     * @apiParam {String} referrerUrl Url to redirect the referee to (must have a trailing slash).
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "The referees has been alerted."
+     *     }
+     */
+    alertReferee: function(req, res) {
+        User.findOne({ select: ['referrer1', 'referrer2'], where: { email: req.body.email } }).exec(function(err, referee) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(404, { status: 'error', err: err });
+            }
+
+            if (!referee) {
+                return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
+            } else {
+                // Send action email to the users apointed referees
+                var refEmailData = {
+                    'email': process.env.SITE_EMAIL,
+                    'from': process.env.SITE_NAME,
+                    'subject': 'Action required on ' + process.env.SITE_NAME + ' membership registration for ' + user.company,
+
+                    'body': 'Hello!<br><br>' +
+                        user.company + 'Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
+                        'Click on the appropriate button to APPROVE or REJECT the applicant for membership.<br><br>' +
+                        '<a href=" ' + refereeUrl + user.id + ' " style="color: green;">APPROVE</a>.<br><br>' +
+                        '<a href=" ' + refereeUrl + user.id + ' " style="color: red;">REJECT</a>.<br><br>' +
+                        'Thank you for your time.<br><br>' +
+                        process.env.SITE_NAME,
+
+                    'to': [referee.referrer1, referee.referrer2]
+                }
+
+                azureEmail.send(refEmailData, function(resp) {
+                    if (resp === 'success') {
+                        return res.json(200, { status: 'success', message: 'The referees has been alerted.' });
+                    }
+
+                    if (resp === 'error') {
+                        sails.log.error(resp);
+                    }
+                });
             }
         });
     },
@@ -354,6 +387,34 @@ module.exports = {
      * @apiGroup User
      *
      * @apiParam {Number} id User id of the the user to be updated.
+
+     * @apiParam {String} username Username of the new user.
+     * @apiParam {String} email Email of the new user.
+     * @apiParam {String} password Password.
+     * @apiParam {String} confirmPassword Confirm the password.
+     * @apiParam {String} address Addresse of the business.
+     * @apiParam {String} bizNature Nature of business.
+     * @apiParam {String} company Name of company.
+     * @apiParam {String} companyCOIUrl Document URL of company certificate if incoporation.
+     * @apiParam {String} phone Phone number of company.
+     * @apiParam {String} companyRepName1 Name of first company representative.
+     * @apiParam {String} companyRepPhone1 Phone number of first company representative.
+     * @apiParam {String} companyRepEmail1 Email of first company representative.
+     * @apiParam {String} companyRepPassportUrl1 Passport URL of first company representative.
+     * @apiParam {String} companyRepCVUrl1 CV URL of first company representative.
+     * @apiParam {String} companyRepName2 Name of second company representative.
+     * @apiParam {String} companyRepPhone2 Phonenumber of second company representative.
+     * @apiParam {String} companyRepEmail2 Email of second company representative.
+     * @apiParam {String} companyRepPassportUrl2 Passport URL of second company representative.
+     * @apiParam {String} companyRepCVUrl2 CV URL of second company representative.
+     * @apiParam {String} tradeGroup Trade group of company.
+     * @apiParam {String} annualReturn Annual return of company.
+     * @apiParam {String} annualProfits Annual profits of company.
+     * @apiParam {String} employees Employee count of company.
+     * @apiParam {String} referrer1 Email of first referrer.
+     * @apiParam {String} referrer2 Email of second referrer.
+
+     * @apiParam {String} [profileImage] Profile image for the company/member.
      *
      * @apiSuccess {String} status Status of the response from API.
      * @apiSuccess {String} message  Success message response from API.

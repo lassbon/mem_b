@@ -63,7 +63,7 @@ module.exports = {
     if (!req.param('id')) {
       return res.json(401, { status: 'error', err: 'No User id provided!' });
     } else {
-      User.findOne({ select: ['username', 'referred1', 'referred2', 'email'], where: { id: req.param('id') } }).exec(function(err, user) {
+      User.findOne({ select: ['username', 'referred1', 'referred2', 'email'], where: { id: req.param('id') }}).exec(function(err, user) {
         if (err) {
           sails.log.error(err);
           return res.json(err.status, { err: err });
