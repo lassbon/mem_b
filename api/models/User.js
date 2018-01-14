@@ -120,10 +120,6 @@ module.exports = {
             type: 'string',
             defaultsTo: null
         },
-        verified: {
-            type: 'boolean',
-            defaultsTo: false
-        },
         friends: {
             collection: 'user',
             via: 'id'
@@ -144,9 +140,19 @@ module.exports = {
             collection: 'forumPosts',
             via: 'creator'
         },
+        verified: {
+            type: 'boolean',
+            defaultsTo: false
+        },
+        verifiedRejectionReason: {
+            type: 'text',
+        },
         approved: {
             type: 'boolean',
             defaultsTo: false
+        },
+        approvedRejectionReason: {
+            type: 'text',
         },
         rejected: {
             type: 'boolean',
@@ -204,17 +210,17 @@ module.exports = {
         })
     },
 
-    // Here we encrypt password before creating an Admin
-    beforeUpdate: function(values, next) {
-        bcrypt.genSalt(10, function(err, salt) {
-            if (err) return next(err);
-            bcrypt.hash(values.password, salt, function(err, hash) {
-                if (err) return next(err);
-                values.password = hash;
-                next();
-            })
-        })
-    },
+    // // Here we encrypt password before creating an Admin
+    // beforeCreate: function(values, next) {
+    //     bcrypt.genSalt(10, function(err, salt) {
+    //         if (err) return next(err);
+    //         bcrypt.hash(values.password, salt, function(err, hash) {
+    //             if (err) return next(err);
+    //             values.password = hash;
+    //             next();
+    //         })
+    //     })
+    // },
 
     // Here we compare password with available hash
     comparePassword: function(password, user, cb) {

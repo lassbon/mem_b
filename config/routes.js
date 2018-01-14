@@ -173,7 +173,7 @@ module.exports.routes = {
      * Verifier routes
      */
     'POST /api/v1/verifier': 'VerifierController.verify',
-    'DELETE /api/v1/verifier/:id': 'VerifierController.reject',
+    'DELETE /api/v1/verifier/:id/:reason': 'VerifierController.reject',
     'GET /api/v1/verifier/:id': 'VerifierController.get',
     'GET /api/v1/verifier': 'VerifierController.get',
 
@@ -181,7 +181,7 @@ module.exports.routes = {
      * Approver routes
      */
     'POST /api/v1/approver': 'ApproverController.approve',
-    'DELETE /api/v1/approver/:id': 'ApproverController.reject',
+    'DELETE /api/v1/approver/:id/:reason': 'ApproverController.reject',
     'GET /api/v1/approver/:id': 'ApproverController.get',
     'GET /api/v1/approver': 'ApproverController.get',
 
@@ -196,8 +196,7 @@ module.exports.routes = {
     /**
      * Social routes
      */
-
-     'GET /api/v1/socialcount': 'SocialController.getCount',
+    'GET /api/v1/socialcount': 'SocialController.getCount',
 
     'POST /api/v1/social/request': 'SocialController.request',
     'POST /api/v1/social/accept': 'SocialController.accept',
@@ -231,7 +230,6 @@ module.exports.routes = {
     /**
      * Forum routes
     */
-
     'GET /api/v1/forumcount': 'ForumController.getCount',
 
     // Forum topic routes

@@ -61,27 +61,53 @@ module.exports = {
    * @apiUse UserNotFoundError
    */
   verify: function (req, res) {
-    if(!req.param('id')){
-      return res.json(401, {status: 'error', err: 'No User id provided!'});
-    }else{
-      User.findOne({select: 'username', where : {id : req.param('id')}}).exec(function (err, user){
+    if (!req.param('id')) {
+      return res.json(401, { status: 'error', err: 'No User id provided!' });
+    } else {
+      User.findOne({ id: req.param('id') }).exec(function(err, user) {
         if (err) {
           sails.log.error(err);
-          return res.json(err.status, {err: err});
+          return res.json(err.status, { err: err });
         }
 
-        if(!user){
-          return res.json(401, {status: 'error', err: 'No User with such id existing'});
-        }else{
-          User.update({id: req.param('id')}, {verified: true}).exec(function(err, data){
-            if(err){
+        if (!user) {
+          return res.json(404, { status: 'error', err: 'No User with such id existing' });
+        } else {
+          User.update({ id: req.param('id') }, { verified: true }).exec(function(err, data) {
+            if (err) {
               sails.log.error(err);
-              return res.json(err.status, {err: err});
+              return res.json(err.status, { err: err });
             }
 
-            // TODO: send email to the user alerting him/her to the state of affairs
-      
-            return res.json(200, 'User with id '+req.param('id')+' has been verified');
+            var verificationMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been verified.';
+
+            // Send notification to the user alerting him/her on the state of affairs
+            Notifications.create({ id: req.param('id'), message: verificationMessage }).exec(function(err, info) {
+              if (err) {
+                sails.log.error(err);
+              }
+            });
+
+            // Send email to the user alerting him/her to the state of affairs
+            var emailData = {
+              'email': process.env.SITE_EMAIL,
+              'from': process.env.SITE_NAME,
+              'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+              'body': 'Hello ' + user.company + '! <br><br> ' + verificationMessage + ' <br><br> Kindly wait for the approval step to take place. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+              'to': user.email
+            }
+
+            azureEmail.send(emailData, function(resp) {
+              if (resp === 'success') {
+                sails.log.info('The email was sent successfully.');
+              }
+
+              if (resp === 'error') {
+                sails.log.error(resp);
+              }
+            });
+
+            return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been verified' });
           });
         }
       });
@@ -99,6 +125,7 @@ module.exports = {
    * @apiGroup Verifier
    *
    * @apiParam {Number} id User id of the the user to be verified.
+   * @apiParam {String} reason Reason for the user to be rejected.
    *
    * @apiSuccess {String} status Status of the response from API.
    * @apiSuccess {String} message  Success message response from API.
@@ -115,31 +142,61 @@ module.exports = {
    * @apiUse UserNotFoundError
    */
   reject: function (req, res) {
-    if(!req.param('id')){
-      return res.json(401, {status: 'error', err: 'No User id provided!'});
-    }else{
-      User.findOne({select: 'username', where : {id : req.param('id')}}).exec(function (err, user){
-        if (err) {
-          sails.log.error(err);
-          return res.json(err.status, {err: err});
-        }
+    if (!req.param('id')) {
+      return res.json(401, { status: 'error', err: 'No User id provided!' });
+    }
 
-        if(!user){
-          return res.json(401, {status: 'error', err: 'No User with such id existing'});
-        }else{
-          User.update({id: req.param('id')}, {rejected: true}).exec(function(err, data){
-            if(err){
+    if (!req.param('reason')) {
+      return res.json(401, { status: 'error', err: 'No rejection reason provided!' });
+    }
+
+    User.findOne({ id: req.param('id') }).exec(function(err, user) {
+      if (err) {
+        sails.log.error(err);
+        return res.json(err.status, { err: err });
+      }
+
+      if (!user) {
+        return res.json(404, { status: 'error', err: 'No User with such id existing' });
+      } else {
+        User.update({ id: req.param('id') }, { verified: false, verifiedRejectionReason: req.param('reason') }).exec(function(err, data) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          var rejectionMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been rejected.';
+
+          // Send notification to the user alerting him/her on the state of affairs
+          Notifications.create({ id: req.param('id'), message: rejectionMessage }).exec(function(err, info) {
+            if (err) {
               sails.log.error(err);
-              return res.json(err.status, {err: err});
+            }
+          });
+
+          // Send email to the user alerting him/her to the state of affairs
+          var emailData = {
+            'email': process.env.SITE_EMAIL,
+            'from': process.env.SITE_NAME,
+            'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+            'body': 'Hello ' + user.company + '! <br><br> ' + rejectionMessage + ' <br><br> ' + req.param('reason') + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+            'to': user.email
+          }
+
+          azureEmail.send(emailData, function(resp) {
+            if (resp === 'success') {
+              sails.log.info('The email was sent successfully.');
             }
 
-            // TODO: send email to the user alerting him/her to the state of affairs
-      
-            return res.json(200, {status: 'success', message: 'User with id '+req.param('id')+' has been rejected'});
+            if (resp === 'error') {
+              sails.log.error(resp);
+            }
           });
-        }
-      });
-    }
+
+          return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been verified' });
+        });
+      }
+    });
   },
 
 

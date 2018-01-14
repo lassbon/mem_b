@@ -124,38 +124,49 @@ module.exports = {
         // create and add membership id to the body content
         req.body.membershipId = utility.membershipId(req.body.email);
 
-        User.create(req.body).exec(function(err, user) {
+        User.findOne({ email: req.param('email') }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
-            // If user created successfuly we return user and token as response
             if (user) {
+                return res.json(404, { status: 'error', err: 'An account with that email already exists.' })
+            } else {
+                User.create(req.body).exec(function(err, user) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
 
-                // // Send email to the user alerting him/her to the state of affairs
-                // var emailData = {
-                //     'email': process.env.SITE_EMAIL,
-                //     'from': process.env.SITE_NAME,
-                //     'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-                //     'body': 'Hello ' + user.company + '! <br><br> Your registration process has begun.<br><br> Kindly execise patience as your apointed referees aprove your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-                //     'to': user.email
-                // }
+                    // If user created successfuly we return user and token as response
+                    if (user) {
 
-                // azureEmail.send(emailData, function(resp) {
-                //     if (resp === 'success') {
-                //         sails.log.info('The email was sent successfully.');
-                //     }
+                        // // Send email to the user alerting him/her to the state of affairs
+                        // var emailData = {
+                        //     'email': process.env.SITE_EMAIL,
+                        //     'from': process.env.SITE_NAME,
+                        //     'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+                        //     'body': 'Hello ' + user.company + '! <br><br> Your registration process has begun.<br><br> Kindly execise patience as your apointed referees aprove your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+                        //     'to': user.email
+                        // }
 
-                //     if (resp === 'error') {
-                //         sails.log.error(resp);
-                //     }
-                // });
+                        // azureEmail.send(emailData, function(resp) {
+                        //     if (resp === 'success') {
+                        //         sails.log.info('The email was sent successfully.');
+                        //     }
 
-                res.json(200, {
-                    email: user.email,
-                    id: user.id,
-                    role: user.role
+                        //     if (resp === 'error') {
+                        //         sails.log.error(resp);
+                        //     }
+                        // });
+
+                        res.json(200, {
+                            email: user.email,
+                            id: user.id,
+                            role: user.role
+                        });
+                    }
                 });
             }
         });
@@ -247,6 +258,25 @@ module.exports = {
                 }
 
                 azureEmail.send(refEmailData, function(resp) {
+                    if (resp === 'success') {
+                        sails.log.info('The email was sent successfully.');
+                    }
+
+                    if (resp === 'error') {
+                        sails.log.error(resp);
+                    }
+                });
+
+                // Send email to the user alerting him/her to the state of affairs
+                var emailData = {
+                    'email': process.env.SITE_EMAIL,
+                    'from': process.env.SITE_NAME,
+                    'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+                    'body': 'Hello ' + user.company + '! <br><br> Your registration process has begun. <br><br> Kindly execise patience as your apointed referees confirm your application. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+                    'to': user.email
+                }
+
+                azureEmail.send(emailData, function(resp) {
                     if (resp === 'success') {
                         return res.json(200, { status: 'success', message: 'The referees has been alerted.' });
                     }
