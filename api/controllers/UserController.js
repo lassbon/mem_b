@@ -217,7 +217,7 @@ module.exports = {
      * @apiDescription This is where a referee is alerted to confirm a new membership applicant.
      * @apiGroup User
      *
-     * @apiParam {Number} email Email of the referee to be validated.
+     * @apiParam {Number} id Id of the user to be conformed by referees
      * @apiParam {String} referrerUrl Url to redirect the referee to (must have a trailing slash).
      *
      * @apiSuccess {String} status Status of the response from API.
@@ -231,7 +231,7 @@ module.exports = {
      *     }
      */
     alertReferee: function(req, res) {
-        User.findOne({ select: ['referrer1', 'referrer2'], where: { email: req.body.email } }).exec(function(err, referee) {
+        User.findOne({ select: ['referrer1', 'referrer2'], where: { email: req.body.id } }).exec(function(err, referee) {
             if (err) {
                 sails.log.error(err);
                 return res.json(404, { status: 'error', err: err });
