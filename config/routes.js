@@ -33,7 +33,7 @@ module.exports.routes = {
      ***************************************************************************/
 
     '/': {
-        view: 'homepage'
+        '/api/v1/auth/': 'AuthController.index',
     },
 
 
