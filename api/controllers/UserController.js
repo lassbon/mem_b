@@ -57,6 +57,32 @@
  *     }
  */
 
+ /** 
+ * @apiDefine UserEmailNotProvidedError
+ *
+ * @apiError UserEmailNotProvided No User email provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Not Found
+ *     {
+ *       "status": "error",
+ *       "err": "No User Email provided!"
+ *     }
+ */
+
+ /** 
+ * @apiDefine UserTokenNotProvidedError
+ *
+ * @apiError UserTokenNotProvided No User token provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Not Found
+ *     {
+ *       "status": "error",
+ *       "err": "No token provided!"
+ *     }
+ */
+
 module.exports = {
 
 

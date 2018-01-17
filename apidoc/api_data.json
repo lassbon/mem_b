@@ -1,5 +1,89 @@
 [
   {
+    "type": "put",
+    "url": "/api/v1/admin/change/:token",
+    "title": "Change admin password",
+    "name": "Change",
+    "description": "<p>This is where an admin password is changed.</p>",
+    "group": "Admin",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Admin email token.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>New password.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "confirmPassword",
+            "description": "<p>Confirm the new password.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Click on the link sent to your email to change your password'\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Admin",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdminTokenNotProvided",
+            "description": "<p>No token provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No token provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "post",
     "url": "/api/v1/admin",
     "title": "Create a new admin",
@@ -50,6 +134,13 @@
             "optional": false,
             "field": "lastname",
             "description": "<p>Last name of the admin.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "permission",
+            "description": "<p>Permission level of the admin.</p>"
           }
         ]
       }
@@ -186,6 +277,94 @@
     }
   },
   {
+    "type": "put",
+    "url": "/api/v1/admin/:id",
+    "title": "Forgot admin password",
+    "name": "Forgot",
+    "description": "<p>This is where an admin forgoten password is taken care of.</p>",
+    "group": "Admin",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Admin email.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "url",
+            "description": "<p>Url to the password change page.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Click on the link sent to your email to change your password'\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Admin",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdminEmailNotProvided",
+            "description": "<p>No admin email provided.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdminNotFound",
+            "description": "<p>The admin was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No admin email provided!\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No admin with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "get",
     "url": "/api/v1/admin/:id",
     "title": "Get admin(s)",
@@ -247,6 +426,508 @@
         }
       ]
     }
+  },
+  {
+    "type": "put",
+    "url": "/api/v1/admin/:id",
+    "title": "Update an admin",
+    "name": "UpdateAdmin",
+    "description": "<p>This is where an admin is updated</p>",
+    "group": "Admin",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Admin ID.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "password",
+            "description": "<p>Password of the admin.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "firstname",
+            "description": "<p>First of the admin.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "lastname",
+            "description": "<p>Last name of the admin.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "permission",
+            "description": "<p>Permission level of the admin.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Admin with id 59dce9d56b54d91c38847825 has been updated'\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AdminController.js",
+    "groupTitle": "Admin",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdminIdNotProvided",
+            "description": "<p>No admin id provided.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdminNotFound",
+            "description": "<p>The admin was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No admin id provided!\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No admin with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/advert",
+    "title": "Create a new advert",
+    "name": "CreateAdvert",
+    "description": "<p>This is where a new advert is created.</p>",
+    "group": "Advert",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "title",
+            "description": "<p>Title of the advert.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "banner",
+            "description": "<p>Cloud Url of Picture banner for the advert.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "url",
+            "description": "<p>URL of the advert.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"id\": \"59dce9c16b54d91c38847825\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdvertInfoNotComplete",
+            "description": "<p>Advert info not complete.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { title | banner | url | fee} provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AdvertController.js",
+    "groupTitle": "Advert"
+  },
+  {
+    "type": "delete",
+    "url": "/api/v1/advert/:id",
+    "title": "Delete a advert",
+    "name": "DeleteAdvert",
+    "description": "<p>This is where an advert is deleted</p>",
+    "group": "Advert",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Advert Id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Advert with id 59dce9d56b54d91c38847825 has been deleted'\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AdvertController.js",
+    "groupTitle": "Advert",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdvertIdNotProvided",
+            "description": "<p>No Advert id provided.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdvertNotFound",
+            "description": "<p>The Advert was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Advert id provided!\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Advert with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/advert/:id",
+    "title": "Get advert(s)",
+    "name": "GetAdvert",
+    "description": "<p>This is where adverts are retrieved.</p>",
+    "group": "Advert",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Advert id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "advert",
+            "description": "<p>Post response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AdvertController.js",
+    "groupTitle": "Advert",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdvertNotFound",
+            "description": "<p>The Advert was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Advert with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/api/v1/advert/:id",
+    "title": "Update a advert",
+    "name": "UpdateAdvert",
+    "description": "<p>This is where a advert is updated.</p>",
+    "group": "Advert",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "title",
+            "description": "<p>Title of the advert.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "banner",
+            "description": "<p>Cloud Url of Picture banner for the advert.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "url",
+            "description": "<p>Url of the advert.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Advert with id 59dce9d56b54d91c38847825 has been updated'\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AdvertController.js",
+    "groupTitle": "Advert",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdvertIdNotProvided",
+            "description": "<p>No Advert id provided.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdvertNotFound",
+            "description": "<p>The Advert was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Advert id provided!\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Advert with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/advert/upload",
+    "title": "Upload a advert banner",
+    "name": "UploadBanner",
+    "description": "<p>This is where a advert image banner is uploaded (Make sure image file extension is either jpg or png).</p>",
+    "group": "Advert",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "banner",
+            "description": "<p>Banner image file to be uploaded.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"bannerUrl\": \"https://accicloud.blob.core.windows.net/advert/27ba91b3-ab78-4240-aa6c-a1f32230227c.jpg\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "AdvertImageNotUploaded",
+            "description": "<p>No image uploaded.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No image uploaded!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AdvertController.js",
+    "groupTitle": "Advert"
   },
   {
     "type": "post",
@@ -408,6 +1089,13 @@
             "optional": false,
             "field": "id",
             "description": "<p>User id of the the user to be rejected.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "reason",
+            "description": "<p>Reason for the user to be rejected.</p>"
           }
         ]
       }
@@ -474,28 +1162,39 @@
     }
   },
   {
-    "type": "post",
-    "url": "/api/v1/auth/user",
-    "title": "Login a user",
-    "name": "Login",
-    "description": "<p>This is where a user is logged in, and a token generated and returned.</p>",
-    "group": "Auth",
+    "type": "get",
+    "url": "/api/v1/audit/excel",
+    "title": "Get audit Excel document",
+    "name": "GetExcel",
+    "description": "<p>This is where audit records are obtained in excel format.</p>",
+    "group": "Audit",
+    "version": "0.0.0",
+    "filename": "api/controllers/AuditController.js",
+    "groupTitle": "Audit"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/audits/:id",
+    "title": "Get project(s)",
+    "name": "GetAudit",
+    "description": "<p>This is where audits are retrieved.</p>",
+    "group": "Audits",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "username",
-            "description": "<p>Username of the user.</p>"
+            "type": "String",
+            "optional": true,
+            "field": "term",
+            "description": "<p>Search term.</p>"
           },
           {
             "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "password",
-            "description": "<p>Password of the user.</p>"
+            "type": "String",
+            "optional": true,
+            "field": "field",
+            "description": "<p>Search field.</p>"
           }
         ]
       }
@@ -507,55 +1206,37 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "user",
-            "description": "<p>Details of the logged in user.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "token",
-            "description": "<p>Access token for accessing all parts of the plartform.</p>"
+            "field": "audits",
+            "description": "<p>Response from API.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"user\": {},\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
           "type": "json"
         }
       ]
     },
     "version": "0.0.0",
-    "filename": "api/controllers/AuthController.js",
-    "groupTitle": "Auth",
+    "filename": "api/controllers/AuditController.js",
+    "groupTitle": "Audits",
     "error": {
       "fields": {
         "Error 4xx": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "PasswordOrUsernameInvalid",
-            "description": "<p>Username or password invalid.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PasswordAndUsernameRequired",
-            "description": "<p>Username and password required.</p>"
+            "field": "AuditNotFound",
+            "description": "<p>The record was not found.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'username or password invalid.'\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Username and password required.'\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"err\": 'No audit matched your search term'\n}",
           "type": "json"
         }
       ]
@@ -644,6 +1325,94 @@
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Username and password required.'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/auth/user",
+    "title": "Login a user",
+    "name": "Login",
+    "description": "<p>This is where a user is logged in, and a token generated and returned.</p>",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Username of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password of the user.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Details of the logged in user.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Access token for accessing all parts of the plartform.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"user\": {},\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AuthController.js",
+    "groupTitle": "Auth",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordOrEmailInvalid",
+            "description": "<p>Email or password invalid.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordAndEmailRequired",
+            "description": "<p>Email and password required.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email or password invalid.'\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email and password required.'\n}",
           "type": "json"
         }
       ]
@@ -2619,6 +3388,17 @@
   },
   {
     "type": "get",
+    "url": "/api/v1/forumcount",
+    "title": "Get forum counts",
+    "name": "GetCount",
+    "description": "<p>This is where forum counts are obtained.</p>",
+    "group": "Forum",
+    "version": "0.0.0",
+    "filename": "api/controllers/ForumController.js",
+    "groupTitle": "Forum"
+  },
+  {
+    "type": "get",
     "url": "/api/v1/forum/post/:id",
     "title": "Get post(s)",
     "name": "GetPost_s_",
@@ -3034,6 +3814,17 @@
         }
       ]
     }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/knowledgebase/doccount",
+    "title": "Get document count",
+    "name": "GetCount",
+    "description": "<p>This is where document count is obtained.</p>",
+    "group": "KnowledgeBase",
+    "version": "0.0.0",
+    "filename": "api/controllers/KnowledgeBaseController.js",
+    "groupTitle": "KnowledgeBase"
   },
   {
     "type": "post",
@@ -3492,87 +4283,6 @@
   },
   {
     "type": "put",
-    "url": "/api/v1/admin/:id",
-    "title": "Update an admin",
-    "name": "UpdateAdmin",
-    "description": "<p>This is where an admin is updated</p>",
-    "group": "Knowledgebase",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Admin ID.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "status",
-            "description": "<p>Status of the response from API.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Success message response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Admin with id 59dce9d56b54d91c38847825 has been updated'\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/AdminController.js",
-    "groupTitle": "Knowledgebase",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "AdminIdNotProvided",
-            "description": "<p>No admin id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "AdminNotFound",
-            "description": "<p>The admin was not found.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No admin id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No admin with such id existing'\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "put",
     "url": "/api/v1/knowledgebase/category/:id",
     "title": "Update a category",
     "name": "UpdateCategory",
@@ -3803,7 +4513,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"bannerUrl\": \"https://accicloud.blob.core.windows.net/knowledgebase/27ba91b3-ab78-4240-aa6c-a1f32230227c.pdf\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"docUrl\": \"https://accicloud.blob.core.windows.net/knowledgebase/27ba91b3-ab78-4240-aa6c-a1f32230227c.pdf\"\n}",
           "type": "json"
         }
       ]
@@ -3830,6 +4540,83 @@
     "version": "0.0.0",
     "filename": "api/controllers/KnowledgeBaseController.js",
     "groupTitle": "Knowledgebase"
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/projects/post",
+    "title": "Create a new level",
+    "name": "CreateLevel",
+    "description": "<p>This is where a new level is created.</p>",
+    "group": "Levels",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the membership level.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "fee",
+            "description": "<p>Fee for the memebership level.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Full description of the membership level.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "levels",
+            "description": "<p>Level name and id returned from the API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9c16b54d91c38847825\",\n  \"....\": \"......................\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "LevelsInfoNotComplete",
+            "description": "<p>Post info not complete.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { name | fee | description } provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/LevelsController.js",
+    "groupTitle": "Levels"
   },
   {
     "type": "post",
@@ -4069,6 +4856,461 @@
         }
       ]
     }
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/notifications/",
+    "title": "Create a new notification",
+    "name": "CreateProject",
+    "description": "<p>This is where a new notification is created.</p>",
+    "group": "Notifications",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>User id of the recipient.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Actual content of the notification.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "from",
+            "description": "<p>Sender of the notification.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "type",
+            "description": "<p>Type of notification (notificaton or message).</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the new notification.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\"\n  \"id\": \"59dce9c16b54d91c38847825\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotificationsInfoNotComplete",
+            "description": "<p>Post info not complete.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { id | message | type } provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/NotificationsController.js",
+    "groupTitle": "Notifications"
+  },
+  {
+    "type": "delete",
+    "url": "/api/v1/notifications/:id",
+    "title": "Delete a notification",
+    "name": "DeleteNotification",
+    "description": "<p>This is where a notification is deleted</p>",
+    "group": "Notifications",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Notification ID.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Level with id 59dce9d56b54d91c38847825 has been deleted'\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/NotificationsController.js",
+    "groupTitle": "Notifications",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotificationIdNotProvided",
+            "description": "<p>No Notification id provided.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotificationNotFound",
+            "description": "<p>The Notification was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Notification id provided!\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Notification with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/notification/:id",
+    "title": "Get notification(s)",
+    "name": "GetLevel",
+    "description": "<p>This is where notification are retrieved.</p>",
+    "group": "Notifications",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "id",
+            "description": "<p>Notifications id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "notification",
+            "description": "<p>Notifications response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/NotificationsController.js",
+    "groupTitle": "Notifications",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotificationNotFound",
+            "description": "<p>The Notification was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Notification with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/donations",
+    "title": "Get donation payments",
+    "name": "Donations",
+    "description": "<p>This is where donation payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/events",
+    "title": "Get event payments",
+    "name": "Events",
+    "description": "<p>This is where event payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/donation/excel",
+    "title": "Get donation payment Excel document",
+    "name": "GetDonationExcel",
+    "description": "<p>This is where donation payment records are obtained in excel format.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/event/excel",
+    "title": "Get event payment Excel document",
+    "name": "GetEventExcel",
+    "description": "<p>This is where event payment records are obtained in excel format.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/:id",
+    "title": "Get Payment Excel document",
+    "name": "GetExcel",
+    "description": "<p>This is payment records are obtained in excel format.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/DonationController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/excel",
+    "title": "Get Payment Excel document",
+    "name": "GetExcel",
+    "description": "<p>This is where payment records are obtained in excel format.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/membership/excel",
+    "title": "Get membership payment Excel document",
+    "name": "GetMembershipExcel",
+    "description": "<p>This is where membership payment records are obtained in excel format.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/:id",
+    "title": "Get payments(s)",
+    "name": "GetPayment",
+    "description": "<p>This is where paymet records are retrieved.</p>",
+    "group": "Payments",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "term",
+            "description": "<p>Search term.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "field",
+            "description": "<p>Search field.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "offset",
+            "description": "<p>Search offset for pagination.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "limit",
+            "description": "<p>Search limit for pagination.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "payments",
+            "description": "<p>Response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PaymentNotFound",
+            "description": "<p>The Payment was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Payment with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/registration/excel",
+    "title": "Get registration payment Excel document",
+    "name": "GetRegistrationExcel",
+    "description": "<p>This is where registration payment records are obtained in excel format.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/totals",
+    "title": "Get Payment summary/totals",
+    "name": "GetTotals",
+    "description": "<p>This is payment totals are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/training/excel",
+    "title": "Get training payment Excel document",
+    "name": "GetTrainingExcel",
+    "description": "<p>This is where training payment records are obtained in excel format.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/memberships",
+    "title": "Get registration payments",
+    "name": "Memberships",
+    "description": "<p>This is where registration payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/registrations",
+    "title": "Get registration payments",
+    "name": "Registrations",
+    "description": "<p>This is where registration payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/trainings",
+    "title": "Get event payments",
+    "name": "Trainings",
+    "description": "<p>This is where training payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
   },
   {
     "type": "delete",
@@ -4383,83 +5625,6 @@
     "groupTitle": "Projects"
   },
   {
-    "type": "post",
-    "url": "/api/v1/projects/post",
-    "title": "Create a new project",
-    "name": "CreateProject",
-    "description": "<p>This is where a new project is created.</p>",
-    "group": "Projects",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "name",
-            "description": "<p>Name of the membership level.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "fee",
-            "description": "<p>Fee for the memebership level.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "description",
-            "description": "<p>Full description of the membership level.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "levels",
-            "description": "<p>Level name and id returned from the API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response: ",
-          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9c16b54d91c38847825\",\n  \"....\": \"......................\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "LevelsInfoNotComplete",
-            "description": "<p>Post info not complete.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { name | fee | description } provided!\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/LevelsController.js",
-    "groupTitle": "Projects"
-  },
-  {
     "type": "put",
     "url": "/api/v1/projects",
     "title": "Update a project",
@@ -4573,7 +5738,7 @@
     "url": "/api/v1/referrer",
     "title": "Approve a user",
     "name": "Approve",
-    "description": "<p>This is where a newly registered user is approved instead of beign rejected by a referrer.</p>",
+    "description": "<p>This is where a newly registered user is confirmed instead of beign rejected by a referee.</p>",
     "group": "Referrer",
     "parameter": {
       "fields": {
@@ -4583,7 +5748,14 @@
             "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>User id of the the user to be approved.</p>"
+            "description": "<p>User id of the the user to be confirmed.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "refereeId",
+            "description": "<p>Member id of the referee.</p>"
           }
         ]
       }
@@ -4610,7 +5782,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"User with id 59dce9d56b54d91c38847825 has been approved'\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Confirmed!\"\n}",
           "type": "json"
         }
       ]
@@ -4717,7 +5889,7 @@
     "url": "/api/v1/referrer",
     "title": "Reject a user",
     "name": "Reject",
-    "description": "<p>This is where a newly registered user is rejected instead of beign approved by a referrer.</p>",
+    "description": "<p>This is where a newly registered user is rejected instead of beign confirmed by a referrer.</p>",
     "group": "Referrer",
     "parameter": {
       "fields": {
@@ -4728,6 +5900,13 @@
             "optional": false,
             "field": "id",
             "description": "<p>User id of the the user to be rejected.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "refereeId",
+            "description": "<p>Member id of the referee.</p>"
           }
         ]
       }
@@ -5416,6 +6595,61 @@
         }
       ]
     }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/socialcount",
+    "title": "Get social counts",
+    "name": "GetCount",
+    "description": "<p>This is where social counts are obtained.</p>",
+    "group": "Social",
+    "version": "0.0.0",
+    "filename": "api/controllers/SocialController.js",
+    "groupTitle": "Social"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/social/feed/:id",
+    "title": "Get user's feed",
+    "name": "GetFeed",
+    "description": "<p>This is where a user's feed is retrieved.</p>",
+    "group": "Social",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>User id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "comment",
+            "description": "<p>Postresponse from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/SocialController.js",
+    "groupTitle": "Social"
   },
   {
     "type": "get",
@@ -7000,8 +8234,150 @@
     "groupTitle": "Training"
   },
   {
+    "type": "delete",
+    "url": "/api/v1/alertreferee",
+    "title": "Alert a referee",
+    "name": "AlertReferee",
+    "description": "<p>This is where a referee is alerted to confirm a new membership applicant.</p>",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of the user to be conformed by referees</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "referrerUrl",
+            "description": "<p>Url to redirect the referee to (must have a trailing slash).</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"The referees has been alerted.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserController.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "put",
+    "url": "/api/v1/user/change/:token",
+    "title": "Change user password",
+    "name": "Change",
+    "description": "<p>This is where an user password is changed.</p>",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>User email token.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>New password.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "confirmPassword",
+            "description": "<p>Confirm the new password.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Click on the link sent to your email to change your password'\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserController.js",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserTokenNotProvided",
+            "description": "<p>No User token provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No token provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "post",
-    "url": "/api/v1/projects/post",
+    "url": "/api/v1/user",
     "title": "Create a new user",
     "name": "CreateUser",
     "description": "<p>This is where a new user is created.</p>",
@@ -7062,6 +8438,13 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
+            "field": "companyCOIUrl",
+            "description": "<p>Document URL of company certificate if incoporation.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
             "field": "phone",
             "description": "<p>Phone number of company.</p>"
           },
@@ -7090,6 +8473,20 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
+            "field": "companyRepPassportUrl1",
+            "description": "<p>Passport URL of first company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepCVUrl1",
+            "description": "<p>CV URL of first company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
             "field": "companyRepName2",
             "description": "<p>Name of second company representative.</p>"
           },
@@ -7111,8 +8508,43 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
+            "field": "companyRepPassportUrl2",
+            "description": "<p>Passport URL of second company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepCVUrl2",
+            "description": "<p>CV URL of second company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
             "field": "tradeGroup",
             "description": "<p>Trade group of company.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "annualReturn",
+            "description": "<p>Annual return of company.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "annualProfits",
+            "description": "<p>Annual profits of company.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "employees",
+            "description": "<p>Employee count of company.</p>"
           },
           {
             "group": "Parameter",
@@ -7194,6 +8626,269 @@
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { title | banner | description } provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/api/v1/user",
+    "title": "Reject a user",
+    "name": "DeleteUser",
+    "description": "<p>This is where a user's info is updated.</p>",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>User id of the the user to be updated.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Username of the new user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email of the new user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "confirmPassword",
+            "description": "<p>Confirm the password.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "address",
+            "description": "<p>Addresse of the business.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "bizNature",
+            "description": "<p>Nature of business.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "company",
+            "description": "<p>Name of company.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyCOIUrl",
+            "description": "<p>Document URL of company certificate if incoporation.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "phone",
+            "description": "<p>Phone number of company.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepName1",
+            "description": "<p>Name of first company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepPhone1",
+            "description": "<p>Phone number of first company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepEmail1",
+            "description": "<p>Email of first company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepPassportUrl1",
+            "description": "<p>Passport URL of first company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepCVUrl1",
+            "description": "<p>CV URL of first company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepName2",
+            "description": "<p>Name of second company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepPhone2",
+            "description": "<p>Phonenumber of second company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepEmail2",
+            "description": "<p>Email of second company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepPassportUrl2",
+            "description": "<p>Passport URL of second company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "companyRepCVUrl2",
+            "description": "<p>CV URL of second company representative.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "tradeGroup",
+            "description": "<p>Trade group of company.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "annualReturn",
+            "description": "<p>Annual return of company.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "annualProfits",
+            "description": "<p>Annual profits of company.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "employees",
+            "description": "<p>Employee count of company.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "referrer1",
+            "description": "<p>Email of first referrer.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "referrer2",
+            "description": "<p>Email of second referrer.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "profileImage",
+            "description": "<p>Profile image for the company/member.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"User with id 59dce9d56b54d91c38847825 has been updated'\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserController.js",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserNotFound",
+            "description": "<p>The User was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No User with such id existing'\n}",
           "type": "json"
         }
       ]
@@ -7282,20 +8977,27 @@
   },
   {
     "type": "put",
-    "url": "/api/v1/user",
-    "title": "Reject a user",
-    "name": "DeleteUser",
-    "description": "<p>This is where a user's info is updated.</p>",
+    "url": "/api/v1/user/:id",
+    "title": "Forgot user password",
+    "name": "Forgot",
+    "description": "<p>This is where an user forgoten password is taken care of.</p>",
     "group": "User",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "String",
             "optional": false,
-            "field": "id",
-            "description": "<p>User id of the the user to be updated.</p>"
+            "field": "email",
+            "description": "<p>User email.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "url",
+            "description": "<p>Url to the password change page.</p>"
           }
         ]
       }
@@ -7322,7 +9024,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"User with id 59dce9d56b54d91c38847825 has been updated'\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Click on the link sent to your email to change your password'\"\n}",
           "type": "json"
         }
       ]
@@ -7336,8 +9038,8 @@
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "UserIdNotProvided",
-            "description": "<p>No User id provided.</p>"
+            "field": "UserEmailNotProvided",
+            "description": "<p>No User email provided.</p>"
           },
           {
             "group": "Error 4xx",
@@ -7350,7 +9052,7 @@
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User Email provided!\"\n}",
           "type": "json"
         },
         {
@@ -7360,6 +9062,17 @@
         }
       ]
     }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/user/usercount",
+    "title": "Get User count",
+    "name": "GetCount",
+    "description": "<p>This is where user count is obtained.</p>",
+    "group": "User",
+    "version": "0.0.0",
+    "filename": "api/controllers/UserController.js",
+    "groupTitle": "User"
   },
   {
     "type": "get",
@@ -7427,9 +9140,9 @@
   {
     "type": "post",
     "url": "/api/v1/user/upload",
-    "title": "Upload a profile image",
-    "name": "UploadImage",
-    "description": "<p>This is where a profile image is uploaded (Make sure image file extension is either jpg or png).</p>",
+    "title": "Upload a file",
+    "name": "UploadFile",
+    "description": "<p>This is where a file is uploaded .</p>",
     "group": "User",
     "parameter": {
       "fields": {
@@ -7438,8 +9151,8 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "image",
-            "description": "<p>Profile image file to be uploaded.</p>"
+            "field": "file",
+            "description": "<p>File to be uploaded.</p>"
           }
         ]
       }
@@ -7466,7 +9179,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"bannerUrl\": \"https://accicloud.blob.core.windows.net/user/27ba91b3-ab78-4240-aa6c-a1f32230227c.jpg\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"bannerUrl\": \"https://accicloud.blob.core.windows.net/userfiles/27ba91b3-ab78-4240-aa6c-a1f32230227c.jpg\"\n}",
           "type": "json"
         }
       ]
@@ -7477,15 +9190,66 @@
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "ImageNotUploaded",
-            "description": "<p>No image uploaded.</p>"
+            "field": "FileNotUploaded",
+            "description": "<p>No file uploaded.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No image uploaded!\"\n}",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No file uploaded!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserController.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "delete",
+    "url": "/api/v1/validatereferee",
+    "title": "Validate a referee",
+    "name": "ValidateReferee",
+    "description": "<p>This is where a referee is validated.</p>",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email of the referee to be validated.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"The referee is valid\"\n}",
           "type": "json"
         }
       ]
@@ -7654,6 +9418,13 @@
             "optional": false,
             "field": "id",
             "description": "<p>User id of the the user to be verified.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "reason",
+            "description": "<p>Reason for the user to be rejected.</p>"
           }
         ]
       }
