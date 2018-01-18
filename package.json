@@ -48,7 +48,7 @@
     },
     "scripts": {
         "debug": "node debug app.js",
-        "start": "nodemon app.js"
+        "start": "node app.js"
     },
     "main": "app.js",
     "devDependencies": {},
