@@ -437,8 +437,8 @@ module.exports = {
      * `UserController.update()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {put} /api/v1/user Reject a user
-     * @apiName DeleteUser
+     * @api {put} /api/v1/user Update a user
+     * @apiName UpdateUser
      * @apiDescription This is where a user's info is updated.
      * @apiGroup User
      *

@@ -10,7 +10,7 @@ module.exports = function(req, res, next) {
 
     if (req.headers && req.headers.authorization) {
         token = req.headers.authorization;
-    } else if (req.param('token')) {
+    } else if (req.param('token')) { 
         token = req.param('token');
         // We delete the token from param to not mess with blueprints
         delete req.query.token;

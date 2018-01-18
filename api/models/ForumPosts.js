@@ -28,6 +28,10 @@ module.exports = {
     topic: {
       model: 'forumTopics',
       required: true
+    },
+    censored: {
+      type: 'boolean',
+      defaultsTo: false
     }
   }
 };

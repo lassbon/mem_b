@@ -52,10 +52,10 @@
     },
     "main": "app.js",
     "devDependencies": {},
-    "repository": {
-        "type": "git",
-        "url": "git+https://lemuelokoli@bitbucket.org/lemuelokoli/accimembership-api.git"
-    },
-    "license": "ISC",
-    "homepage": "https://bitbucket.org/lemuelokoli/accimembership-api#readme"
+    // "repository": {
+    //     "type": "git",
+    //     "url": "git+https://lemuelokoli@bitbucket.org/lemuelokoli/accimembership-api.git"
+    // },
+    // "license": "ISC",
+    // "homepage": "https://bitbucket.org/lemuelokoli/accimembership-api#readme"
 }

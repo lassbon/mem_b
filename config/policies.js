@@ -37,6 +37,7 @@ module.exports.policies = {
      ***************************************************************************/
 
     'UserController': { // We dont need authorization here, allowing public access
+        '*': ['isAdmin', 'isAuthenticated'],
         'create': true,
         'delete': ['isHigh', 'isAdmin']
     },

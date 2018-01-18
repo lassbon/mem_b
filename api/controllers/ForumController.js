@@ -70,6 +70,19 @@
  *     }
  */
 
+ /** 
+ * @apiDefine CensorActionNotProvidedError
+ *
+ * @apiError CensorActionNotProvided No action provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Not Found
+ *     {
+ *       "status": "error",
+ *       "err": "No action provided!"
+ *     }
+ */
+
 /**
  * @apiDefine CommentNotFoundError
  *
@@ -482,7 +495,7 @@ module.exports = {
      */
     getPost: function(req, res) {
         if (req.param('id')) {
-            ForumPosts.findOne({ id: req.param('id') }).populate('comments').exec(function(err, post) {
+            ForumPosts.findOne({ id: req.param('id'), censored: false }).populate('comments').exec(function(err, post) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -495,7 +508,7 @@ module.exports = {
                 }
             });
         } else {
-            ForumPosts.find().populate('comments').exec(function(err, posts) {
+            ForumPosts.find({censored: false }).populate('comments').exec(function(err, posts) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -504,6 +517,106 @@ module.exports = {
                 return res.json(200, posts);
             });
         }
+    },
+
+    /**
+     * `ForumController.getCensoredPost()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/forum/censore Get censored post(s)
+     * @apiName GetCensoredPost(s)
+     * @apiDescription This is where censored forum post(s) is retrieved
+     * @apiGroup Forum
+     *
+     * @apiSuccess {String} post Post response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       "........": ".................."
+     *     }
+     * 
+     * @apiUse PostNotFoundError
+     */
+    getCensoredPost: function(req, res) {
+        
+        ForumPosts.find({ censored: true }).exec(function(err, posts) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            return res.json(200, posts);
+        });
+    },
+
+    /**
+     * `ForumController.censorPost()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {put} /api/v1/forum/censor/:id/:action Censor a forum post
+     * @apiName CensorPost
+     * @apiDescription This is where a forum post is censored.
+     * @apiGroup Forum
+     *
+     * @apiParam {Number} id Post Id.
+     * @apiParam {String} action To censor forum post or not (expects a boolean).
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "Post with id 59dce9d56b54d91c38847825 has been updated'"
+     *     }
+     *
+     * @apiUse PostIdNotProvidedError
+     *
+     * @apiUse CensorActionNotProvidedError
+     * 
+     * @apiUse PostNotFoundError 
+     */
+    censorPost: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: "error", err: 'No Post id provided!' });
+        } 
+
+        if (!req.param('action')) {
+            return res.json(401, { status: "error", err: 'No action provided!' });
+        }
+
+        
+        ForumPosts.findOne({ select: 'censored', where: { id: req.param('id') } }).exec(function(err, post) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            if (!post) {
+                return res.json(404, { status: 'error', err: 'No Post with such id existing' });
+            } else {
+
+                var censored;
+
+                if(!req.param('action') == 'true'){
+                    censored = true;
+                }else{
+                    censored = false;
+                }
+
+                ForumPosts.update({ id: req.param('id') }, {censored: censored}).exec(function(err, data) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been updated' });
+                });
+            }
+        });
     },
 
     /**

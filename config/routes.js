@@ -253,6 +253,10 @@ module.exports.routes = {
     'GET /api/v1/forum/comment/:id': 'ForumController.getComment',
     'GET /api/v1/forum/comment': 'ForumController.getComment',
 
+    //Forum censor routes
+    'PUT /api/v1/forum/censor/:id/:action': 'ForumController.censorPost',
+    'GET /api/v1/forum/censor': 'ForumController.getCensoredPost',
+
     // Paystack routes
     'POST /api/v1/paystack': 'PaystackController.verify',
 
