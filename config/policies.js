@@ -42,6 +42,14 @@ module.exports.policies = {
         'delete': ['isHigh', 'isAdmin', 'isAuthenticated']
     },
 
+    'SocialController': { // We dont need authorization here, allowing public access
+        '*': ['isUser', 'isAuthenticated'],
+    },
+
+    'ForumController': { // We dont need authorization here, allowing public access
+        '*': ['isUser', 'isAuthenticated'],
+    },
+
     'AdminController': {
         '*': ['isAdmin', 'isAuthenticated'],
         'forgotPassword': true,
