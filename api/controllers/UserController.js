@@ -202,7 +202,7 @@ module.exports = {
      * `UserController.validateReferee()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {delete} /api/v1/validatereferee Validate a referee
+     * @api {post} /api/v1/validatereferee Validate a referee
      * @apiName ValidateReferee
      * @apiDescription This is where a referee is validated.
      * @apiGroup User
@@ -238,7 +238,7 @@ module.exports = {
      * `UserController.alertReferee()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {delete} /api/v1/alertreferee Alert a referee
+     * @api {post} /api/v1/alertreferee Alert a referee
      * @apiName AlertReferee
      * @apiDescription This is where a referee is alerted to confirm a new membership applicant.
      * @apiGroup User

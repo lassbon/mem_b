@@ -78,6 +78,9 @@ module.exports.routes = {
     'GET /api/v1/user': 'UserController.get',
     'GET /api/v1/usercount': 'UserController.getCount',
 
+    'POST /api/v1/alertreferee': 'UserController.alertReferee',
+    'POST /api/v1/validatereferee': 'UserController.validateReferee',
+
     /**
      * Projects routes
      */
