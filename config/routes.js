@@ -88,8 +88,10 @@ module.exports.routes = {
     'POST /api/v1/projects/upload': 'ProjectsController.uploadBanner',
     'PUT /api/v1/projects/:id': 'ProjectsController.update',
     'DELETE /api/v1/projects/:id': 'ProjectsController.delete',
+
     'GET /api/v1/projects/completed/:id': 'ProjectsController.getCompleted',
     'GET /api/v1/projects/completed': 'ProjectsController.getCompleted',
+
     'GET /api/v1/projects/ongoing/:id': 'ProjectsController.getOngoing',
     'GET /api/v1/projects/ongoing': 'ProjectsController.getOngoing',
 
@@ -112,8 +114,12 @@ module.exports.routes = {
     'POST /api/v1/events/upload': 'EventsController.uploadBanner',
     'PUT /api/v1/events/:id': 'EventsController.updateEvent',
     'DELETE /api/v1/events/:id': 'EventsController.deleteEvent',
-    'GET /api/v1/events/:id': 'EventsController.getEvent',
-    'GET /api/v1/events': 'EventsController.getEvent',
+    
+    'GET /api/v1/events/completed/:id': 'EventsController.getCompleted',
+    'GET /api/v1/events/completed': 'EventsController.getCompleted',
+
+    'GET /api/v1/events/ongoing/:id': 'EventsController.getOngoing',
+    'GET /api/v1/events/ongoing': 'EventsController.getOngoing',
 
     'GET /api/v1/myevents/:id': 'EventsController.myEvents',
 
@@ -277,6 +283,8 @@ module.exports.routes = {
     'GET /api/v1/userpayments/events/:id': 'UserPaymentsController.userEvents',
     'GET /api/v1/userpayments/trainings/:id': 'UserPaymentsController.userTrainings',
     'GET /api/v1/userpayments/memberships/:id': 'UserPaymentsController.userMemberships',
+
+    //'POST /api/v1/userpayments/memberships': 'UserPaymentsController.postuserMemberships',
 
     // Audit routes
     'GET /api/v1/audit': 'AuditController.get',

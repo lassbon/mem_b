@@ -215,4 +215,12 @@ module.exports = {
 			});
 		});
 	},
+
+	// postuserMemberships: function(req, res) {
+
+	// 	EventsPayments.create(req.body).exec(function(err, memberships) {
+	// 		//console.log(memberships);
+	// 		return res.json(200, memberships);
+	// 	});
+	// },
 }

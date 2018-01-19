@@ -2076,10 +2076,10 @@
   },
   {
     "type": "get",
-    "url": "/api/v1/event/:id",
+    "url": "/api/v1/events/completed/:id",
     "title": "Get event(s)",
-    "name": "GetEvent",
-    "description": "<p>This is where events are retrieved.</p>",
+    "name": "GetCompleted",
+    "description": "<p>This is where completed events are retrieved.</p>",
     "group": "Event",
     "parameter": {
       "fields": {
@@ -2195,6 +2195,69 @@
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/events/ongoing/:id",
+    "title": "Get event(s)",
+    "name": "GetOngoing",
+    "description": "<p>This is where ongoing events are retrieved.</p>",
+    "group": "Event",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "id",
+            "description": "<p>Event id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "event",
+            "description": "<p>Post response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/EventsController.js",
+    "groupTitle": "Event",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "EventNotFound",
+            "description": "<p>The Event was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Event with such id existing'\n}",
           "type": "json"
         }
       ]
@@ -4995,17 +5058,6 @@
   },
   {
     "type": "get",
-    "url": "/api/v1/payments/memberships",
-    "title": "Get registration payments",
-    "name": "Memberships",
-    "description": "<p>This is where registration payment records are obtained.</p>",
-    "group": "Payments",
-    "version": "0.0.0",
-    "filename": "api/controllers/PaymentsController.js",
-    "groupTitle": "Payments"
-  },
-  {
-    "type": "get",
     "url": "/api/v1/userpayments/memberships/:id",
     "title": "Get user membership payments",
     "name": "Memberships",
@@ -5049,10 +5101,32 @@
   },
   {
     "type": "get",
+    "url": "/api/v1/payments/memberships",
+    "title": "Get registration payments",
+    "name": "Memberships",
+    "description": "<p>This is where registration payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
     "url": "/api/v1/payments/registrations",
     "title": "Get registration payments",
     "name": "Registrations",
     "description": "<p>This is where registration payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/trainings",
+    "title": "Get event payments",
+    "name": "Trainings",
+    "description": "<p>This is where training payment records are obtained.</p>",
     "group": "Payments",
     "version": "0.0.0",
     "filename": "api/controllers/PaymentsController.js",
@@ -5100,17 +5174,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "get",
-    "url": "/api/v1/payments/trainings",
-    "title": "Get event payments",
-    "name": "Trainings",
-    "description": "<p>This is where training payment records are obtained.</p>",
-    "group": "Payments",
-    "version": "0.0.0",
-    "filename": "api/controllers/PaymentsController.js",
-    "groupTitle": "Payments"
   },
   {
     "type": "delete",

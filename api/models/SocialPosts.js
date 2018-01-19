@@ -21,8 +21,7 @@ module.exports = {
             required: true
         },
         likes: {
-            collection: 'socialPosts',
-            via: 'id'
+            type: 'array',
         },
         comments: {
             collection: 'socialComments',

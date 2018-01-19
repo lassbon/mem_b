@@ -328,12 +328,12 @@ module.exports = {
 
 
     /**
-     * `EventsController.getEvent()`
+     * `EventsController.getCompleted()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/event/:id Get event(s)
-     * @apiName GetEvent
-     * @apiDescription This is where events are retrieved.
+     * @api {get} /api/v1/events/completed/:id Get event(s)
+     * @apiName GetCompleted
+     * @apiDescription This is where completed events are retrieved.
      * @apiGroup Event
      *
      * @apiParam {Number} [id] Event id.
@@ -350,22 +350,71 @@ module.exports = {
      * 
      * @apiUse EventNotFoundError
      */
-    getEvent: function(req, res) {
+    getCompleted: function(req, res) {
         if (req.param('id')) {
-            Events.findOne({ id: req.param('id') }).exec(function(err, event) {
+            Events.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, event) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!event) {
-                    return res.json(404, { status: 'error', err: 'No Event with such id existing' })
+                    return res.json(404, { status: 'error', message: 'No event with such id existing' })
                 } else {
                     return res.json(200, event);
                 }
             });
         } else {
-            Events.find().exec(function(err, event) {
+            Events.find({status: 'completed' }).exec(function(err, event) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, event);
+            });
+        }
+    },
+
+    /**
+     * `EventsController.getOngoing()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/events/ongoing/:id Get event(s)
+     * @apiName GetOngoing
+     * @apiDescription This is where ongoing events are retrieved.
+     * @apiGroup Event
+     *
+     * @apiParam {Number} [id] Event id.
+     *
+     * @apiSuccess {String} event Post response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     * 
+     * @apiUse EventNotFoundError
+     */
+    getOngoing: function(req, res) {
+        if (req.param('id')) {
+            Events.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, event) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!event) {
+                    return res.json(404, { status: 'error', message: 'No event with such id existing' })
+                } else {
+                    return res.json(200, event);
+                }
+            });
+        } else {
+            Events.find({status: 'ongoing' }).exec(function(err, event) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });

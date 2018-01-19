@@ -775,7 +775,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Post id provided!' });
         } else {
-            SocialPosts.findOne({ select: 'postText', where: { id: req.param('id') } }).populate('likes').exec(function(err, post) {
+            SocialPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).exec(function(err, post) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -785,15 +785,12 @@ module.exports = {
                     return res.json(200, { status: 'error', message: 'No Post with such id existing' });
                 } else {
 
-                    post.likes.add(req.param('liker'));
-                    post.save(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
+                    var likes = post.likes ? post.likes : [];
+                    likes.push(req.param('liker'));
 
+                    SocialPosts.update({ id: req.param('id') }, {likes: likes}).exec(function(err, post) {
                         return res.json(200, { status: 'success', message: 'Post liked' });
-                    });
+                    })
                 }
             });
         }

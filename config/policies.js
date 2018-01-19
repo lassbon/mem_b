@@ -88,13 +88,14 @@ module.exports.policies = {
     'TrainingController': {
         '*': ['isAdmin', 'isLow', 'isAuthenticated'],
         'getTraining': ['isUser', 'isAuthenticated'],
-        'myTrainings': ['isUser', 'isAuthenticated']
+        'myTrainings': ['isUser', 'isAuthenticated'],
     },
 
     'EventsController': {
         '*': ['isAdmin', 'isLow', 'isAuthenticated'],
-        'getEvent': ['isUser', 'isAuthenticated'],
-        'myEvents': ['isUser', 'isAuthenticated']
+        'getCompleted': ['isUser', 'isAuthenticated'],
+        'getOngoing': ['isUser', 'isAuthenticated'],
+        'myEvents': ['isUser', 'isAuthenticated'],
     },
 
     'DonationController': {
