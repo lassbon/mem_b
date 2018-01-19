@@ -1244,94 +1244,6 @@
   },
   {
     "type": "post",
-    "url": "/api/v1/auth/admin",
-    "title": "Login a user",
-    "name": "Login",
-    "description": "<p>This is where a user is logged in, and a token generated and returned.</p>",
-    "group": "Auth",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "username",
-            "description": "<p>Username of the user.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "password",
-            "description": "<p>Password of the user.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "user",
-            "description": "<p>Details of the logged in user.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "token",
-            "description": "<p>Access token for accessing all parts of the plartform.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"user\": {},\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/AuthController.js",
-    "groupTitle": "Auth",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PasswordOrUsernameInvalid",
-            "description": "<p>Username or password invalid.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PasswordAndUsernameRequired",
-            "description": "<p>Username and password required.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'username or password invalid.'\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Username and password required.'\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "post",
     "url": "/api/v1/auth/user",
     "title": "Login a user",
     "name": "Login",
@@ -1413,6 +1325,94 @@
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email and password required.'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/auth/admin",
+    "title": "Login a user",
+    "name": "Login",
+    "description": "<p>This is where a user is logged in, and a token generated and returned.</p>",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Username of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password of the user.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Details of the logged in user.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Access token for accessing all parts of the plartform.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"user\": {},\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AuthController.js",
+    "groupTitle": "Auth",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordOrUsernameInvalid",
+            "description": "<p>Username or password invalid.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordAndUsernameRequired",
+            "description": "<p>Username and password required.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'username or password invalid.'\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Username and password required.'\n}",
           "type": "json"
         }
       ]
@@ -1592,69 +1592,6 @@
   },
   {
     "type": "get",
-    "url": "/api/v1/donation/:id",
-    "title": "Get donation(s)",
-    "name": "GetDonation",
-    "description": "<p>This is where donations are retrieved.</p>",
-    "group": "Donation",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": true,
-            "field": "id",
-            "description": "<p>Donation id.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "donation",
-            "description": "<p>Post response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/DonationController.js",
-    "groupTitle": "Donation",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "DonationNotFound",
-            "description": "<p>The Donation was not found.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Donation with such id existing'\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "get",
     "url": "/api/v1/mydonations/:id",
     "title": "Get donation(s)",
     "name": "GetDonation",
@@ -1711,6 +1648,69 @@
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/donation/:id",
+    "title": "Get donation(s)",
+    "name": "GetDonation",
+    "description": "<p>This is where donations are retrieved.</p>",
+    "group": "Donation",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "id",
+            "description": "<p>Donation id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "donation",
+            "description": "<p>Post response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/DonationController.js",
+    "groupTitle": "Donation",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "DonationNotFound",
+            "description": "<p>The Donation was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Donation with such id existing'\n}",
           "type": "json"
         }
       ]
@@ -2076,69 +2076,6 @@
   },
   {
     "type": "get",
-    "url": "/api/v1/myevents/:id",
-    "title": "Get event(s)",
-    "name": "GetEvent",
-    "description": "<p>This is where events are retrieved.</p>",
-    "group": "Event",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "id",
-            "description": "<p>User id.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "event",
-            "description": "<p>Post response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/EventsController.js",
-    "groupTitle": "Event",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "UserIdNotProvided",
-            "description": "<p>No User id provided.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "get",
     "url": "/api/v1/event/:id",
     "title": "Get event(s)",
     "name": "GetEvent",
@@ -2195,6 +2132,69 @@
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Event with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/myevents/:id",
+    "title": "Get event(s)",
+    "name": "GetEvent",
+    "description": "<p>This is where events are retrieved.</p>",
+    "group": "Event",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>User id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "event",
+            "description": "<p>Post response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/EventsController.js",
+    "groupTitle": "Event",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
           "type": "json"
         }
       ]
@@ -4954,7 +4954,7 @@
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Payment with such id existing'\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No payment matched your search term'\n}",
           "type": "json"
         }
       ]
@@ -5006,6 +5006,49 @@
   },
   {
     "type": "get",
+    "url": "/api/v1/userpayments/memberships/:id",
+    "title": "Get user membership payments",
+    "name": "Memberships",
+    "description": "<p>This is where user membership payment records are obtained.</p>",
+    "group": "Payments",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>user ID.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserPaymentsController.js",
+    "groupTitle": "Payments",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/api/v1/payments/registrations",
     "title": "Get registration payments",
     "name": "Registrations",
@@ -5014,6 +5057,49 @@
     "version": "0.0.0",
     "filename": "api/controllers/PaymentsController.js",
     "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/userpayments/trainings/:id",
+    "title": "Get event payments",
+    "name": "Trainings",
+    "description": "<p>This is where training payment records are obtained.</p>",
+    "group": "Payments",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>user ID.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserPaymentsController.js",
+    "groupTitle": "Payments",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
   },
   {
     "type": "get",
@@ -7488,69 +7574,6 @@
   },
   {
     "type": "get",
-    "url": "/api/v1/mytrainings/:id",
-    "title": "Get training(s)",
-    "name": "GetTraining",
-    "description": "<p>This is where trainings are retrieved.</p>",
-    "group": "Training",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "id",
-            "description": "<p>user id.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "training",
-            "description": "<p>Post response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/TrainingController.js",
-    "groupTitle": "Training",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "UserIdNotProvided",
-            "description": "<p>No User id provided.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "get",
     "url": "/api/v1/training/:id",
     "title": "Get training(s)",
     "name": "GetTraining",
@@ -7607,6 +7630,69 @@
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Training with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/mytrainings/:id",
+    "title": "Get training(s)",
+    "name": "GetTraining",
+    "description": "<p>This is where trainings are retrieved.</p>",
+    "group": "Training",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>user id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "training",
+            "description": "<p>Post response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/TrainingController.js",
+    "groupTitle": "Training",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
           "type": "json"
         }
       ]
@@ -8434,6 +8520,92 @@
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No User with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/userpayments/donations/:id",
+    "title": "Get user donation payments",
+    "name": "Donations",
+    "description": "<p>This is where user donation payment records are obtained.</p>",
+    "group": "UserPayments",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>user ID.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserPaymentsController.js",
+    "groupTitle": "UserPayments",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/userpayments/events/:id",
+    "title": "Get user event payments",
+    "name": "Events",
+    "description": "<p>This is where user event payment records are obtained.</p>",
+    "group": "UserPayments",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>user ID.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserPaymentsController.js",
+    "groupTitle": "UserPayments",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
           "type": "json"
         }
       ]
