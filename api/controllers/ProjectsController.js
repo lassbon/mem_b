@@ -187,16 +187,16 @@ module.exports = {
                 if (!project) {
                     return res.json(404, { status: 'error', err: 'No Project with such id existing' })
                 } else {
-                    Projects.update({ id: req.param('id'), status: 'completed' }).exec(function(err) {
+                    Projects.update({ id: req.param('id')}, {status: 'completed' }).exec(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
-                        if (project.banner) {
-                            var url = project.banner;
-                            azureBlob.delete('project', url.split('/').reverse()[0]);
-                        }
+                        // if (project.banner) {
+                        //     var url = project.banner;
+                        //     azureBlob.delete('project', url.split('/').reverse()[0]);
+                        // }
 
                         var who = jwToken.who(req.headers.authorization);
                         audit.log('project', who + ' deleted ' + project.title);

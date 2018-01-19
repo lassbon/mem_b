@@ -1244,94 +1244,6 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/api/v1/auth/user",
-    "title": "Login a user",
-    "name": "Login",
-    "description": "<p>This is where a user is logged in, and a token generated and returned.</p>",
-    "group": "Auth",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "email",
-            "description": "<p>Username of the user.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "password",
-            "description": "<p>Password of the user.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "user",
-            "description": "<p>Details of the logged in user.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "token",
-            "description": "<p>Access token for accessing all parts of the plartform.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"user\": {},\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/AuthController.js",
-    "groupTitle": "Auth",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PasswordOrEmailInvalid",
-            "description": "<p>Email or password invalid.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PasswordAndEmailRequired",
-            "description": "<p>Email and password required.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email or password invalid.'\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email and password required.'\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "post",
     "url": "/api/v1/auth/admin",
     "title": "Login a user",
     "name": "Login",
@@ -1413,6 +1325,94 @@ define({ "api": [
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Username and password required.'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/auth/user",
+    "title": "Login a user",
+    "name": "Login",
+    "description": "<p>This is where a user is logged in, and a token generated and returned.</p>",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Username of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password of the user.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Details of the logged in user.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Access token for accessing all parts of the plartform.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"user\": {},\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AuthController.js",
+    "groupTitle": "Auth",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordOrEmailInvalid",
+            "description": "<p>Email or password invalid.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordAndEmailRequired",
+            "description": "<p>Email and password required.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email or password invalid.'\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email and password required.'\n}",
           "type": "json"
         }
       ]
@@ -1592,6 +1592,69 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/api/v1/donation/completed/:id",
+    "title": "Get donation(s)",
+    "name": "GetCompleted",
+    "description": "<p>This is where completed donation are retrieved.</p>",
+    "group": "Donation",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "id",
+            "description": "<p>Donation id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "donation",
+            "description": "<p>Post response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/DonationController.js",
+    "groupTitle": "Donation",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "DonationNotFound",
+            "description": "<p>The Donation was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Donation with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/api/v1/mydonations/:id",
     "title": "Get donation(s)",
     "name": "GetDonation",
@@ -1655,10 +1718,10 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/donation/:id",
+    "url": "/api/v1/donation/ongoing/:id",
     "title": "Get donation(s)",
-    "name": "GetDonation",
-    "description": "<p>This is where donations are retrieved.</p>",
+    "name": "GetOngoing",
+    "description": "<p>This is where ongoing donation are retrieved.</p>",
     "group": "Donation",
     "parameter": {
       "fields": {
@@ -5058,6 +5121,17 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/api/v1/payments/memberships",
+    "title": "Get registration payments",
+    "name": "Memberships",
+    "description": "<p>This is where registration payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
     "url": "/api/v1/userpayments/memberships/:id",
     "title": "Get user membership payments",
     "name": "Memberships",
@@ -5098,17 +5172,6 @@ define({ "api": [
         }
       ]
     }
-  },
-  {
-    "type": "get",
-    "url": "/api/v1/payments/memberships",
-    "title": "Get registration payments",
-    "name": "Memberships",
-    "description": "<p>This is where registration payment records are obtained.</p>",
-    "group": "Payments",
-    "version": "0.0.0",
-    "filename": "api/controllers/PaymentsController.js",
-    "groupTitle": "Payments"
   },
   {
     "type": "get",
@@ -7637,10 +7700,10 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/training/:id",
+    "url": "/api/v1/training/completed/:id",
     "title": "Get training(s)",
-    "name": "GetTraining",
-    "description": "<p>This is where trainings are retrieved.</p>",
+    "name": "GetCompleted",
+    "description": "<p>This is where completed training are retrieved.</p>",
     "group": "Training",
     "parameter": {
       "fields": {
@@ -7648,7 +7711,70 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "Number",
+            "optional": true,
+            "field": "id",
+            "description": "<p>Training id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
             "optional": false,
+            "field": "training",
+            "description": "<p>Post response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/TrainingController.js",
+    "groupTitle": "Training",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "TrainingNotFound",
+            "description": "<p>The Training was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Training with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/training/ongoing/:id",
+    "title": "Get training(s)",
+    "name": "GetOngoing",
+    "description": "<p>This is where ongoing training are retrieved.</p>",
+    "group": "Training",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
             "field": "id",
             "description": "<p>Training id.</p>"
           }

@@ -238,16 +238,16 @@ module.exports = {
                 if (!event) {
                     return res.json(404, { status: 'error', err: 'No Event with such id existing' })
                 } else {
-                    Events.destroy({ id: req.param('id') }).exec(function(err) {
+                    Events.update({ id: req.param('id') }, {status: 'completed'}).exec(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
-                        if (event.banner) {
-                            var url = event.banner;
-                            azureBlob.delete('event', url.split('/').reverse()[0]);
-                        }
+                        // if (event.banner) {
+                        //     var url = event.banner;
+                        //     azureBlob.delete('event', url.split('/').reverse()[0]);
+                        // }
 
                         var who = jwToken.who(req.headers.authorization);
                         audit.log('event', who + ' deleted ' + event.title);

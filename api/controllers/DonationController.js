@@ -253,16 +253,16 @@ module.exports = {
                 if (!donation) {
                     return res.json(404, { status: 'error', message: 'No Donation with such id existing' })
                 } else {
-                    Donation.destroy({ id: req.param('id') }).exec(function(err) {
+                    Donation.update({ id: req.param('id') }, {status: 'completed'}).exec(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
-                        if (donation.banner) {
-                            var url = donation.banner;
-                            azureBlob.delete('donation', url.split('/').reverse()[0]);
-                        }
+                        // if (donation.banner) {
+                        //     var url = donation.banner;
+                        //     azureBlob.delete('donation', url.split('/').reverse()[0]);
+                        // }
 
                         var who = jwToken.who(req.headers.authorization);
                         audit.log('donation', who + ' deleted '+ donation.title + ' donation' );
@@ -341,12 +341,12 @@ module.exports = {
 
 
     /**
-     * `DonationController.getDonation()`
+     * `DonationController.getCompleted()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/donation/:id Get donation(s)
-     * @apiName GetDonation
-     * @apiDescription This is where donations are retrieved.
+     * @api {get} /api/v1/donation/completed/:id Get donation(s)
+     * @apiName GetCompleted
+     * @apiDescription This is where completed donation are retrieved.
      * @apiGroup Donation
      *
      * @apiParam {Number} [id] Donation id.
@@ -363,28 +363,77 @@ module.exports = {
      * 
      * @apiUse DonationNotFoundError
      */
-    getDonation: function(req, res) {
+    getCompleted: function(req, res) {
         if (req.param('id')) {
-            Donation.findOne({ id: req.param('id') }).exec(function(err, donation) {
+            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, donation) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!donation) {
-                    return res.json(404, { status: 'error', message: 'No Donation with such id existing' })
+                    return res.json(404, { status: 'error', message: 'No donation with such id existing' })
                 } else {
                     return res.json(200, donation);
                 }
             });
         } else {
-            Donation.find().exec(function(err, donations) {
+            Donation.find({status: 'completed' }).exec(function(err, donation) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                return res.json(200, donations);
+                return res.json(200, donation);
+            });
+        }
+    },
+
+    /**
+     * `DonationController.getOngoing()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/donation/ongoing/:id Get donation(s)
+     * @apiName GetOngoing
+     * @apiDescription This is where ongoing donation are retrieved.
+     * @apiGroup Donation
+     *
+     * @apiParam {Number} [id] Donation id.
+     *
+     * @apiSuccess {String} donation Post response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     * 
+     * @apiUse DonationNotFoundError
+     */
+    getOngoing: function(req, res) {
+        if (req.param('id')) {
+            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, donation) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!donation.id) {
+                    return res.json(404, { status: 'error', message: 'No donation.id with such id existing' })
+                } else {
+                    return res.json(200, donation);
+                }
+            });
+        } else {
+            Donation.find({status: 'ongoing' }).exec(function(err, donation) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, donation);
             });
         }
     },

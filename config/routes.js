@@ -102,8 +102,12 @@ module.exports.routes = {
     'POST /api/v1/training/upload': 'TrainingController.uploadBanner',
     'PUT /api/v1/training/:id': 'TrainingController.updateTraining',
     'DELETE /api/v1/training/:id': 'TrainingController.deleteTraining',
-    'GET /api/v1/training/:id': 'TrainingController.getTraining',
-    'GET /api/v1/training': 'TrainingController.getTraining',
+
+    'GET /api/v1/training/completed/:id': 'TrainingController.getCompleted',
+    'GET /api/v1/training/completed': 'TrainingController.getCompleted',
+
+    'GET /api/v1/training/ongoing/:id': 'TrainingController.getOngoing',
+    'GET /api/v1/training/ongoing': 'TrainingController.getOngoing',
 
     'GET /api/v1/mytrainings/:id': 'TrainingController.myTrainings',
 
@@ -114,7 +118,7 @@ module.exports.routes = {
     'POST /api/v1/events/upload': 'EventsController.uploadBanner',
     'PUT /api/v1/events/:id': 'EventsController.updateEvent',
     'DELETE /api/v1/events/:id': 'EventsController.deleteEvent',
-    
+
     'GET /api/v1/events/completed/:id': 'EventsController.getCompleted',
     'GET /api/v1/events/completed': 'EventsController.getCompleted',
 
@@ -140,8 +144,12 @@ module.exports.routes = {
     'POST /api/v1/donation/upload': 'DonationController.uploadBanner',
     'PUT /api/v1/donation/:id': 'DonationController.updateDonation',
     'DELETE /api/v1/donation/:id': 'DonationController.deleteDonation',
-    'GET /api/v1/donation/:id': 'DonationController.getDonation',
-    'GET /api/v1/donation': 'DonationController.getDonation',
+    
+    'GET /api/v1/donation/completed/:id': 'DonationController.getCompleted',
+    'GET /api/v1/donation/completed': 'DonationController.getCompleted',
+
+    'GET /api/v1/donation/ongoing/:id': 'DonationController.getOngoing',
+    'GET /api/v1/donation/ongoing': 'DonationController.getOngoing',
 
     'GET /api/v1/mydonations/:id': 'DonationController.myDonations',
 

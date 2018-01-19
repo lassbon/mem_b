@@ -238,16 +238,16 @@ module.exports = {
                 if (!training) {
                     return res.json(404, { status: 'error', err: 'No Training with such id existing' })
                 } else {
-                    Training.destroy({ id: req.param('id') }).exec(function(err) {
+                    Training.update({ id: req.param('id') }, {status: 'completed'}).exec(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
-                        if (training.banner) {
-                            var url = training.banner;
-                            azureBlob.delete('training', url.split('/').reverse()[0]);
-                        }
+                        // if (training.banner) {
+                        //     var url = training.banner;
+                        //     azureBlob.delete('training', url.split('/').reverse()[0]);
+                        // }
 
                         var who = jwToken.who(req.headers.authorization);
                         audit.log('training', who + ' deleted ' + training.title);
@@ -328,15 +328,15 @@ module.exports = {
 
 
     /**
-     * `TrainingController.getTraining()`
+     * `TrainingController.getCompleted()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/training/:id Get training(s)
-     * @apiName GetTraining
-     * @apiDescription This is where trainings are retrieved.
+     * @api {get} /api/v1/training/completed/:id Get training(s)
+     * @apiName GetCompleted
+     * @apiDescription This is where completed training are retrieved.
      * @apiGroup Training
      *
-     * @apiParam {Number} id Training id.
+     * @apiParam {Number} [id] Training id.
      *
      * @apiSuccess {String} training Post response from API.
      *
@@ -350,22 +350,71 @@ module.exports = {
      * 
      * @apiUse TrainingNotFoundError
      */
-    getTraining: function(req, res) {
+    getCompleted: function(req, res) {
         if (req.param('id')) {
-            Training.findOne({ id: req.param('id') }).exec(function(err, training) {
+            Training.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, training) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!training) {
-                    return res.json(404, { status: 'error', err: 'No Training with such id existing' })
+                    return res.json(404, { status: 'error', message: 'No training with such id existing' })
                 } else {
                     return res.json(200, training);
                 }
             });
         } else {
-            Training.find().exec(function(err, training) {
+            Training.find({status: 'completed' }).exec(function(err, training) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, training);
+            });
+        }
+    },
+
+    /**
+     * `TrainingController.getOngoing()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/training/ongoing/:id Get training(s)
+     * @apiName GetOngoing
+     * @apiDescription This is where ongoing training are retrieved.
+     * @apiGroup Training
+     *
+     * @apiParam {Number} [id] Training id.
+     *
+     * @apiSuccess {String} training Post response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     * 
+     * @apiUse TrainingNotFoundError
+     */
+    getOngoing: function(req, res) {
+        if (req.param('id')) {
+            Training.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, training) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!training.id) {
+                    return res.json(404, { status: 'error', message: 'No training with such id existing' })
+                } else {
+                    return res.json(200, training);
+                }
+            });
+        } else {
+            Training.find({status: 'ongoing' }).exec(function(err, training) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
