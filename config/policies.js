@@ -82,22 +82,34 @@ module.exports.policies = {
 
     'TrainingController': {
         '*': ['isAdmin', 'isLow', 'isAuthenticated'],
-        'get': ['isUser', 'isAuthenticated']
+        'getTraining': ['isUser', 'isAuthenticated'],
+        'myTrainings': ['isUser', 'isAuthenticated']
     },
 
     'EventsController': {
         '*': ['isAdmin', 'isLow', 'isAuthenticated'],
-        'get': ['isUser', 'isAuthenticated']
+        'getEvent': ['isUser', 'isAuthenticated'],
+        'myEvents': ['isUser', 'isAuthenticated']
     },
 
     'DonationController': {
         '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
-        'get': ['isUser', 'isAuthenticated']
-    },
+        'getDonation': ['isUser', 'isAuthenticated'],
+        'myDonations': ['isUser', 'isAuthenticated']
+    }, 
 
     'LevelsController': {
         '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
         'get': ['isUser', 'isAuthenticated'],
+    },
+
+    'AdvertController': {
+        '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        'get': ['isUser', 'isAuthenticated'],
+    },
+
+    'NotificationsController': {
+        '*': ['isUser', 'isAuthenticated'],
     },
 
     'KnowledgeBaseController': {
@@ -119,8 +131,8 @@ module.exports.policies = {
         '*': ['isAdmin', 'isLow', 'isAuthenticated'],
     },
 
-    'PaymentsController': {
-        '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
+    'AuditController': {
+        '*': ['isAdmin', 'isSuper', 'isAuthenticated'],
         //'*': true,
     },
 

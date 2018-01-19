@@ -310,7 +310,7 @@ module.exports = {
      * `AdminController.forgotPassword()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {put} /api/v1/admin/:id Forgot admin password
+     * @api {post} /api/v1/admin/reset Forgot admin password
      * @apiName Forgot
      * @apiDescription This is where an admin forgoten password is taken care of.
      * @apiGroup Admin
@@ -372,7 +372,7 @@ module.exports = {
      * `AdminController.changePassword()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {put} /api/v1/admin/change/:token Change admin password
+     * @api {put} /api/v1/admin/change Change admin password
      * @apiName Change
      * @apiDescription This is where an admin password is changed.
      * @apiGroup Admin

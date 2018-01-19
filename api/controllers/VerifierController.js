@@ -119,7 +119,7 @@ module.exports = {
    * `VerifierController.reject()`
    * 
    * ----------------------------------------------------------------------------------
-   * @api {delete} /api/v1/verifier Reject a user
+   * @api {delete} /api/v1/verifier/:id/:reason Reject a user
    * @apiName Verify
    * @apiDescription This is where a newly registered user is rejected instead of beign verified.
    * @apiGroup Verifier
@@ -204,7 +204,7 @@ module.exports = {
    * `VerifierController.get()`
    * 
    * ----------------------------------------------------------------------------------
-   * @api {get} /api/v1/social/verifier/:id Get unverified user(s)
+   * @api {get} /api/v1/verifier/:id Get unverified user(s)
    * @apiName Get
    * @apiDescription This is where unverified users are retrieved.
    * @apiGroup Verifier

@@ -86,6 +86,19 @@ var fs = require('fs');
  *     }
  */
 
+ /** 
+ * @apiDefine UserIdNotProvidedError
+ *
+ * @apiError UserIdNotProvided No User id provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Not Found
+ *     {
+ *       "status": "error",
+ *       "err": "No User id provided!"
+ *     }
+ */
+
 module.exports = {
 
 
@@ -146,7 +159,7 @@ module.exports = {
     },
 
     /**
-     * `TrainingController.uploadBanner()`
+     * `DonationController.uploadBanner()`
      * 
      * ----------------------------------------------------------------------------------
      * @api {post} /api/v1/donation/upload Upload a donation banner
@@ -377,132 +390,17 @@ module.exports = {
     },
 
     /**
-     * `DonationController.createPayment()`
+     * `DonationController.myDonations()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {post} /api/v1/donation/payment Pay for a donation
-     * @apiName CreatePayment
-     * @apiDescription This is where a donation payment is created.
+     * @api {get} /api/v1/mydonations/:id Get donation(s)
+     * @apiName GetDonation
+     * @apiDescription This is where a users donations are retrieved.
      * @apiGroup Donation
      *
-     * @apiParam {String} amount Amount to be paid for donation.
-     * @apiParam {String} donator User id of the donator.
-     * @apiParam {String} donation donation id of the donation beign paid for.
-     * @apiParam {String} [status] State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.
+     * @apiParam {Number} id User id.
      *
-     * @apiSuccess {String} status Status of the response from API.
-     * @apiSuccess {String} message  Success message response from API.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *       "status": "success",
-     *       "id": "59dce9d56b54d91c38847825"
-     *     }
-     * 
-     *
-     * @apiUse DonationIdNotProvidedError
-     * 
-     * @apiUse DonationNotFoundError
-     * 
-     * @apiUse PayerIdNotProvidedError
-     * 
-     * @apiUse AmountNotProvidedError
-     */
-    createPayment: function(req, res) {
-        if (!req.param('donator')) {
-            return res.json(401, { status: 'error', err: 'No donator id provided!' });
-        }
-
-        if (!req.param('donation')) {
-            return res.json(401, { status: 'error', err: 'No donation id provided!' });
-        }
-
-        if (!req.param('amount')) {
-            return res.json(401, { status: 'error', err: 'No donation amount provided!' });
-        }
-
-        DonationPayment.create(req.body).exec(function(err, donation) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-            // If donation is successful, we return donation id
-            if (donation) {
-                // NOTE: payload is { id: donation.id}
-                res.json(200, {
-                    status: 'success',
-                    id: donation.id
-                });
-            }
-        });
-    },
-
-    /**
-     * `DonationController.updatePayment()`
-     * 
-     * ----------------------------------------------------------------------------------
-     * @api {put} /api/v1/donation/payment/:id Update a donation payment
-     * @apiName UpdatePayment
-     * @apiDescription This is where a donation payment is updated.
-     * @apiGroup Donation
-     *
-     * @apiParam {String} id Id of the donation payment.
-     * @apiParam {String} status State/status of the donation payment. Must be any of 'pending', 'approved', 'denied'.
-     *
-     * @apiSuccess {String} status Status of the response from API.
-     * @apiSuccess {String} message  Success message response from API.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *       "status": "success",
-     *       "message": "Donation payment with id 59dce9d56b54d91c38847825 has been updated"
-     *     }
-     * 
-     *
-     * @apiUse PaymentIdNotProvidedError
-     * 
-     * @apiUse PaymentIdNotFoundError
-     */
-    updatePayment: function(req, res) {
-        if (!req.param('id')) {
-            return res.json(401, { status: 'error', err: 'No Payment id provided!' });
-        } else {
-            DonationPayments.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, payment) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!payment) {
-                    return res.json(404, { status: 'error', message: 'No Payment with such id existing' })
-                } else {
-                    DonationPayments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Payment with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
-        }
-    },
-
-    /**
-     * `DonationController.getPayment()`
-     * 
-     * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/donation/:id Get payment(s)
-     * @apiName GetPayment
-     * @apiDescription This is where donation payments are retrieved.
-     * @apiGroup Donation
-     *
-     * @apiParam {Number} [id] Payment id.
-     *
-     * @apiSuccess {String} payment Payment response from API.
+     * @apiSuccess {String} donation Post response from API.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -512,64 +410,20 @@ module.exports = {
      *        .................................
      *     }
      * 
-     * @apiUse PaymentIdNotFoundError
+     * @apiUse UserIdNotProvidedError
      */
-    getPayment: function(req, res) {
-        if (req.param('id')) {
-            DonationPayments.findOne({ id: req.param('id') }).exec(function(err, payment) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!payment) {
-                    return res.json(404, { status: 'error', message: 'No payment with such id existing' })
-                } else {
-                    return res.json(200, payment);
-                }
-            });
-        } else {
-            DonationPayments.find().exec(function(err, payments) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, payments);
-            });
+    myDonations: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No user id provided!' });
         }
-    },
 
-    /**
-     * `PaymentsController.getExcel()`
-     * 
-     * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/payments/:id Get Payment Excel document
-     * @apiName GetExcel
-     * @apiDescription This is payment records are obtained in excel format.
-     * @apiGroup Payments
-     */
-    getExcel: function(req, res) {
-
-        DonationPayments.find().exec(function(err, payments) {
+        DonationPayments.find({donator: req.param('id')}).exec(function(err, donations) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
-            //return res.json(200, payments);
-
-            var xls = json2xls(payments);
-            //console.log(payments);
-            fs.writeFile('assets/tmp/payments.xlsx', xls, function(err) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                return res.attachment('assets/tmp/payments.xlsx');
-            });
-
+            return res.json(200, donations);
         });
     }
 };

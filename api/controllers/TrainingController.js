@@ -70,6 +70,19 @@
  *     }
  */
 
+/** 
+ * @apiDefine UserIdNotProvidedError
+ *
+ * @apiError UserIdNotProvided No User id provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Not Found
+ *     {
+ *       "status": "error",
+ *       "err": "No User id provided!"
+ *     }
+ */
+
 module.exports = {
 
 
@@ -364,133 +377,17 @@ module.exports = {
     },
 
     /**
-     * `TrainingController.createPayment()`
+     * `TrainingController.myTrainings()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {post} /api/v1/training/payment Pay for a training
-     * @apiName CreatePayment
-     * @apiDescription This is where a training payment is created.
+     * @api {get} /api/v1/mytrainings/:id Get training(s)
+     * @apiName GetTraining
+     * @apiDescription This is where trainings are retrieved.
      * @apiGroup Training
      *
-     * @apiParam {String} amount Amount to be paid for training.
-     * @apiParam {String} payer User id of the payer.
-     * @apiParam {String} training Training id of the training beign paid for.
-     * @apiParam {String} [status] State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.
+     * @apiParam {Number} id user id.
      *
-     * @apiSuccess {String} status Status of the response from API.
-     * @apiSuccess {String} message  Success message response from API.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *       "status": "success",
-     *       "id": "59dce9d56b54d91c38847825"
-     *     }
-     * 
-     *
-     * @apiUse TrainingIdNotProvidedError
-     * 
-     * @apiUse TrainingNotFoundError
-     * 
-     * @apiUse PayerIdNotProvidedError
-     * 
-     * @apiUse AmountNotProvidedError
-     */
-    createPayment: function(req, res) {
-        if (!req.param('payer')) {
-            return res.json(401, { status: 'error', err: 'No Payer id provided!' });
-        }
-
-        if (!req.param('training')) {
-            return res.json(401, { status: 'error', err: 'No Training id provided!' });
-        }
-
-        if (!req.param('amount')) {
-            return res.json(401, { status: 'error', err: 'No Training fee provided!' });
-        }
-
-        TrainingPayment.create(req.body).exec(function(err, payment) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-            // If trainig is created successfuly we return payment id
-            if (payment) {
-                // NOTE: payload is { id: payment.id}
-                res.json(200, {
-                    status: 'success',
-                    id: payment.id
-                });
-            }
-        });
-    },
-
-
-    /**
-     * `TrainingController.updatePayment()`
-     * 
-     * ----------------------------------------------------------------------------------
-     * @api {put} /api/v1/training/payment/:id Update a payment
-     * @apiName UpdatePayment
-     * @apiDescription This is where a payment is updated.
-     * @apiGroup Training
-     *
-     * @apiParam {String} id Id of the payment.
-     * @apiParam {String} status State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.
-     *
-     * @apiSuccess {String} status Status of the response from API.
-     * @apiSuccess {String} message  Success message response from API.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *       "status": "success",
-     *       "message": "Payment with id 59dce9d56b54d91c38847825 has been updated'"
-     *     }
-     * 
-     *
-     * @apiUse PaymentIdNotProvidedError
-     * 
-     * @apiUse PaymentIdNotFoundError
-     */
-    updatePayment: function(req, res) {
-        if (!req.param('id')) {
-            return res.json(401, { status: 'error', err: 'No Payment id provided!' });
-        } else {
-            TrainingPayments.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, training) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!training) {
-                    return res.json(404, { status: 'error', err: 'No Payment with such id existing' })
-                } else {
-                    TrainingPayments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Payment with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
-        }
-    },
-
-    /**
-     * `TrainingController.getPayment()`
-     * 
-     * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/training/:id Get payment(s)
-     * @apiName GetPayment
-     * @apiDescription This is where payments are retrieved.
-     * @apiGroup Training
-     *
-     * @apiParam {Number} id Payment id.
-     *
-     * @apiSuccess {String} payment Payment response from API.
+     * @apiSuccess {String} training Post response from API.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -500,33 +397,20 @@ module.exports = {
      *        .................................
      *     }
      * 
-     * @apiUse PaymentIdNotFoundError
+     * @apiUse UserIdNotProvidedError
      */
-    getPayment: function(req, res) {
-        if (req.param('id')) {
-            TrainingPayments.findOne({ id: req.param('id') }).exec(function(err, payment) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!payment) {
-                    return res.json(404, { status: 'error', err: 'No Trainig with such id existing' })
-                } else {
-                    return res.json(200, payment);
-                }
-            });
-        } else {
-            TrainingPayments.find().exec(function(err, payments) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, payments);
-            });
+    myTrainings: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No user id provided!' });
         }
-    }
 
-    //TODO: Build in an API function to deletepayments if needed.
+        TrainingPayments.find({payer: req.param('id')}).exec(function(err, trainings) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            return res.json(200, trainings);
+        });
+    }
 };

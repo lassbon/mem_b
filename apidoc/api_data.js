@@ -1,7 +1,7 @@
 define({ "api": [
   {
     "type": "put",
-    "url": "/api/v1/admin/change/:token",
+    "url": "/api/v1/admin/change",
     "title": "Change admin password",
     "name": "Change",
     "description": "<p>This is where an admin password is changed.</p>",
@@ -277,8 +277,8 @@ define({ "api": [
     }
   },
   {
-    "type": "put",
-    "url": "/api/v1/admin/:id",
+    "type": "post",
+    "url": "/api/v1/admin/reset",
     "title": "Forgot admin password",
     "name": "Forgot",
     "description": "<p>This is where an admin forgoten password is taken care of.</p>",
@@ -1244,94 +1244,6 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/api/v1/auth/admin",
-    "title": "Login a user",
-    "name": "Login",
-    "description": "<p>This is where a user is logged in, and a token generated and returned.</p>",
-    "group": "Auth",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "username",
-            "description": "<p>Username of the user.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "password",
-            "description": "<p>Password of the user.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "user",
-            "description": "<p>Details of the logged in user.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "token",
-            "description": "<p>Access token for accessing all parts of the plartform.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"user\": {},\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/AuthController.js",
-    "groupTitle": "Auth",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PasswordOrUsernameInvalid",
-            "description": "<p>Username or password invalid.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PasswordAndUsernameRequired",
-            "description": "<p>Username and password required.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'username or password invalid.'\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Username and password required.'\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "post",
     "url": "/api/v1/auth/user",
     "title": "Login a user",
     "name": "Login",
@@ -1413,6 +1325,94 @@ define({ "api": [
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email and password required.'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/auth/admin",
+    "title": "Login a user",
+    "name": "Login",
+    "description": "<p>This is where a user is logged in, and a token generated and returned.</p>",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Username of the user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password of the user.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Details of the logged in user.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Access token for accessing all parts of the plartform.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"user\": {},\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AuthController.js",
+    "groupTitle": "Auth",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordOrUsernameInvalid",
+            "description": "<p>Username or password invalid.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordAndUsernameRequired",
+            "description": "<p>Username and password required.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'username or password invalid.'\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Username and password required.'\n}",
           "type": "json"
         }
       ]
@@ -1508,130 +1508,6 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "api/controllers/DonationController.js",
     "groupTitle": "Donation"
-  },
-  {
-    "type": "post",
-    "url": "/api/v1/donation/payment",
-    "title": "Pay for a donation",
-    "name": "CreatePayment",
-    "description": "<p>This is where a donation payment is created.</p>",
-    "group": "Donation",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "amount",
-            "description": "<p>Amount to be paid for donation.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "donator",
-            "description": "<p>User id of the donator.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "donation",
-            "description": "<p>donation id of the donation beign paid for.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "status",
-            "description": "<p>State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "status",
-            "description": "<p>Status of the response from API.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Success message response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"id\": \"59dce9d56b54d91c38847825\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/DonationController.js",
-    "groupTitle": "Donation",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "DonationIdNotProvided",
-            "description": "<p>No Donation id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "DonationNotFound",
-            "description": "<p>The Donation was not found.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PayerIdNotProvided",
-            "description": "<p>No Payer id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "AmountNotProvided",
-            "description": "<p>No Amount provided.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Donation id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Donation with such id existing'\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Payer id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Amount provided!\"\n}",
-          "type": "json"
-        }
-      ]
-    }
   },
   {
     "type": "delete",
@@ -1779,10 +1655,10 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/donation/:id",
-    "title": "Get payment(s)",
-    "name": "GetPayment",
-    "description": "<p>This is where donation payments are retrieved.</p>",
+    "url": "/api/v1/mydonations/:id",
+    "title": "Get donation(s)",
+    "name": "GetDonation",
+    "description": "<p>This is where a users donations are retrieved.</p>",
     "group": "Donation",
     "parameter": {
       "fields": {
@@ -1790,9 +1666,9 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "Number",
-            "optional": true,
+            "optional": false,
             "field": "id",
-            "description": "<p>Payment id.</p>"
+            "description": "<p>User id.</p>"
           }
         ]
       }
@@ -1804,8 +1680,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "payment",
-            "description": "<p>Payment response from API.</p>"
+            "field": "donation",
+            "description": "<p>Post response from API.</p>"
           }
         ]
       },
@@ -1826,15 +1702,15 @@ define({ "api": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "PaymentNotFound",
-            "description": "<p>The Payment was not found.</p>"
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Payment with such id existing'\n}",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
           "type": "json"
         }
       ]
@@ -1937,94 +1813,6 @@ define({ "api": [
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Donation with such id existing'\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "put",
-    "url": "/api/v1/donation/payment/:id",
-    "title": "Update a donation payment",
-    "name": "UpdatePayment",
-    "description": "<p>This is where a donation payment is updated.</p>",
-    "group": "Donation",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Id of the donation payment.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "status",
-            "description": "<p>State/status of the donation payment. Must be any of 'pending', 'approved', 'denied'.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "status",
-            "description": "<p>Status of the response from API.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Success message response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Donation payment with id 59dce9d56b54d91c38847825 has been updated\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/DonationController.js",
-    "groupTitle": "Donation",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PaymentIdNotProvided",
-            "description": "<p>No Payment id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PaymentNotFound",
-            "description": "<p>The Payment was not found.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Payment id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Payment with such id existing'\n}",
           "type": "json"
         }
       ]
@@ -2206,130 +1994,6 @@ define({ "api": [
     "groupTitle": "Event"
   },
   {
-    "type": "post",
-    "url": "/api/v1/event/payment",
-    "title": "Pay for an event",
-    "name": "CreatePayment",
-    "description": "<p>This is where an event payment is created.</p>",
-    "group": "Event",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "amount",
-            "description": "<p>Amount to be paid for event.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "payer",
-            "description": "<p>User id of the payer.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "event",
-            "description": "<p>Event id of the training beign paid for.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "status",
-            "description": "<p>State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "status",
-            "description": "<p>Status of the response from API.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Success message response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"id\": \"59dce9d56b54d91c38847825\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/EventsController.js",
-    "groupTitle": "Event",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "EventIdNotProvided",
-            "description": "<p>No Event id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "EventNotFound",
-            "description": "<p>The Event was not found.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PayerIdNotProvided",
-            "description": "<p>No Payer id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "AmountNotProvided",
-            "description": "<p>No Amount provided.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Event id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Event with such id existing'\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Payer id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Amount provided!\"\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
     "type": "delete",
     "url": "/api/v1/event/:id",
     "title": "Delete a event",
@@ -2475,10 +2139,10 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/event/:id",
-    "title": "Get payment(s)",
-    "name": "GetPayment",
-    "description": "<p>This is where payments are retrieved.</p>",
+    "url": "/api/v1/myevents/:id",
+    "title": "Get event(s)",
+    "name": "GetEvent",
+    "description": "<p>This is where events are retrieved.</p>",
     "group": "Event",
     "parameter": {
       "fields": {
@@ -2486,9 +2150,9 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "Number",
-            "optional": true,
+            "optional": false,
             "field": "id",
-            "description": "<p>Payment id.</p>"
+            "description": "<p>User id.</p>"
           }
         ]
       }
@@ -2500,8 +2164,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "payment",
-            "description": "<p>Payment response from API.</p>"
+            "field": "event",
+            "description": "<p>Post response from API.</p>"
           }
         ]
       },
@@ -2522,15 +2186,15 @@ define({ "api": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "PaymentNotFound",
-            "description": "<p>The Payment was not found.</p>"
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Payment with such id existing'\n}",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
           "type": "json"
         }
       ]
@@ -2647,94 +2311,6 @@ define({ "api": [
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Event with such id existing'\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "put",
-    "url": "/api/v1/event/payment/:id",
-    "title": "Update a payment",
-    "name": "UpdatePayment",
-    "description": "<p>This is where a payment is updated.</p>",
-    "group": "Event",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Id of the payment.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "status",
-            "description": "<p>State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "status",
-            "description": "<p>Status of the response from API.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Success message response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Payment with id 59dce9d56b54d91c38847825 has been updated'\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/EventsController.js",
-    "groupTitle": "Event",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PaymentIdNotProvided",
-            "description": "<p>No Payment id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PaymentNotFound",
-            "description": "<p>The Payment was not found.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Payment id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Payment with such id existing'\n}",
           "type": "json"
         }
       ]
@@ -5291,17 +4867,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/payments/:id",
-    "title": "Get Payment Excel document",
-    "name": "GetExcel",
-    "description": "<p>This is payment records are obtained in excel format.</p>",
-    "group": "Payments",
-    "version": "0.0.0",
-    "filename": "api/controllers/DonationController.js",
-    "groupTitle": "Payments"
-  },
-  {
-    "type": "get",
     "url": "/api/v1/payments/membership/excel",
     "title": "Get membership payment Excel document",
     "name": "GetMembershipExcel",
@@ -7674,130 +7239,6 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/api/v1/training/payment",
-    "title": "Pay for a training",
-    "name": "CreatePayment",
-    "description": "<p>This is where a training payment is created.</p>",
-    "group": "Training",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "amount",
-            "description": "<p>Amount to be paid for training.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "payer",
-            "description": "<p>User id of the payer.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "training",
-            "description": "<p>Training id of the training beign paid for.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "status",
-            "description": "<p>State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "status",
-            "description": "<p>Status of the response from API.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Success message response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"id\": \"59dce9d56b54d91c38847825\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/TrainingController.js",
-    "groupTitle": "Training",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "TrainingIdNotProvided",
-            "description": "<p>No Training id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "TrainingNotFound",
-            "description": "<p>The Training was not found.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PayerIdNotProvided",
-            "description": "<p>No Payer id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "AmountNotProvided",
-            "description": "<p>No Amount provided.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Training id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Training with such id existing'\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Payer id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Amount provided!\"\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "post",
     "url": "/api/v1/training",
     "title": "Create a new training",
     "name": "CreateTraining",
@@ -7984,10 +7425,10 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/training/:id",
-    "title": "Get payment(s)",
-    "name": "GetPayment",
-    "description": "<p>This is where payments are retrieved.</p>",
+    "url": "/api/v1/mytrainings/:id",
+    "title": "Get training(s)",
+    "name": "GetTraining",
+    "description": "<p>This is where trainings are retrieved.</p>",
     "group": "Training",
     "parameter": {
       "fields": {
@@ -7997,7 +7438,7 @@ define({ "api": [
             "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>Payment id.</p>"
+            "description": "<p>user id.</p>"
           }
         ]
       }
@@ -8009,8 +7450,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "payment",
-            "description": "<p>Payment response from API.</p>"
+            "field": "training",
+            "description": "<p>Post response from API.</p>"
           }
         ]
       },
@@ -8031,15 +7472,15 @@ define({ "api": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "PaymentNotFound",
-            "description": "<p>The Payment was not found.</p>"
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Payment with such id existing'\n}",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
           "type": "json"
         }
       ]
@@ -8103,94 +7544,6 @@ define({ "api": [
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Training with such id existing'\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "put",
-    "url": "/api/v1/training/payment/:id",
-    "title": "Update a payment",
-    "name": "UpdatePayment",
-    "description": "<p>This is where a payment is updated.</p>",
-    "group": "Training",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Id of the payment.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "status",
-            "description": "<p>State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "status",
-            "description": "<p>Status of the response from API.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Success message response from API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Payment with id 59dce9d56b54d91c38847825 has been updated'\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/TrainingController.js",
-    "groupTitle": "Training",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PaymentIdNotProvided",
-            "description": "<p>No Payment id provided.</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PaymentNotFound",
-            "description": "<p>The Payment was not found.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Payment id provided!\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Payment with such id existing'\n}",
           "type": "json"
         }
       ]
@@ -9409,7 +8762,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/social/verifier/:id",
+    "url": "/api/v1/verifier/:id",
     "title": "Get unverified user(s)",
     "name": "Get",
     "description": "<p>This is where unverified users are retrieved.</p>",
@@ -9553,7 +8906,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/api/v1/verifier",
+    "url": "/api/v1/verifier/:id/:reason",
     "title": "Reject a user",
     "name": "Verify",
     "description": "<p>This is where a newly registered user is rejected instead of beign verified.</p>",

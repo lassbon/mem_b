@@ -70,6 +70,19 @@
  *     }
  */
 
+  /** 
+ * @apiDefine UserIdNotProvidedError
+ *
+ * @apiError UserIdNotProvided No User id provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Not Found
+ *     {
+ *       "status": "error",
+ *       "err": "No User id provided!"
+ *     }
+ */
+
 module.exports = {
 
 
@@ -364,133 +377,17 @@ module.exports = {
     },
 
     /**
-     * `EventsController.createPayment()`
+     * `EventsController.myEvents()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {post} /api/v1/event/payment Pay for an event
-     * @apiName CreatePayment
-     * @apiDescription This is where an event payment is created.
+     * @api {get} /api/v1/myevents/:id Get event(s)
+     * @apiName GetEvent
+     * @apiDescription This is where events are retrieved.
      * @apiGroup Event
      *
-     * @apiParam {String} amount Amount to be paid for event.
-     * @apiParam {String} payer User id of the payer.
-     * @apiParam {String} event Event id of the training beign paid for.
-     * @apiParam {String} [status] State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.
+     * @apiParam {Number} id User id.
      *
-     * @apiSuccess {String} status Status of the response from API.
-     * @apiSuccess {String} message  Success message response from API.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *       "status": "success",
-     *       "id": "59dce9d56b54d91c38847825"
-     *     }
-     * 
-     *
-     * @apiUse EventIdNotProvidedError
-     * 
-     * @apiUse EventNotFoundError
-     * 
-     * @apiUse PayerIdNotProvidedError
-     * 
-     * @apiUse AmountNotProvidedError
-     */
-    createPayment: function(req, res) {
-        if (!req.param('payer')) {
-            return res.json(401, { status: 'error', err: 'No Payer id provided!' });
-        }
-
-        if (!req.param('event')) {
-            return res.json(401, { status: 'error', err: 'No Event id provided!' });
-        }
-
-        if (!req.param('amount')) {
-            return res.json(401, { status: 'error', err: 'No Event fee provided!' });
-        }
-
-        EventsPayment.create(req.body).exec(function(err, payment) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-            // If event is created successfuly we return payment id
-            if (payment) {
-                // NOTE: payload is { id: payment.id}
-                res.json(200, {
-                    status: 'success',
-                    id: payment.id
-                });
-            }
-        });
-    },
-
-
-    /**
-     * `EventsController.updatePayment()`
-     * 
-     * ----------------------------------------------------------------------------------
-     * @api {put} /api/v1/event/payment/:id Update a payment
-     * @apiName UpdatePayment
-     * @apiDescription This is where a payment is updated.
-     * @apiGroup Event
-     *
-     * @apiParam {String} id Id of the payment.
-     * @apiParam {String} [status] State/status of the payment. Must be any of 'pending', 'approved', 'denied', 'free'.
-     *
-     * @apiSuccess {String} status Status of the response from API.
-     * @apiSuccess {String} message  Success message response from API.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *       "status": "success",
-     *       "message": "Payment with id 59dce9d56b54d91c38847825 has been updated'"
-     *     }
-     * 
-     *
-     * @apiUse PaymentIdNotProvidedError
-     * 
-     * @apiUse PaymentIdNotFoundError
-     */
-    updatePayment: function(req, res) {
-        if (!req.param('id')) {
-            return res.json(401, { status: 'error', err: 'No Payment id provided!' });
-        } else {
-            EventsPayments.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, event) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!event) {
-                    return res.json(404, { status: 'error', err: 'No Payment with such id existing' })
-                } else {
-                    EventsPayments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Payment with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
-        }
-    },
-
-    /**
-     * `EventsController.getPayment()`
-     * 
-     * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/event/:id Get payment(s)
-     * @apiName GetPayment
-     * @apiDescription This is where payments are retrieved.
-     * @apiGroup Event
-     *
-     * @apiParam {Number} [id] Payment id.
-     *
-     * @apiSuccess {String} payment Payment response from API.
+     * @apiSuccess {String} event Post response from API.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -500,33 +397,20 @@ module.exports = {
      *        .................................
      *     }
      * 
-     * @apiUse PaymentIdNotFoundError
+     * @apiUse UserIdNotProvidedError
      */
-    getPayment: function(req, res) {
-        if (req.param('id')) {
-            EventsPayments.findOne({ id: req.param('id') }).exec(function(err, payment) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!payment) {
-                    return res.json(404, { status: 'error', err: 'No Event with such id existing' })
-                } else {
-                    return res.json(200, payment);
-                }
-            });
-        } else {
-            EventsPayments.find().exec(function(err, payments) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, payments);
-            });
+    myEvents: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No user id provided!' });
         }
-    }
 
-    //TODO: Build in an API function to deletepayments if needed.
+        EventPayments.find({payer: req.param('id')}).exec(function(err, events) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            return res.json(200, events);
+        });
+    }
 };

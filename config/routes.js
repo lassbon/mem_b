@@ -101,11 +101,8 @@ module.exports.routes = {
     'GET /api/v1/training/:id': 'TrainingController.getTraining',
     'GET /api/v1/training': 'TrainingController.getTraining',
 
-    'POST /api/v1/training/payment': 'TrainingController.createPayment',
-    'PUT /api/v1/training/payment/:id': 'TrainingController.updatePayment',
-    'GET /api/v1/training/payment/:id': 'TrainingController.getPayment',
-    'GET /api/v1/training/payment': 'TrainingController.getPayment',
-
+    'GET /api/v1/mytrainings/:id': 'TrainingController.myTrainings',
+    
     /**
      * Event routes
      */
@@ -116,10 +113,7 @@ module.exports.routes = {
     'GET /api/v1/events/:id': 'EventsController.getEvent',
     'GET /api/v1/events': 'EventsController.getEvent',
 
-    'POST /api/v1/events/payment': 'EventsController.createPayment',
-    'PUT /api/v1/events/payment/:id': 'EventsController.updatePayment',
-    'GET /api/v1/events/payment/:id': 'EventsController.getPayment',
-    'GET /api/v1/events/payment': 'EventsController.getPayment',
+    'GET /api/v1/myevents/:id': 'EventsController.myEvents',
 
     /**
      * Advert routes
@@ -141,10 +135,7 @@ module.exports.routes = {
     'GET /api/v1/donation/:id': 'DonationController.getDonation',
     'GET /api/v1/donation': 'DonationController.getDonation',
 
-    'POST /api/v1/donation/payment': 'DonationController.createPayment',
-    'PUT /api/v1/donation/payment/:id': 'DonationController.updatePayment',
-    'GET /api/v1/donation/payment/:id': 'DonationController.getPayment',
-    'GET /api/v1/donation-payment': 'DonationController.getPayment',
+    'GET /api/v1/mydonations/:id': 'DonationController.myDonations',
 
     /**
      * Levels routes
