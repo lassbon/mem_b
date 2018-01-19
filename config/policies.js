@@ -43,7 +43,7 @@ module.exports.policies = {
     },
 
     'UserPaymentsController': {
-        '*': ['isUser', 'isAuthenticated']
+        '*': ['isUser', 'isAuthenticated'],
     },
 
     'SocialController': { // We dont need authorization here, allowing public access

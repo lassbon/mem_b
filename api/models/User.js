@@ -198,7 +198,7 @@ module.exports = {
         },
         regState: {
             type: 'integer',
-            defaultsTo: 0;
+            defaultsTo: 0
         }
     },
 
