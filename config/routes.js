@@ -273,10 +273,10 @@ module.exports.routes = {
     'POST /api/v1/payments/membership/excel': 'PaymentsController.getMembershipExcel',
 
     // User payments routes
-    'GET /api/v1/userpayments/donations/:id': 'UserPaymentsController.donations',
-    'GET /api/v1/userpayments/events/:id': 'UserPaymentsController.events',
-    'GET /api/v1/userpayments/trainings/:id': 'UserPaymentsController.trainings',
-    'GET /api/v1/userpayments/memberships/:id': 'UserPaymentsController.memberships',
+    'GET /api/v1/userpayments/donations/:id': 'UserPaymentsController.userDonations',
+    'GET /api/v1/userpayments/events/:id': 'UserPaymentsController.userEvents',
+    'GET /api/v1/userpayments/trainings/:id': 'UserPaymentsController.userTrainings',
+    'GET /api/v1/userpayments/memberships/:id': 'UserPaymentsController.userMemberships',
 
     // Audit routes
     'GET /api/v1/audit': 'AuditController.get',
