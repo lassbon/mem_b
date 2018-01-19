@@ -195,6 +195,10 @@ module.exports = {
         donationPayments: {
             collection: 'donationPayments',
             via: 'donator'
+        },
+        regState: {
+            type: ,
+            defaultsTo: 0;
         }
     },
 

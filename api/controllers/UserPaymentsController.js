@@ -47,7 +47,7 @@ module.exports = {
 	 * @apiUse UserIdNotProvidedError
 	 */
 	userDonations: function(req, res) {
-		if (req.param('id')) {
+		if (!req.param('id')) {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
@@ -93,7 +93,7 @@ module.exports = {
 	 */
 	userEvents: function(req, res) {
 
-		if (req.param('id')) {
+		if (!req.param('id')) {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
@@ -139,7 +139,7 @@ module.exports = {
      */
 	userTrainings: function(req, res) {
 
-		if (req.param('id')) {
+		if (!req.param('id')) {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
@@ -185,7 +185,7 @@ module.exports = {
      */
 	userMemberships: function(req, res) {
 
-		if (req.param('id')) {
+		if (!req.param('id')) {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
