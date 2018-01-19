@@ -72,7 +72,11 @@ module.exports = {
         if (!user) {
           return res.json(404, { status: 'error', err: 'No User with such id existing' });
         } else {
-          User.update({ id: req.param('id') }, { approved: true }).exec(function(err, data) {
+
+          // create and associate memebership id to the new user
+          var membershipId = utility.membershipId();
+
+          User.update({ id: req.param('id') }, { approved: true, membershipStatus:'active', membershipId: membershipId }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
               return res.json(err.status, { err: err });

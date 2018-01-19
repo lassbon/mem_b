@@ -25,6 +25,10 @@ module.exports = {
         date: {
             type: 'string'
         },
+        status: {
+            type: 'string',
+            defaultsTo: 'ongoing'
+        },
         venue: {
             type: 'text'
         }

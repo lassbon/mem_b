@@ -187,7 +187,7 @@ module.exports = {
                 if (!project) {
                     return res.json(404, { status: 'error', err: 'No Project with such id existing' })
                 } else {
-                    Projects.destroy({ id: req.param('id') }).exec(function(err) {
+                    Projects.update({ id: req.param('id'), status: 'completed' }).exec(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
@@ -276,12 +276,12 @@ module.exports = {
 
 
     /**
-     * `ProjectsController.get()`
+     * `ProjectsController.getCompleted()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/projects/:id Get project(s)
-     * @apiName Get
-     * @apiDescription This is where projects are retrieved.
+     * @api {get} /api/v1/projects/completed/:id Get project(s)
+     * @apiName GetCompleted
+     * @apiDescription This is where completed projects are retrieved.
      * @apiGroup Project
      *
      * @apiParam {Number} [id] Project id.
@@ -298,9 +298,9 @@ module.exports = {
      * 
      * @apiUse ProjectNotFoundError
      */
-    get: function(req, res) {
+    getCompleted: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id') }).exec(function(err, project) {
+            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, project) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -313,7 +313,56 @@ module.exports = {
                 }
             });
         } else {
-            Projects.find().exec(function(err, project) {
+            Projects.find({status: 'completed' }).exec(function(err, project) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, project);
+            });
+        }
+    },
+
+    /**
+     * `ProjectsController.getOngoing()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/projects/ongoing/:id Get project(s)
+     * @apiName GetOngoing
+     * @apiDescription This is where ongoing projects are retrieved.
+     * @apiGroup Project
+     *
+     * @apiParam {Number} [id] Project id.
+     *
+     * @apiSuccess {String} project Post response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     * 
+     * @apiUse ProjectNotFoundError
+     */
+    getOngoing: function(req, res) {
+        if (req.param('id')) {
+            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, project) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!project) {
+                    return res.json(404, { status: 'error', message: 'No Project with such id existing' })
+                } else {
+                    return res.json(200, project);
+                }
+            });
+        } else {
+            Projects.find({status: 'ongoing' }).exec(function(err, project) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });

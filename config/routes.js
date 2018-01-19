@@ -88,8 +88,10 @@ module.exports.routes = {
     'POST /api/v1/projects/upload': 'ProjectsController.uploadBanner',
     'PUT /api/v1/projects/:id': 'ProjectsController.update',
     'DELETE /api/v1/projects/:id': 'ProjectsController.delete',
-    'GET /api/v1/projects/:id': 'ProjectsController.get',
-    'GET /api/v1/projects': 'ProjectsController.get',
+    'GET /api/v1/projects/completed/:id': 'ProjectsController.getCompleted',
+    'GET /api/v1/projects/completed': 'ProjectsController.getCompleted',
+    'GET /api/v1/projects/ongoing/:id': 'ProjectsController.getOngoing',
+    'GET /api/v1/projects/ongoing': 'ProjectsController.getOngoing',
 
     /**
      * Training routes
@@ -102,7 +104,7 @@ module.exports.routes = {
     'GET /api/v1/training': 'TrainingController.getTraining',
 
     'GET /api/v1/mytrainings/:id': 'TrainingController.myTrainings',
-    
+
     /**
      * Event routes
      */

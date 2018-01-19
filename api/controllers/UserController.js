@@ -147,9 +147,6 @@ module.exports = {
         // remove the confirmPassword element from the body object before saving to DB
         delete req.body.confirmPassword;
 
-        // create and add membership id to the body content
-        req.body.membershipId = utility.membershipId(req.body.email);
-
         User.findOne({ email: req.param('email') }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
