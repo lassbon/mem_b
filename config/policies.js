@@ -77,7 +77,8 @@ module.exports.policies = {
 
     'ProjectsController': {
         '*': ['isAdmin', 'isLow', 'isAuthenticated'],
-        'get': ['isUser', 'isAuthenticated']
+        'getCompleted': ['isUser', 'isAuthenticated'],
+        'getOngoing': ['isUser', 'isAuthenticated']
     },
 
     'TrainingController': {
