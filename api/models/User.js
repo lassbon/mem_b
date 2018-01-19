@@ -197,7 +197,7 @@ module.exports = {
             via: 'donator'
         },
         regState: {
-            type: ,
+            type: 'integer',
             defaultsTo: 0;
         }
     },
