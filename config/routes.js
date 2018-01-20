@@ -83,6 +83,8 @@ module.exports.routes = {
     'POST /api/v1/alertreferee': 'UserController.alertReferee',
     'POST /api/v1/validatereferee': 'UserController.validateReferee',
 
+    'GET /api/v1/searchuser/:id/:page/:limit': 'UserController.searchUser',
+
     /**
      * Projects routes
      */
@@ -179,6 +181,7 @@ module.exports.routes = {
     'GET /api/v1/knowledgebase/document/:id': 'KnowledgeBaseController.getDoc',
     'GET /api/v1/knowledgebase/document': 'KnowledgeBaseController.getDoc',
     'GET /api/v1/doccount': 'KnowledgeBaseController.getCount',
+    'GET /api/v1/searchdocuments/:id/:page/:limit': 'KnowledgeBaseController.searchDocuments',
 
     'POST /api/v1/knowledgebase/category': 'KnowledgeBaseController.createCategory',
     'PUT /api/v1/knowledgebase/category/:id': 'KnowledgeBaseController.updateCategory',

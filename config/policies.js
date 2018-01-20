@@ -137,6 +137,7 @@ module.exports.policies = {
         'update': ['isUser', 'isAuthenticated'],
         'delete': ['isAdmin', 'isHigh', 'isAuthenticated'],
         'getDoc': ['isUser', 'isAuthenticated'],
+        'searchDocuments': ['isUser', 'isAuthenticated'],
     },
 
     'ApproverController': {

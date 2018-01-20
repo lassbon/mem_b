@@ -4315,6 +4315,97 @@ define({ "api": [
     }
   },
   {
+    "type": "get",
+    "url": "/api/v1/searchdocuments/:id/:page/:limit",
+    "title": "Search for document(s)",
+    "name": "SearchDocument",
+    "description": "<p>This is where a document is searched.</p>",
+    "group": "Knowledgebase",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "searchTerm",
+            "description": "<p>Search term to be searched.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result",
+            "description": "<p>Result of the search.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"page\": \"1\",\n  \"limit\": \"10\",\n  \"result\": [{}]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/KnowledgeBaseController.js",
+    "groupTitle": "Knowledgebase",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SearchTermNotProvided",
+            "description": "<p>No search term provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No search term provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "put",
     "url": "/api/v1/knowledgebase/category/:id",
     "title": "Update a category",
@@ -5303,17 +5394,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/payments/memberships",
-    "title": "Get registration payments",
-    "name": "Memberships",
-    "description": "<p>This is where registration payment records are obtained.</p>",
-    "group": "Payments",
-    "version": "0.0.0",
-    "filename": "api/controllers/PaymentsController.js",
-    "groupTitle": "Payments"
-  },
-  {
-    "type": "get",
     "url": "/api/v1/userpayments/memberships/:id",
     "title": "Get user membership payments",
     "name": "Memberships",
@@ -5357,10 +5437,32 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/api/v1/payments/memberships",
+    "title": "Get registration payments",
+    "name": "Memberships",
+    "description": "<p>This is where registration payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
     "url": "/api/v1/payments/registrations",
     "title": "Get registration payments",
     "name": "Registrations",
     "description": "<p>This is where registration payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/trainings",
+    "title": "Get event payments",
+    "name": "Trainings",
+    "description": "<p>This is where training payment records are obtained.</p>",
     "group": "Payments",
     "version": "0.0.0",
     "filename": "api/controllers/PaymentsController.js",
@@ -5408,17 +5510,6 @@ define({ "api": [
         }
       ]
     }
-  },
-  {
-    "type": "get",
-    "url": "/api/v1/payments/trainings",
-    "title": "Get event payments",
-    "name": "Trainings",
-    "description": "<p>This is where training payment records are obtained.</p>",
-    "group": "Payments",
-    "version": "0.0.0",
-    "filename": "api/controllers/PaymentsController.js",
-    "groupTitle": "Payments"
   },
   {
     "type": "delete",
@@ -9222,6 +9313,97 @@ define({ "api": [
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/searchuser/:id/:page/:limit",
+    "title": "Search for document(s)",
+    "name": "SearchUser",
+    "description": "<p>This is where users are searched.</p>",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "searchTerm",
+            "description": "<p>Search term to be searched.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result",
+            "description": "<p>Result of the search.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"page\": \"1\",\n  \"limit\": \"10\",\n  \"result\": [{}]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserController.js",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SearchTermNotProvided",
+            "description": "<p>No search term provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No search term provided!\"\n}",
           "type": "json"
         }
       ]

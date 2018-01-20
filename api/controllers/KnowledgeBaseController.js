@@ -71,9 +71,20 @@
  *     }
  */
 
+ /**
+ * @apiDefine SearchTermNotProvidedError
+ *
+ * @apiError SearchTermNotProvided No search term provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Not Found
+ *     {
+ *       "status": "error",
+ *       "err": "No search term provided!"
+ *     }
+ */
+
 module.exports = {
-
-
 
     /**
      * `KnowledgeBaseController.create()`
@@ -367,6 +378,60 @@ module.exports = {
                 }
 
                 return res.json(200, doc);
+            });
+        }
+    },
+
+    /**
+     * `KnowledgeBaseController.searchDocuments()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/searchdocuments/:id/:page/:limit Search for document(s)
+     * @apiName SearchDocument
+     * @apiDescription This is where a document is searched.
+     * @apiGroup Knowledgebase
+     *
+     * @apiParam {String} searchTerm Search term to be searched.
+     * @apiParam {String} [page] Current page of the search result.
+     * @apiParam {String} [limit] Number of search items per page.
+     *
+     * @apiSuccess {String} page Current page of the search result.
+     * @apiSuccess {String} limit  Number of search items per page.
+     * @apiSuccess {String} result  Result of the search.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "page": "1",
+     *       "limit": "10",
+     *       "result": [{}]
+     *     }
+     *
+     * @apiUse SearchTermNotProvidedError
+     * 
+     */
+    searchDocuments: function(req, res) {
+        var page = 0;
+        var limit = 10;
+
+        if (req.param('page') && req.param('page') > 1) {
+            page = req.param('page');
+        }
+
+        if (req.param('limit')) {
+            limit = req.param('limit');
+        }
+
+        if (!req.param('searchTerm')) {
+            return res.json(401, { status: "error", err: 'No search term provided!' });
+        } else {
+            KnowledgebaseDocuments.find({ title: { 'contains': req.param('searchTerm') } }).paginate({ page: page, limit: limit }).exec(function(err, documents) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, { page: page, limit: limit, result: documents });
             });
         }
     },
