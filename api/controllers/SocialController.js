@@ -601,8 +601,8 @@ module.exports = {
      * @apiUse PostNotFoundError
      */
     getPost: function(req, res) {
-        var page = 1;
-        var limit = 25;
+        var page = 0;
+        var limit = 10;
 
         if (req.param('page') > 1) {
             page = req.param('page');
@@ -613,7 +613,7 @@ module.exports = {
         }
 
         if (req.param('id')) {
-            SocialPosts.findOne({ id: req.param('id') }).populate('comments').populate('likes').exec(function(err, post) {
+            SocialPosts.findOne({ id: req.param('id') }).populate('comments').exec(function(err, post) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -626,7 +626,7 @@ module.exports = {
                 }
             });
         } else {
-            SocialPosts.find().populate('comments').populate('likes').paginate({ page: page, limit: limit }).exec(function(err, posts) {
+            SocialPosts.find().populate('comments').paginate({ page: page, limit: limit }).exec(function(err, posts) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
