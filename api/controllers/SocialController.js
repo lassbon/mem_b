@@ -1162,7 +1162,6 @@ module.exports = {
                             SocialPosts.find({
                                     id: friends
                                 }).populate('comments')
-                                .populate('likes')
                                 .limit(limit)
                                 .skip(offset)
                                 .sort('createdAt DESC')

@@ -249,6 +249,12 @@ module.exports.routes = {
     // Social feed routes
     'GET /api/v1/social/feed/:id': 'SocialController.getFeed',
 
+    // Notifiction routes
+    'POST /api/v1/notifications': 'NotificationsController.create',
+    'DELETE /api/v1/notifications/:id': 'NotificationsController.delete',
+    'GET /api/v1/notifications/:id': 'NotificationsController.get',
+    'GET /api/v1/notifications': 'NotificationsController.get',
+
     /**
      * Forum routes
     */

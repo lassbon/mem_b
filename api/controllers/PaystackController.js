@@ -46,7 +46,7 @@ module.exports = {
                                 memeberID: user.membershipId,
                                 name: event.data.customer.first_name + ' ' + event.data.customer.last_name,
                                 type: 'Payment for' + event.data.plan.name,
-                                source: event.plan.authorization.channel,
+                                source: event.authorization.channel,
                                 data: event
                             }
 
@@ -102,6 +102,7 @@ module.exports = {
                             if (err) {
                                 sails.log.error(err);
                             }
+                            console.log(event);
 
                             var payment_for = event.data.metadata.custom_fields[0].value;
                             var memberId = event.data.metadata.custom_fields[1].value;
@@ -157,7 +158,7 @@ module.exports = {
                             }
 
                             // Check if payment is for registration
-                            if (registration.test(payment_for) === true) {
+                            if (register.test(payment_for) === true) {
                                 var regId = payment_for.split('_')[1];
                                 RegistrationPayments.create({ amount: event.data.amount, payer: memberId }).exec(function(err, info) {
                                     if (err) {

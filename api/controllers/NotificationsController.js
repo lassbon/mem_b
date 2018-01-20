@@ -38,7 +38,7 @@ module.exports = {
      * `NotificationsController.create()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {post} /api/v1/notifications/ Create a new notification
+     * @api {post} /api/v1/notifications Create a new notification
      * @apiName CreateProject
      * @apiDescription This is where a new notification is created.
      * @apiGroup Notifications
