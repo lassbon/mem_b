@@ -108,7 +108,6 @@ module.exports = {
      * @apiDescription This is where a new user is created.
      * @apiGroup User
      *
-     * @apiParam {String} username Username of the new user.
      * @apiParam {String} email Email of the new user.
      * @apiParam {String} password Password.
      * @apiParam {String} confirmPassword Confirm the password.
@@ -454,7 +453,6 @@ module.exports = {
      *
      * @apiParam {Number} id User id of the the user to be updated.
 
-     * @apiParam {String} username Username of the new user.
      * @apiParam {String} email Email of the new user.
      * @apiParam {String} password Password.
      * @apiParam {String} confirmPassword Confirm the password.
@@ -665,6 +663,49 @@ module.exports = {
         }
 
         User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).populate('posts').exec(function(err, user) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            if (!user) {
+                return res.json(404, { status: 'error', err: 'No User with such id existing' })
+            } else {
+                delete user.password;
+                return res.json(200, user);
+            }
+        });
+    },
+
+    /**
+     * `UserController.getFriends()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/useractivity/:id Get user friends
+     * @apiName GetUserFriends
+     * @apiDescription This is where users friends is retrieved.
+     * @apiGroup User
+     *
+     * @apiParam {Number} id user ID.
+     *
+     * @apiSuccess {String} user User activity response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     * 
+     * @apiUse UserNotFoundError
+     */
+    getFriends: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No User id provided!' });
+        }
+
+        User.findOne({ select: 'membershipId', where: { id: req.param('id') } }).populate('friends', { select: ['email', 'membershipId', 'company', 'profileImage']}).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });

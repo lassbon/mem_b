@@ -85,6 +85,19 @@ var nestedPop = require('nested-pop');
  *     }
  */
 
+ /**
+ * @apiDefine RequesteeNotFoundError
+ *
+ * @apiError RequesteeNotFound No requestee id provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "status": "error",
+ *       "message": 'No requestee id provided'
+ *     }
+ */
+
 /**
  * @apiDefine CommentIdNotProvidedError
  *
@@ -322,7 +335,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Requestee id provided!' });
         }
 
-        User.findOne({ select: 'username', where: { id: req.param('requestee') } }).populate('friends').exec(function(err, user) {
+        User.findOne({ select: 'email', where: { id: req.param('requestee') } }).populate('friends').exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
@@ -641,7 +654,7 @@ module.exports = {
      * `SocialController.searchPost()`
      * 
      * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/social/post/search Search for post(s)
+     * @api {get} /api/v1/social/postsearch Search for post(s)
      * @apiName SearchPost
      * @apiDescription This is where a social post is searched.
      * @apiGroup Social
@@ -825,6 +838,44 @@ module.exports = {
                 }
             });
         }
+    },
+
+    /**
+     * `SocialController.getRequsts()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/social/requests/:requestee Get friend requests(s)
+     * @apiName GetPost
+     * @apiDescription This is where a social post(s) is retrieved
+     * @apiGroup Social
+     *
+     * @apiParam {Number} id Requestee id.
+     *
+     * @apiSuccess {String} post Postresponse from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "requester": "59dce9d56b54d91c38847825",
+     *       "requestee": "59dce9d56b54d91c38847825"
+     *     }
+     * 
+     * @apiUse RequesteeNotFoundError
+     */
+    getRequsts: function(req, res) {
+
+        if (!req.param('requestee')) {
+            return res.json(401, { status: 'error', err: 'No Requestee id provided!' });
+        }
+
+        SocialConnections.find({requestee: req.param('requestee')}).exec(function(err, requests) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            return res.json(200, requests);
+        });
     },
 
     /**

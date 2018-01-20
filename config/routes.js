@@ -79,6 +79,7 @@ module.exports.routes = {
     'GET /api/v1/usercount': 'UserController.getCount',
 
     'GET /api/v1/useractivity/:id': 'UserController.getActivity',
+    'GET /api/v1/userfriends/:id': 'UserController.getFriends',
 
     'POST /api/v1/alertreferee': 'UserController.alertReferee',
     'POST /api/v1/validatereferee': 'UserController.validateReferee',
@@ -230,7 +231,7 @@ module.exports.routes = {
     'PUT /api/v1/social/post/:id': 'SocialController.updatePost',
     'GET /api/v1/social/post/:id': 'SocialController.getPost',
     'GET /api/v1/social/post': 'SocialController.getPost',
-    'GET /api/v1/social/post/search': 'SocialController.searchPost',
+    'GET /api/v1/social/postsearch': 'SocialController.searchPost',
 
     // Social comment routes
     'POST /api/v1/social/comment': 'SocialController.createComment',
@@ -243,6 +244,7 @@ module.exports.routes = {
     // Social like/unlike routes
     'POST /api/v1/social/post/like': 'SocialController.likePost',
     'POST /api/v1/social/post/unlike': 'SocialController.unlikePost',
+    'GET /api/v1/social/requests/:requestee': 'SocialController.getRequsts',
 
     // Social feed routes
     'GET /api/v1/social/feed/:id': 'SocialController.getFeed',

@@ -4667,83 +4667,6 @@
   },
   {
     "type": "post",
-    "url": "/api/v1/projects/post",
-    "title": "Create a new level",
-    "name": "CreateLevel",
-    "description": "<p>This is where a new level is created.</p>",
-    "group": "Levels",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "name",
-            "description": "<p>Name of the membership level.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "fee",
-            "description": "<p>Fee for the memebership level.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "description",
-            "description": "<p>Full description of the membership level.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "levels",
-            "description": "<p>Level name and id returned from the API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response: ",
-          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9c16b54d91c38847825\",\n  \"....\": \"......................\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "LevelsInfoNotComplete",
-            "description": "<p>Post info not complete.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { name | fee | description } provided!\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/LevelsController.js",
-    "groupTitle": "Levels"
-  },
-  {
-    "type": "post",
     "url": "/api/v1/levels",
     "title": "Create a new level",
     "name": "CreateLevel",
@@ -4836,6 +4759,83 @@
         }
       ]
     }
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/projects/post",
+    "title": "Create a new level",
+    "name": "CreateLevel",
+    "description": "<p>This is where a new level is created.</p>",
+    "group": "Levels",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the membership level.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "fee",
+            "description": "<p>Fee for the memebership level.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Full description of the membership level.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "levels",
+            "description": "<p>Level name and id returned from the API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9c16b54d91c38847825\",\n  \"....\": \"......................\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "LevelsInfoNotComplete",
+            "description": "<p>Post info not complete.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { name | fee | description } provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/LevelsController.js",
+    "groupTitle": "Levels"
   },
   {
     "type": "delete",
@@ -5394,6 +5394,17 @@
   },
   {
     "type": "get",
+    "url": "/api/v1/payments/memberships",
+    "title": "Get registration payments",
+    "name": "Memberships",
+    "description": "<p>This is where registration payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
     "url": "/api/v1/userpayments/memberships/:id",
     "title": "Get user membership payments",
     "name": "Memberships",
@@ -5434,17 +5445,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "get",
-    "url": "/api/v1/payments/memberships",
-    "title": "Get registration payments",
-    "name": "Memberships",
-    "description": "<p>This is where registration payment records are obtained.</p>",
-    "group": "Payments",
-    "version": "0.0.0",
-    "filename": "api/controllers/PaymentsController.js",
-    "groupTitle": "Payments"
   },
   {
     "type": "get",
@@ -7006,6 +7006,69 @@
   },
   {
     "type": "get",
+    "url": "/api/v1/social/requests/:requestee",
+    "title": "Get friend requests(s)",
+    "name": "GetPost",
+    "description": "<p>This is where a social post(s) is retrieved</p>",
+    "group": "Social",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Requestee id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "post",
+            "description": "<p>Postresponse from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"requester\": \"59dce9d56b54d91c38847825\",\n  \"requestee\": \"59dce9d56b54d91c38847825\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/SocialController.js",
+    "groupTitle": "Social",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "RequesteeNotFound",
+            "description": "<p>No requestee id provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No requestee id provided'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/api/v1/social/post/:id",
     "title": "Get post(s)",
     "name": "GetPost",
@@ -7446,7 +7509,7 @@
   },
   {
     "type": "get",
-    "url": "/api/v1/social/post/search",
+    "url": "/api/v1/social/postsearch",
     "title": "Search for post(s)",
     "name": "SearchPost",
     "description": "<p>This is where a social post is searched.</p>",
@@ -8684,13 +8747,6 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "username",
-            "description": "<p>Username of the new user.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "email",
             "description": "<p>Email of the new user.</p>"
           },
@@ -9171,6 +9227,69 @@
   },
   {
     "type": "get",
+    "url": "/api/v1/useractivity/:id",
+    "title": "Get user friends",
+    "name": "GetUserFriends",
+    "description": "<p>This is where users friends is retrieved.</p>",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>user ID.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>User activity response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserController.js",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserNotFound",
+            "description": "<p>The User was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No User with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/api/v1/user/:id",
     "title": "Get User(s)",
     "name": "GetUser_s_",
@@ -9425,13 +9544,6 @@
             "optional": false,
             "field": "id",
             "description": "<p>User id of the the user to be updated.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "username",
-            "description": "<p>Username of the new user.</p>"
           },
           {
             "group": "Parameter",
