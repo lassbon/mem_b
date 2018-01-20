@@ -54,6 +54,10 @@ module.exports.policies = {
         '*': ['isUser', 'isAuthenticated'],
     },
 
+    'ForumController': { // We dont need authorization here, allowing public access
+        '*': ['isUser', 'isAuthenticated'],
+    },
+
     'AdminController': {
         '*': ['isAdmin', 'isAuthenticated'],
         'forgotPassword': true,
