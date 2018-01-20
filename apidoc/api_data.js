@@ -5368,17 +5368,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/payments/trainings",
-    "title": "Get event payments",
-    "name": "Trainings",
-    "description": "<p>This is where training payment records are obtained.</p>",
-    "group": "Payments",
-    "version": "0.0.0",
-    "filename": "api/controllers/PaymentsController.js",
-    "groupTitle": "Payments"
-  },
-  {
-    "type": "get",
     "url": "/api/v1/userpayments/trainings/:id",
     "title": "Get event payments",
     "name": "Trainings",
@@ -5419,6 +5408,17 @@ define({ "api": [
         }
       ]
     }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/trainings",
+    "title": "Get event payments",
+    "name": "Trainings",
+    "description": "<p>This is where training payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
   },
   {
     "type": "delete",
@@ -9014,6 +9014,69 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "api/controllers/UserController.js",
     "groupTitle": "User"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/useractivity/:id",
+    "title": "Get User social activity",
+    "name": "GetUserActivity",
+    "description": "<p>This is where users activity is retrieved.</p>",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>user ID.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>User activity response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \".........\": \"....................\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserController.js",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserNotFound",
+            "description": "<p>The User was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No User with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
   },
   {
     "type": "get",

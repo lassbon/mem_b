@@ -57,7 +57,7 @@
  *     }
  */
 
- /** 
+/** 
  * @apiDefine UserEmailNotProvidedError
  *
  * @apiError UserEmailNotProvided No User email provided.
@@ -70,7 +70,7 @@
  *     }
  */
 
- /** 
+/** 
  * @apiDefine UserTokenNotProvidedError
  *
  * @apiError UserTokenNotProvided No User token provided.
@@ -567,6 +567,48 @@ module.exports = {
                 return res.json(200, user);
             });
         }
+    },
+
+    /**
+     * `UserController.getAtivity()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/useractivity/:id Get User social activity
+     * @apiName GetUserActivity
+     * @apiDescription This is where users activity is retrieved.
+     * @apiGroup User
+     *
+     * @apiParam {Number} id user ID.
+     *
+     * @apiSuccess {String} user User activity response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     * 
+     * @apiUse UserNotFoundError
+     */
+    getActivity: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No User id provided!' });
+        }
+
+        User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).populate('posts').exec(function(err, user) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            if (!user) {
+                return res.json(404, { status: 'error', err: 'No User with such id existing' })
+            } else {
+                return res.json(200, user);
+            }
+        });
     },
 
     /**
