@@ -292,7 +292,7 @@ module.exports = {
      */
     getAdvert: function(req, res) {
         if (req.param('id')) {
-            Advert.findOne({ id: req.param('id') }).exec(function(err, advert) {
+            Advert.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, advert) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -305,7 +305,7 @@ module.exports = {
                 }
             });
         } else {
-            Advert.find().exec(function(err, advert) {
+            Advert.find().sort('createdAt DESC').exec(function(err, advert) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });

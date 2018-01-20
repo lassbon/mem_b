@@ -51,7 +51,7 @@ module.exports = {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
-		DonationPayments.find({ donator: req.param('id') }).exec(function(err, donations) {
+		DonationPayments.find({ donator: req.param('id') }).sort('createdAt DESC').exec(function(err, donations) {
 			if (err) {
 				sails.log.error(err);
 				return res.json(err.status, { err: err });
@@ -97,7 +97,7 @@ module.exports = {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
-		EventsPayments.find({ payer: req.param('id') }).exec(function(err, events) {
+		EventsPayments.find({ payer: req.param('id') }).sort('createdAt DESC').exec(function(err, events) {
 			if (err) {
 				sails.log.error(err);
 				return res.json(err.status, { err: err });
@@ -143,7 +143,7 @@ module.exports = {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
-		TrainingPayments.find({ payer: req.param('id') }).exec(function(err, trainings) {
+		TrainingPayments.find({ payer: req.param('id') }).sort('createdAt DESC').exec(function(err, trainings) {
 			if (err) {
 				sails.log.error(err);
 				return res.json(err.status, { err: err });
@@ -189,7 +189,7 @@ module.exports = {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
-		MembershipPayments.find({ payer: req.param('id') }).exec(function(err, memberships) {
+		MembershipPayments.find({ payer: req.param('id') }).sort('createdAt DESC').exec(function(err, memberships) {
 			if (err) {
 				sails.log.error(err);
 				return res.json(err.status, { err: err });

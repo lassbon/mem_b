@@ -85,7 +85,7 @@ module.exports = {
         } else {
 
             Audit.find().limit(limit)
-                .skip(offset).exec(function(err, audits) {
+                .skip(offset).sort('createdAt DESC').exec(function(err, audits) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });

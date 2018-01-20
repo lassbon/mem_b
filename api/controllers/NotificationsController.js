@@ -162,7 +162,7 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Notifications.findOne({ id: req.param('id') }).exec(function(err, notification) {
+            Notifications.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, notification) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -175,7 +175,7 @@ module.exports = {
                 }
             });
         } else {
-            Notifications.find().exec(function(err, notification) {
+            Notifications.find().sort('createdAt DESC').exec(function(err, notification) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });

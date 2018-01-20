@@ -330,7 +330,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            Projects.find({ title: { 'contains': req.param('searchTerm') } }).paginate({ page: page, limit: limit }).exec(function(err, projects) {
+            Projects.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, projects) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -366,7 +366,7 @@ module.exports = {
      */
     getCompleted: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, project) {
+            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, project) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -379,7 +379,7 @@ module.exports = {
                 }
             });
         } else {
-            Projects.find({status: 'completed' }).exec(function(err, project) {
+            Projects.find({status: 'completed' }).sort('createdAt DESC').exec(function(err, project) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -415,7 +415,7 @@ module.exports = {
      */
     getOngoing: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, project) {
+            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, project) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -428,7 +428,7 @@ module.exports = {
                 }
             });
         } else {
-            Projects.find({status: 'ongoing' }).exec(function(err, project) {
+            Projects.find({status: 'ongoing' }).sort('createdAt DESC').exec(function(err, project) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });

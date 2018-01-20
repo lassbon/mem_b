@@ -358,7 +358,7 @@ module.exports = {
      */
     getDoc: function(req, res) {
         if (req.param('id')) {
-            KnowledgebaseDocuments.findOne({ id: req.param('id') }).exec(function(err, doc) {
+            KnowledgebaseDocuments.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, doc) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -371,7 +371,7 @@ module.exports = {
                 }
             });
         } else {
-            KnowledgebaseDocuments.find().exec(function(err, doc) {
+            KnowledgebaseDocuments.find().sort('createdAt DESC').exec(function(err, doc) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -425,7 +425,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            KnowledgebaseDocuments.find({ title: { 'contains': req.param('searchTerm') } }).paginate({ page: page, limit: limit }).exec(function(err, documents) {
+            KnowledgebaseDocuments.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, documents) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });

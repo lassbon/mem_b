@@ -298,7 +298,7 @@ module.exports = {
                 }
             });
         } else {
-            ForumTopics.find().populate('posts').exec(function(err, topics) {
+            ForumTopics.find().populate('posts').sort('createdAt DESC').exec(function(err, topics) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -495,7 +495,7 @@ module.exports = {
      */
     getPost: function(req, res) {
         if (req.param('id')) {
-            ForumPosts.findOne({ id: req.param('id'), censored: false }).populate('comments').exec(function(err, post) {
+            ForumPosts.findOne({ id: req.param('id'), censored: false }).sort('createdAt DESC').populate('comments').exec(function(err, post) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -508,7 +508,7 @@ module.exports = {
                 }
             });
         } else {
-            ForumPosts.find({censored: false }).populate('comments').exec(function(err, posts) {
+            ForumPosts.find({censored: false }).sort('createdAt DESC').populate('comments').exec(function(err, posts) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -804,7 +804,7 @@ module.exports = {
      */
     getComment: function(req, res) {
         if (req.param('id')) {
-            ForumComments.findOne({ id: req.param('id') }).exec(function(err, comment) {
+            ForumComments.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, comment) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -817,7 +817,7 @@ module.exports = {
                 }
             });
         } else {
-            ForumComments.find().exec(function(err, comments) {
+            ForumComments.find().sort('createdAt DESC').exec(function(err, comments) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });

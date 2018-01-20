@@ -555,7 +555,7 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            User.findOne({ id: req.param('id') }).exec(function(err, user) {
+            User.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, user) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -569,7 +569,7 @@ module.exports = {
                 }
             });
         } else {
-            User.find().exec(function(err, user) {
+            User.find().sort('createdAt DESC').exec(function(err, user) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -623,7 +623,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            User.find({ company: { 'contains': req.param('searchTerm') } }).paginate({ page: page, limit: limit }).exec(function(err, users) {
+            User.find({ company: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, users) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -662,7 +662,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         }
 
-        User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).populate('posts').exec(function(err, user) {
+        User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).sort('createdAt DESC').populate('posts').exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
@@ -705,7 +705,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         }
 
-        User.findOne({ select: 'membershipId', where: { id: req.param('id') } }).populate('friends', { select: ['email', 'membershipId', 'company', 'profileImage']}).exec(function(err, user) {
+        User.findOne({ select: 'membershipId', where: { id: req.param('id') } }).sort('createdAt DESC').populate('friends', { select: ['email', 'membershipId', 'company', 'profileImage']}).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });

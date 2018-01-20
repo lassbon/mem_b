@@ -395,7 +395,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            Donation.find({ title: { 'contains': req.param('searchTerm') } }).paginate({ page: page, limit: limit }).exec(function(err, donations) {
+            Donation.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, donations) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -431,7 +431,7 @@ module.exports = {
      */
     getCompleted: function(req, res) {
         if (req.param('id')) {
-            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, donation) {
+            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, donation) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -444,7 +444,7 @@ module.exports = {
                 }
             });
         } else {
-            Donation.find({status: 'completed' }).exec(function(err, donation) {
+            Donation.find({status: 'completed' }).sort('createdAt DESC').exec(function(err, donation) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -480,7 +480,7 @@ module.exports = {
      */
     getOngoing: function(req, res) {
         if (req.param('id')) {
-            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).exec(function(err, donation) {
+            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, donation) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -493,7 +493,7 @@ module.exports = {
                 }
             });
         } else {
-            Donation.find({status: 'ongoing' }).exec(function(err, donation) {
+            Donation.find({status: 'ongoing' }).sort('createdAt DESC').exec(function(err, donation) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -532,7 +532,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No user id provided!' });
         }
 
-        DonationPayments.find({donator: req.param('id')}).exec(function(err, donations) {
+        DonationPayments.find({donator: req.param('id')}).sort('createdAt DESC').exec(function(err, donations) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
