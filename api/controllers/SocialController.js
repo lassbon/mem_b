@@ -721,25 +721,41 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No Post id provided!' });
         } else {
-            SocialPosts.findOne({ select: 'postText', where: { id: req.param('id') } }).populate('likes').exec(function(err, post) {
+            SocialPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).exec(function(err, post) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!post) {
-                    return res.json(200, { status: 'error', err: 'No Post with such id existing' });
+                    return res.json(404, { status: 'error', err: 'No Post with such id existing' });
                 } else {
 
-                    post.likes.remove(req.param('liker'));
-                    post.save(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
+                    var likes = post.likes ? post.likes : [];
+
+                    var stat = false;
+
+                    for (var i = 0; i < likes.length; i++) {
+                        var name = likes[i];
+                        if (name == req.param('liker')) {
+                            stat = true;
+                            break;
+                        }
+                    }
+
+                    if (stat == false) {
+                        return res.json(403, { status: 'error', err: 'Post not previously liked' });
+                    } else {
+                        for (var i = post.likes.length; i--;) {
+                            if (post.likes[i] === req.param('liker')) {
+                                post.likes.splice(i, 1);
+                            }
                         }
 
-                        return res.json(200, { status: 'success', message: 'Post unliked' });
-                    });
+                        SocialPosts.update({ id: req.param('id') }, { likes: post.likes }).exec(function(err, post) {
+                            return res.json(200, { status: 'success', message: 'Post unliked' });
+                        });
+                    }
                 }
             });
         }
@@ -782,15 +798,30 @@ module.exports = {
                 }
 
                 if (!post) {
-                    return res.json(200, { status: 'error', message: 'No Post with such id existing' });
+                    return res.json(404, { status: 'error', message: 'No Post with such id existing' });
                 } else {
 
                     var likes = post.likes ? post.likes : [];
-                    likes.push(req.param('liker'));
 
-                    SocialPosts.update({ id: req.param('id') }, {likes: likes}).exec(function(err, post) {
-                        return res.json(200, { status: 'success', message: 'Post liked' });
-                    })
+                    var stat = true;
+
+                    for (var i = 0; i < likes.length; i++) {
+                        var name = likes[i];
+                        if (name == req.param('liker')) {
+                            stat = false;
+                            break;
+                        }
+                    }
+
+                    if (stat == false) {
+                        return res.json(403, { status: 'error', err: 'Post already liked' });
+                    } else {
+                        likes.push(req.param('liker'));
+
+                        SocialPosts.update({ id: req.param('id') }, { likes: likes }).exec(function(err, post) {
+                            return res.json(200, { status: 'success', message: 'Post liked' });
+                        });
+                    }
                 }
             });
         }
