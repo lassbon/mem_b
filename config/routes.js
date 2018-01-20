@@ -126,6 +126,7 @@ module.exports.routes = {
     'GET /api/v1/events/ongoing': 'EventsController.getOngoing',
 
     'GET /api/v1/myevents/:id': 'EventsController.myEvents',
+    'GET /api/v1/searchevents/:id/:page/:limit': 'EventsController.searchEvents',
 
     /**
      * Advert routes
@@ -144,7 +145,7 @@ module.exports.routes = {
     'POST /api/v1/donation/upload': 'DonationController.uploadBanner',
     'PUT /api/v1/donation/:id': 'DonationController.updateDonation',
     'DELETE /api/v1/donation/:id': 'DonationController.deleteDonation',
-    
+
     'GET /api/v1/donation/completed/:id': 'DonationController.getCompleted',
     'GET /api/v1/donation/completed': 'DonationController.getCompleted',
 
@@ -152,6 +153,7 @@ module.exports.routes = {
     'GET /api/v1/donation/ongoing': 'DonationController.getOngoing',
 
     'GET /api/v1/mydonations/:id': 'DonationController.myDonations',
+    'GET /api/v1/searchdonations/:id/:page/:limit': 'DonationController.searchDonations',
 
     /**
      * Levels routes
