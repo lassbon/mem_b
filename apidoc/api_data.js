@@ -1780,6 +1780,97 @@ define({ "api": [
     }
   },
   {
+    "type": "get",
+    "url": "/api/v1/searchdonations/:id/:page/:limit",
+    "title": "Search for donation(s)",
+    "name": "SearchDonation",
+    "description": "<p>This is where a donation is searched.</p>",
+    "group": "Donation",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "searchTerm",
+            "description": "<p>Search term to be searched.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result",
+            "description": "<p>Result of the search.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"page\": \"1\",\n  \"limit\": \"10\",\n  \"result\": [{}]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/DonationController.js",
+    "groupTitle": "Donation",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SearchTermNotProvided",
+            "description": "<p>No search term provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No search term provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "put",
     "url": "/api/v1/donation/:id",
     "title": "Update a donation",
@@ -2321,6 +2412,97 @@ define({ "api": [
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Event with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/searchevents/:id/:page/:limit",
+    "title": "Search for event(s)",
+    "name": "SearchEvent",
+    "description": "<p>This is where an event is searched.</p>",
+    "group": "Event",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "searchTerm",
+            "description": "<p>Search term to be searched.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result",
+            "description": "<p>Result of the search.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"page\": \"1\",\n  \"limit\": \"10\",\n  \"result\": [{}]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/EventsController.js",
+    "groupTitle": "Event",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SearchTermNotProvided",
+            "description": "<p>No search term provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No search term provided!\"\n}",
           "type": "json"
         }
       ]
@@ -5446,6 +5628,97 @@ define({ "api": [
     }
   },
   {
+    "type": "get",
+    "url": "/api/v1/searchprojects/:id/:page/:limit",
+    "title": "Search for project(s)",
+    "name": "SearchProject",
+    "description": "<p>This is where a project is searched.</p>",
+    "group": "Project",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "searchTerm",
+            "description": "<p>Search term to be searched.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result",
+            "description": "<p>Result of the search.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"page\": \"1\",\n  \"limit\": \"10\",\n  \"result\": [{}]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/ProjectsController.js",
+    "groupTitle": "Project",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SearchTermNotProvided",
+            "description": "<p>No search term provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No search term provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "post",
     "url": "/api/v1/projects/upload",
     "title": "Upload a project banner",
@@ -7882,6 +8155,97 @@ define({ "api": [
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/searchtrainings/:id/:page/:limit",
+    "title": "Search for training(s)",
+    "name": "SearchTraining",
+    "description": "<p>This is where a training is searched.</p>",
+    "group": "Training",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "searchTerm",
+            "description": "<p>Search term to be searched.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "page",
+            "description": "<p>Current page of the search result.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>Number of search items per page.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result",
+            "description": "<p>Result of the search.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"page\": \"1\",\n  \"limit\": \"10\",\n  \"result\": [{}]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/TrainingController.js",
+    "groupTitle": "Training",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SearchTermNotProvided",
+            "description": "<p>No search term provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No search term provided!\"\n}",
           "type": "json"
         }
       ]

@@ -95,6 +95,8 @@ module.exports.routes = {
     'GET /api/v1/projects/ongoing/:id': 'ProjectsController.getOngoing',
     'GET /api/v1/projects/ongoing': 'ProjectsController.getOngoing',
 
+    'GET /api/v1/searchprojects/:id/:page/:limit': 'ProjectsController.searchProjects',
+
     /**
      * Training routes
      */
@@ -110,6 +112,7 @@ module.exports.routes = {
     'GET /api/v1/training/ongoing': 'TrainingController.getOngoing',
 
     'GET /api/v1/mytrainings/:id': 'TrainingController.myTrainings',
+    'GET /api/v1/searchtrainings/:id/:page/:limit': 'TrainingController.searchTrainings',
 
     /**
      * Event routes

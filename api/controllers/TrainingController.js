@@ -83,6 +83,19 @@
  *     }
  */
 
+/**
+ * @apiDefine SearchTermNotProvidedError
+ *
+ * @apiError SearchTermNotProvided No search term provided.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 401 Not Found
+ *     {
+ *       "status": "error",
+ *       "err": "No search term provided!"
+ *     }
+ */
+
 module.exports = {
 
 
@@ -326,6 +339,59 @@ module.exports = {
         }
     },
 
+    /**
+     * `TrainingController.searchTrainings()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/searchtrainings/:id/:page/:limit Search for training(s)
+     * @apiName SearchTraining
+     * @apiDescription This is where a training is searched.
+     * @apiGroup Training
+     *
+     * @apiParam {String} searchTerm Search term to be searched.
+     * @apiParam {String} [page] Current page of the search result.
+     * @apiParam {String} [limit] Number of search items per page.
+     *
+     * @apiSuccess {String} page Current page of the search result.
+     * @apiSuccess {String} limit  Number of search items per page.
+     * @apiSuccess {String} result  Result of the search.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "page": "1",
+     *       "limit": "10",
+     *       "result": [{}]
+     *     }
+     *
+     * @apiUse SearchTermNotProvidedError
+     * 
+     */
+    searchTrainings: function(req, res) {
+        var page = 0;
+        var limit = 10;
+
+        if (req.param('page') && req.param('page') > 1) {
+            page = req.param('page');
+        }
+
+        if (req.param('limit')) {
+            limit = req.param('limit');
+        }
+
+        if (!req.param('searchTerm')) {
+            return res.json(401, { status: "error", err: 'No search term provided!' });
+        } else {
+            Training.find({ title: { 'contains': req.param('searchTerm') } }).paginate({ page: page, limit: limit }).exec(function(err, trainings) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, { page: page, limit: limit, result: trainings });
+            });
+        }
+    },
 
     /**
      * `TrainingController.getCompleted()`
