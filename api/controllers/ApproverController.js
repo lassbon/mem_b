@@ -96,7 +96,7 @@ module.exports = {
               'email': process.env.SITE_EMAIL,
               'from': process.env.SITE_NAME,
               'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-              'body': 'Hello ' + user.company + '! <br><br> ' + approvalMessage + ' <br><br> Kindly visit the website to continue the registration process. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+              'body': 'Hello ' + user.companyName + '! <br><br> ' + approvalMessage + ' <br><br> Kindly visit the website to continue the registration process. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
               'to': user.email
             }
 
@@ -183,7 +183,7 @@ module.exports = {
             'email': process.env.SITE_EMAIL,
             'from': process.env.SITE_NAME,
             'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-            'body': 'Hello ' + user.company + '! <br><br> ' + rejectionMessage + ' <br><br> ' + req.param('reason') + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+            'body': 'Hello ' + user.companyName + '! <br><br> ' + rejectionMessage + ' <br><br> ' + req.param('reason') + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
             'to': user.email
           }
 

@@ -4983,7 +4983,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/api/v1/notifications/",
+    "url": "/api/v1/notifications",
     "title": "Create a new notification",
     "name": "CreateProject",
     "description": "<p>This is where a new notification is created.</p>",
@@ -8782,7 +8782,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "company",
+            "field": "companyName",
             "description": "<p>Name of company.</p>"
           },
           {
@@ -9584,7 +9584,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "company",
+            "field": "companyName",
             "description": "<p>Name of company.</p>"
           },
           {

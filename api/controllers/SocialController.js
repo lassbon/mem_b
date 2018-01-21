@@ -85,7 +85,7 @@ var nestedPop = require('nested-pop');
  *     }
  */
 
- /**
+/**
  * @apiDefine RequesteeNotFoundError
  *
  * @apiError RequesteeNotFound No requestee id provided.
@@ -172,9 +172,26 @@ module.exports = {
                 return res.json(err.status, { err: err });
             }
 
-            if (friendRequest) {
-                res.json(200, { status: 'success', message: 'Friend request sent' });
-            }
+
+            User.findOne({ id: req.param('requester') }).exec(function(err, user) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!user) {
+                    return res.json(404, { status: 'error', err: 'No User with such id existing' });
+                } else {
+
+                    Notifications.create({ id: req.param('requestee'), message: user.companyName + ' sent you a friend request' }).exec(function(err, info) {
+                        if (err) {
+                            sails.log.error(err);
+                        }
+                    });
+                }
+
+                return res.json(200, { status: 'success', message: 'Friend request sent' });
+            });
         });
     },
 
@@ -351,6 +368,24 @@ module.exports = {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
                     }
+
+                    User.findOne({ id: req.param('requester') }).exec(function(err, requester) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
+
+                        if (!requester) {
+                            return res.json(404, { status: 'error', err: 'No User with such id existing' });
+                        } else {
+
+                            Notifications.create({ id: req.param('requester'), message: requester.companyName + ' sent you a friend request' }).exec(function(err, info) {
+                                if (err) {
+                                    sails.log.error(err);
+                                }
+                            });
+                        }
+                    });
 
                     return res.json(200, { status: 'success', message: 'Friend request accepted' });
                 });
@@ -868,7 +903,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Requestee id provided!' });
         }
 
-        SocialConnections.find({requestee: req.param('requestee')}).sort('createdAt DESC').exec(function(err, requests) {
+        SocialConnections.find({ requestee: req.param('requestee') }).sort('createdAt DESC').exec(function(err, requests) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });

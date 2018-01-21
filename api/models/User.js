@@ -29,7 +29,7 @@ module.exports = {
             type: 'string',
             //required: true
         },
-        company: {
+        companyName: {
             type: 'string',
             //required: true
         },

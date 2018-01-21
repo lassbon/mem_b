@@ -117,7 +117,7 @@ module.exports = {
      * @apiGroup Audit
      */
     getExcel: function(req, res) {
-        Audit.find().exec(function(err, audits) {
+        Audit.find().sort('createdAt DESC').exec(function(err, audits) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });

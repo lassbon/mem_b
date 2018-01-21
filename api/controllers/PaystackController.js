@@ -30,7 +30,7 @@ module.exports = {
 
                 // when a new subscription is created
                 case 'subscription.create':
-                    User.findOne({ select: ['company', 'membershipId'], where: { email: event.data.customer.email } }).exec(function(err, user) {
+                    User.findOne({ select: ['companyName', 'membershipId'], where: { email: event.data.customer.email } }).exec(function(err, user) {
                         if (err) {
                             sails.log.error(err);
                         }
@@ -40,7 +40,7 @@ module.exports = {
                                 sails.log.error(err);
                             }
 
-                            audit.log('membership', user.company + ' paid membership fee');
+                            audit.log('membership', user.companyName + ' paid membership fee');
 
                             var data = {
                                 memeberID: user.membershipId,
@@ -68,7 +68,7 @@ module.exports = {
 
                     // when charge is subscription based
                     if (event.data.plan.id) {
-                        User.findOne({ select: ['company', 'membershipId'], where: { email: event.data.customer.email } }).exec(function(err, user) {
+                        User.findOne({ select: ['companyName', 'membershipId'], where: { email: event.data.customer.email } }).exec(function(err, user) {
                             if (err) {
                                 sails.log.error(err);
                             }
@@ -78,7 +78,7 @@ module.exports = {
                                     sails.log.error(err);
                                 }
 
-                                audit.log('membership', user.company + ' renewed membership fee');
+                                audit.log('membership', user.companyName + ' renewed membership fee');
 
                                 var data = {
                                     memeberID: user.membershipId,
@@ -98,7 +98,7 @@ module.exports = {
                             });
                         });
                     } else {
-                        User.findOne({ select: ['membershipId', 'company'], where: { email: event.data.customer.email } }).exec(function(err, user) {
+                        User.findOne({ select: ['membershipId', 'companyName'], where: { email: event.data.customer.email } }).exec(function(err, user) {
                             if (err) {
                                 sails.log.error(err);
                             }
@@ -109,7 +109,7 @@ module.exports = {
 
                             var data = {
                                 memberId: memberId,
-                                name: user.company,
+                                name: user.companyName,
                                 type: 'Payment for ' + event.data.metadata.custom_fields[0].variable_name,
                                 source: event.data.authorization.channel,
                                 amount: event.data.amount,
@@ -129,7 +129,7 @@ module.exports = {
                                         sails.log.error(err);
                                     }
 
-                                    audit.log('donation', user.company + ' donated ' + data.amount + ' to ' + event.data.metadata.custom_fields[0].variable_name, );
+                                    audit.log('donation', user.companyName + ' donated ' + data.amount + ' to ' + event.data.metadata.custom_fields[0].variable_name, );
                                 });
                             }
 
@@ -141,7 +141,7 @@ module.exports = {
                                         sails.log.error(err);
                                     }
 
-                                    audit.log('training', user.company + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
+                                    audit.log('training', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
                                 });
                             }
 
@@ -153,7 +153,7 @@ module.exports = {
                                         sails.log.error(err);
                                     }
 
-                                    audit.log('event', user.company + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
+                                    audit.log('event', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
                                 });
                             }
 
@@ -165,7 +165,7 @@ module.exports = {
                                         sails.log.error(err);
                                     }
 
-                                    audit.log('registration', user.company + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
+                                    audit.log('registration', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
                                 });
                             }
 
@@ -188,7 +188,7 @@ module.exports = {
                             sails.log.error(err);
                         }
 
-                        audit.log('membership', user.company + ' memebership has been disabled' );
+                        audit.log('membership', user.companyName + ' memebership has been disabled' );
 
                         return res.json(200);
                     });

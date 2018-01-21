@@ -108,12 +108,12 @@ module.exports = {
      * @apiDescription This is where a new user is created.
      * @apiGroup User
      *
-     * @apiParam {String} email Email of the new user.
+     * @apiParam {String} email Email of the new user. 
      * @apiParam {String} password Password.
      * @apiParam {String} confirmPassword Confirm the password.
      * @apiParam {String} address Addresse of the business.
      * @apiParam {String} bizNature Nature of business.
-     * @apiParam {String} company Name of company.
+     * @apiParam {String} companyName Name of company.
      * @apiParam {String} companyCOIUrl Document URL of company certificate if incoporation.
      * @apiParam {String} phone Phone number of company.
      * @apiParam {String} companyRepName1 Name of first company representative.
@@ -182,7 +182,7 @@ module.exports = {
                         //     'email': process.env.SITE_EMAIL,
                         //     'from': process.env.SITE_NAME,
                         //     'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-                        //     'body': 'Hello ' + user.company + '! <br><br> Your registration process has begun.<br><br> Kindly execise patience as your apointed referees aprove your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+                        //     'body': 'Hello ' + user.companyName + '! <br><br> Your registration process has begun.<br><br> Kindly execise patience as your apointed referees aprove your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
                         //     'to': user.email
                         // }
 
@@ -279,10 +279,10 @@ module.exports = {
                 var refEmailData = {
                     'email': process.env.SITE_EMAIL,
                     'from': process.env.SITE_NAME,
-                    'subject': 'Action required on ' + process.env.SITE_NAME + ' membership registration for ' + user.company,
+                    'subject': 'Action required on ' + process.env.SITE_NAME + ' membership registration for ' + user.companyName,
 
                     'body': 'Hello!<br><br>' +
-                        user.company + 'Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
+                        user.companyName + 'Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
                         'Click on the appropriate button to APPROVE or REJECT the applicant for membership.<br><br>' +
                         '<a href=" ' + refereeUrl + user.id + ' " style="color: green;">APPROVE</a>.<br><br>' +
                         '<a href=" ' + refereeUrl + user.id + ' " style="color: red;">REJECT</a>.<br><br>' +
@@ -307,7 +307,7 @@ module.exports = {
                     'email': process.env.SITE_EMAIL,
                     'from': process.env.SITE_NAME,
                     'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-                    'body': 'Hello ' + user.company + '! <br><br> Your registration process has begun. <br><br> Kindly execise patience as your apointed referees confirm your application. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+                    'body': 'Hello ' + user.companyName + '! <br><br> Your registration process has begun. <br><br> Kindly execise patience as your apointed referees confirm your application. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
                     'to': user.email
                 }
 
@@ -432,7 +432,7 @@ module.exports = {
                         }
 
                         var who = jwToken.who(req.headers.authorization);
-                        audit.log('user', who + ' deleted ' + user.company);
+                        audit.log('user', who + ' deleted ' + user.companyName);
 
                         return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been deleted' });
                     });
@@ -458,7 +458,7 @@ module.exports = {
      * @apiParam {String} confirmPassword Confirm the password.
      * @apiParam {String} address Addresse of the business.
      * @apiParam {String} bizNature Nature of business.
-     * @apiParam {String} company Name of company.
+     * @apiParam {String} companyName Name of company.
      * @apiParam {String} companyCOIUrl Document URL of company certificate if incoporation.
      * @apiParam {String} phone Phone number of company.
      * @apiParam {String} companyRepName1 Name of first company representative.
@@ -520,7 +520,7 @@ module.exports = {
                         }
 
                         var who = jwToken.who(req.headers.authorization);
-                        audit.log('user', who + ' edited ' + user.company);
+                        audit.log('user', who + ' edited ' + user.companyName);
 
                         return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been updated' });
                     });
@@ -623,7 +623,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            User.find({ company: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, users) {
+            User.find({ companyName: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, users) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -662,7 +662,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         }
 
-        User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).sort('createdAt DESC').populate('posts').exec(function(err, user) {
+        User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).sort('createdAt ASC').populate('posts').exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
@@ -705,7 +705,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         }
 
-        User.findOne({ select: 'membershipId', where: { id: req.param('id') } }).sort('createdAt DESC').populate('friends', { select: ['email', 'membershipId', 'company', 'profileImage']}).exec(function(err, user) {
+        User.findOne({ select: 'membershipId', where: { id: req.param('id') } }).sort('createdAt DESC').populate('friends', { select: ['email', 'membershipId', 'companyName', 'profileImage']}).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
