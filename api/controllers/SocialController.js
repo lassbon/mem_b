@@ -661,7 +661,7 @@ module.exports = {
         }
 
         if (req.param('id')) {
-            SocialPosts.findOne({ id: req.param('id') }).sort('createdAt DESC').populate('comments').exec(function(err, post) {
+            SocialPosts.findOne({ id: req.param('id') }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).exec(function(err, post) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -674,7 +674,7 @@ module.exports = {
                 }
             });
         } else {
-            SocialPosts.find().populate('comments').sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, posts) {
+            SocialPosts.find().populate('comments', { sort: 'createdAt DESC' }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, posts) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -728,7 +728,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            SocialPosts.find({ postText: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').populate('comments').populate('likes').paginate({ page: page, limit: limit }).exec(function(err, posts) {
+            SocialPosts.find({ postText: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).paginate({ page: page, limit: limit }).exec(function(err, posts) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });

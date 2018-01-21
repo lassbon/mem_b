@@ -662,7 +662,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         }
 
-        User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).sort('createdAt ASC').populate('posts').exec(function(err, user) {
+        User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).sort('createdAt DESC').populate('posts', { sort: 'createdAt DESC' }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });

@@ -285,7 +285,7 @@ module.exports = {
      */
     getTopic: function(req, res) {
         if (req.param('id')) {
-            ForumTopics.findOne({ id: req.param('id') }).populate('posts').exec(function(err, topic) {
+            ForumTopics.findOne({ id: req.param('id') }).populate('posts', { sort: 'createdAt DESC' }).exec(function(err, topic) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -298,7 +298,7 @@ module.exports = {
                 }
             });
         } else {
-            ForumTopics.find().populate('posts').sort('createdAt DESC').exec(function(err, topics) {
+            ForumTopics.find().populate('posts', { sort: 'createdAt DESC' }).sort('createdAt DESC').exec(function(err, topics) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -495,7 +495,7 @@ module.exports = {
      */
     getPost: function(req, res) {
         if (req.param('id')) {
-            ForumPosts.findOne({ id: req.param('id'), censored: false }).sort('createdAt DESC').populate('comments').exec(function(err, post) {
+            ForumPosts.findOne({ id: req.param('id'), censored: false }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).exec(function(err, post) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -508,7 +508,7 @@ module.exports = {
                 }
             });
         } else {
-            ForumPosts.find({censored: false }).sort('createdAt DESC').populate('comments').exec(function(err, posts) {
+            ForumPosts.find({censored: false }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).exec(function(err, posts) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
