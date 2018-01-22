@@ -153,6 +153,10 @@ module.exports.policies = {
         //'*': true,
     },
 
+    'TestController': {
+        '*': ['isUser', 'isAuthenticated'],
+    },
+
     /***************************************************************************
      *                                                                          *
      * Here's an example of mapping some policies to run before a controller    *

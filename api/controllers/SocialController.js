@@ -976,10 +976,8 @@ module.exports = {
                 return res.json(err.status, { err: err });
             }
 
-            if (post) {
-                res.json(200, {
-                    id: comment.id
-                });
+            if (comment) {
+                res.json(200, comment);
             }
         });
 

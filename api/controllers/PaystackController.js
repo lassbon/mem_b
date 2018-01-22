@@ -42,11 +42,21 @@ module.exports = {
 
                             audit.log('membership', user.companyName + ' paid membership fee');
 
+                            user.membershipId = '1234567890';
+
+                            // this block of code is written to take care of the double zero
+                            // added to the amount paid by the paystack people
+                            var amountPaid = event.data.amount;
+                            amountPaid = amountPaid.toString();
+                            amountPaid = amountPaid.slice(0, -2);
+                            amountPaid = parseInt(amountPaid);
+
                             var data = {
-                                memeberID: user.membershipId,
-                                name: event.data.customer.first_name + ' ' + event.data.customer.last_name,
+                                memberID: user.membershipId,
+                                name: user.companyName,
                                 type: 'Payment for' + event.data.plan.name,
-                                source: event.authorization.channel,
+                                source: event.data.authorization.channel,
+                                amount: amountPaid,
                                 data: event
                             }
 
@@ -78,13 +88,21 @@ module.exports = {
                                     sails.log.error(err);
                                 }
 
+                                // this block of code is written to take care of the double zero
+                                // added to the amount paid by the paystack people
+                                var amountPaid = event.data.amount;
+                                amountPaid = amountPaid.toString();
+                                amountPaid = amountPaid.slice(0, -2);
+                                amountPaid = parseInt(amountPaid);
+
                                 audit.log('membership', user.companyName + ' renewed membership fee');
 
                                 var data = {
                                     memeberID: user.membershipId,
-                                    name: event.data.customer.first_name + ' ' + event.data.customer.last_name,
-                                    type: 'Payment for' + event.data.plan.name,
+                                    name: user.companyName,
+                                    type: 'Payment for ' + event.data.plan.name,
                                     source: event.data.authorization.channel,
+                                    amount: amountPaid,
                                     data: event
                                 }
 
@@ -102,7 +120,13 @@ module.exports = {
                             if (err) {
                                 sails.log.error(err);
                             }
-                            console.log(event);
+
+                            // this block of code is written to take care of the double zero
+                            // added to the amount paid by the paystack people
+                            var amountPaid = event.data.amount;
+                            amountPaid = amountPaid.toString();
+                            amountPaid = amountPaid.slice(0, -2);
+                            amountPaid = parseInt(amountPaid);
 
                             var payment_for = event.data.metadata.custom_fields[0].value;
                             var memberId = event.data.metadata.custom_fields[1].value;
@@ -112,7 +136,7 @@ module.exports = {
                                 name: user.companyName,
                                 type: 'Payment for ' + event.data.metadata.custom_fields[0].variable_name,
                                 source: event.data.authorization.channel,
-                                amount: event.data.amount,
+                                amount: amountPaid,
                                 data: event
                             }
 
@@ -124,7 +148,7 @@ module.exports = {
                             // Check if payment is towards a donation
                             if (donation.test(payment_for) === true) {
                                 var donationId = payment_for.split('_')[1];
-                                DonationPayments.create({ amount: event.data.amount, donator: memberId, donationId: donationId }).exec(function(err, info) {
+                                DonationPayments.create({ amount: amountPaid, donator: memberId, donationId: donationId }).exec(function(err, info) {
                                     if (err) {
                                         sails.log.error(err);
                                     }
@@ -136,7 +160,7 @@ module.exports = {
                             // Check if payment is for a training
                             if (training.test(payment_for) === true) {
                                 var trainingId = payment_for.split('_')[1];
-                                TrainingPayments.create({ amount: event.data.amount, payer: memberId, trainingId: trainingId }).exec(function(err, info) {
+                                TrainingPayments.create({ amount: amountPaid, payer: memberId, trainingId: trainingId }).exec(function(err, info) {
                                     if (err) {
                                         sails.log.error(err);
                                     }
@@ -148,7 +172,7 @@ module.exports = {
                             // Check if payment is for an event
                             if (events.test(payment_for) === true) {
                                 var eventId = payment_for.split('_')[1];
-                                EventsPayments.create({ amount: event.data.amount, payer: memberId, trainingId: trainingId }).exec(function(err, info) {
+                                EventsPayments.create({ amount: amountPaid, payer: memberId, trainingId: trainingId }).exec(function(err, info) {
                                     if (err) {
                                         sails.log.error(err);
                                     }
@@ -160,7 +184,7 @@ module.exports = {
                             // Check if payment is for registration
                             if (register.test(payment_for) === true) {
                                 var regId = payment_for.split('_')[1];
-                                RegistrationPayments.create({ amount: event.data.amount, payer: memberId }).exec(function(err, info) {
+                                RegistrationPayments.create({ amount: amountPaid, payer: memberId }).exec(function(err, info) {
                                     if (err) {
                                         sails.log.error(err);
                                     }
@@ -188,7 +212,7 @@ module.exports = {
                             sails.log.error(err);
                         }
 
-                        audit.log('membership', user.companyName + ' memebership has been disabled' );
+                        audit.log('membership', user.companyName + ' memebership has been disabled');
 
                         return res.json(200);
                     });

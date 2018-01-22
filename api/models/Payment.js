@@ -10,8 +10,7 @@ module.exports = {
     attributes: {
 
         memberId: {
-            type: 'string',
-            required: true
+            type: 'string'
         },
         name: {
             type: 'string'
@@ -29,7 +28,7 @@ module.exports = {
             required: true
         },
         amount: {
-            type: 'string',
+            type: 'integer',
             required: true
         },
     }

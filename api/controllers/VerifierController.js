@@ -226,7 +226,7 @@ module.exports = {
    */
   get: function (req, res) {
     if(req.param('id')){
-      User.findOne({id : req.param('id'), verified: false}).exec(function (err, user){
+      User.findOne({id : req.param('id'), verified: false}).sort('createdAt DESC').exec(function (err, user){
         if (err) {
           sails.log.error(err);
           return res.json(err.status, {err: err});
@@ -240,7 +240,7 @@ module.exports = {
         }
       });
     }else{
-      User.find({verified: false}).exec(function (err, users){
+      User.find({verified: false}).sort('createdAt DESC').exec(function (err, users){
         if (err) {
           sails.log.error(err);
           return res.json(err.status, {err: err});

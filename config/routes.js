@@ -315,4 +315,8 @@ module.exports.routes = {
     // Audit routes
     'GET /api/v1/audit': 'AuditController.get',
     'POST /api/v1/audit/excel': 'AuditController.getExcel',
+
+
+    // Test routes
+    'POST /api/v1/testemail': 'TestController.testEmail',
 };
