@@ -16,6 +16,10 @@ module.exports = {
       model: 'user',
       required: true
     },
+    companyName:{
+      type: 'string',
+      required: true
+    },
     post: {
       model: 'socialPosts',
       required: true

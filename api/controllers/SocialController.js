@@ -442,15 +442,25 @@ module.exports = {
         if (!req.param('postText')) {
             return res.json(401, { status: 'error', err: 'No post content provided!' });
         }
-        SocialPosts.create(req.body).exec(function(err, post) {
+
+        User.findOne({ select: 'companyName', where: { id: req.param('owner') } }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
-            if (post) {
-                res.json(200, { status: 'success', id: post.id });
-            }
+            req.body.companyName = user.companyName;
+
+            SocialPosts.create(req.body).exec(function(err, post) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (post) {
+                    res.json(200, { status: 'success', id: post.id });
+                }
+            });
         });
     },
 
@@ -970,17 +980,25 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Comment provided!' });
         }
 
-        SocialComments.create(req.body).exec(function(err, comment) {
+        User.findOne({ select: 'companyName', where: { id: req.param('owner') } }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
             }
 
-            if (comment) {
-                res.json(200, comment);
-            }
-        });
+            req.body.companyName = user.companyName;
 
+            SocialComments.create(req.body).exec(function(err, comment) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (comment) {
+                    res.json(200, comment);
+                }
+            });
+        });
     },
 
     /**
