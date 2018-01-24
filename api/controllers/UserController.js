@@ -289,7 +289,33 @@ module.exports = {
                         'Thank you for your time.<br><br>' +
                         process.env.SITE_NAME,
 
-                    'to': [referee.referrer1, referee.referrer2]
+                    'to': referee.referrer1
+                }
+
+                azureEmail.send(refEmailData, function(resp) {
+                    if (resp === 'success') {
+                        sails.log.info('The email was sent successfully.');
+                    }
+
+                    if (resp === 'error') {
+                        sails.log.error(resp);
+                    }
+                });
+
+                var refEmailData = {
+                    'email': process.env.SITE_EMAIL,
+                    'from': process.env.SITE_NAME,
+                    'subject': 'Action required on ' + process.env.SITE_NAME + ' membership registration for ' + user.companyName,
+
+                    'body': 'Hello!<br><br>' +
+                        user.companyName + 'Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
+                        'Click on the appropriate button to APPROVE or REJECT the applicant for membership.<br><br>' +
+                        '<a href=" ' + refereeUrl + user.id + ' " style="color: green;">APPROVE</a>.<br><br>' +
+                        '<a href=" ' + refereeUrl + user.id + ' " style="color: red;">REJECT</a>.<br><br>' +
+                        'Thank you for your time.<br><br>' +
+                        process.env.SITE_NAME,
+
+                    'to': referee.referrer2
                 }
 
                 azureEmail.send(refEmailData, function(resp) {

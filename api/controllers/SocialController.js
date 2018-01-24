@@ -443,7 +443,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No post content provided!' });
         }
 
-        User.findOne({ select: 'companyName', where: { id: req.param('owner') } }).exec(function(err, user) {
+        User.findOne({ select: ['companyName', 'membershipId'], where: { id: req.param('owner') } }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
@@ -980,7 +980,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Comment provided!' });
         }
 
-        User.findOne({ select: 'companyName', where: { id: req.param('owner') } }).exec(function(err, user) {
+        User.findOne({ select: ['companyName', 'membershipId'], where: { id: req.param('owner') } }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });

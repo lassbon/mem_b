@@ -31,7 +31,7 @@
  *     }
  */
 
-  /**
+/**
  * @apiDefine SearchTermNotProvidedError
  *
  * @apiError SearchTermNotProvided No search term provided.
@@ -200,7 +200,7 @@ module.exports = {
                 if (!project) {
                     return res.json(404, { status: 'error', err: 'No Project with such id existing' })
                 } else {
-                    Projects.update({ id: req.param('id')}, {status: 'completed' }).exec(function(err) {
+                    Projects.update({ id: req.param('id') }, { status: 'completed' }).exec(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
@@ -379,7 +379,7 @@ module.exports = {
                 }
             });
         } else {
-            Projects.find({status: 'completed' }).sort('createdAt DESC').exec(function(err, project) {
+            Projects.find({ status: 'completed' }).sort('createdAt DESC').exec(function(err, project) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -428,13 +428,39 @@ module.exports = {
                 }
             });
         } else {
-            Projects.find({status: 'ongoing' }).sort('createdAt DESC').exec(function(err, project) {
+            Projects.find({ status: 'ongoing' }).sort('createdAt DESC').exec(function(err, project) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 return res.json(200, project);
+            });
+        }
+    },
+
+    getProjects: function(req, res) {
+        if (req.param('id')) {
+            Projects.findOne({ id: req.param('id') }).exec(function(err, project) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!project) {
+                    return res.json(404, { status: 'error', message: 'No Project with such id existing' })
+                } else {
+                    return res.json(200, project);
+                }
+            });
+        } else {
+            Projects.find().sort('createdAt DESC').exec(function(err, projects) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, projects);
             });
         }
     }

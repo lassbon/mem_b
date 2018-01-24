@@ -102,6 +102,9 @@ module.exports.routes = {
 
     'GET /api/v1/searchprojects/:id/:page/:limit': 'ProjectsController.searchProjects',
 
+    'GET /api/v1/getprojects': 'ProjectsController.getProjects',
+    'GET /api/v1/getprojects/:id': 'ProjectsController.getProjects',
+
     /**
      * Training routes
      */
@@ -119,6 +122,9 @@ module.exports.routes = {
     'GET /api/v1/mytrainings/:id': 'TrainingController.myTrainings',
     'GET /api/v1/searchtrainings/:id/:page/:limit': 'TrainingController.searchTrainings',
 
+    'GET /api/v1/gettrainings': 'TrainingController.getTrainings',
+    'GET /api/v1/gettrainings/:id': 'TrainingController.getTrainings',
+
     /**
      * Event routes
      */
@@ -135,6 +141,9 @@ module.exports.routes = {
 
     'GET /api/v1/myevents/:id': 'EventsController.myEvents',
     'GET /api/v1/searchevents/:id/:page/:limit': 'EventsController.searchEvents',
+
+    'GET /api/v1/getevents': 'EventsController.getEvents',
+    'GET /api/v1/getevents/:id': 'EventsController.getEvents',
 
     /**
      * Advert routes
@@ -162,6 +171,9 @@ module.exports.routes = {
 
     'GET /api/v1/mydonations/:id': 'DonationController.myDonations',
     'GET /api/v1/searchdonations/:id/:page/:limit': 'DonationController.searchDonations',
+
+    'GET /api/v1/getdonations': 'DonationController.getDonations',
+    'GET /api/v1/getdonations/:id': 'DonationController.getDonations',
 
     /**
      * Levels routes

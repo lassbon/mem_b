@@ -251,7 +251,7 @@ module.exports = {
                 if (!training) {
                     return res.json(404, { status: 'error', err: 'No Training with such id existing' })
                 } else {
-                    Training.update({ id: req.param('id') }, {status: 'completed'}).exec(function(err) {
+                    Training.update({ id: req.param('id') }, { status: 'completed' }).exec(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
@@ -431,7 +431,7 @@ module.exports = {
                 }
             });
         } else {
-            Training.find({status: 'completed' }).sort('createdAt DESC').exec(function(err, training) {
+            Training.find({ status: 'completed' }).sort('createdAt DESC').exec(function(err, training) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -480,7 +480,7 @@ module.exports = {
                 }
             });
         } else {
-            Training.find({status: 'ongoing' }).sort('createdAt DESC').exec(function(err, training) {
+            Training.find({ status: 'ongoing' }).sort('createdAt DESC').exec(function(err, training) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -519,7 +519,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No user id provided!' });
         }
 
-        TrainingPayments.find({payer: req.param('id')}).sort('createdAt DESC').exec(function(err, trainings) {
+        TrainingPayments.find({ payer: req.param('id') }).sort('createdAt DESC').exec(function(err, trainings) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
@@ -527,5 +527,31 @@ module.exports = {
 
             return res.json(200, trainings);
         });
+    },
+
+    getTrainings: function(req, res) {
+        if (req.param('id')) {
+            Training.findOne({ id: req.param('id')}).sort('createdAt DESC').exec(function(err, training) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!training.id) {
+                    return res.json(404, { status: 'error', message: 'No training with such id existing' })
+                } else {
+                    return res.json(200, training);
+                }
+            });
+        } else {
+            Training.find().sort('createdAt DESC').exec(function(err, trainings) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, trainings);
+            });
+        }
     }
 };

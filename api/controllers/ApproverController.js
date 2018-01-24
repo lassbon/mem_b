@@ -76,7 +76,7 @@ module.exports = {
           // create and associate memebership id to the new user
           var membershipId = utility.membershipId();
 
-          User.update({ id: req.param('id') }, { approved: true, membershipStatus:'active', membershipId: membershipId }).exec(function(err, data) {
+          User.update({ id: req.param('id') }, { approved: true, membershipStatus: 'active', membershipId: membershipId }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
               return res.json(err.status, { err: err });
@@ -96,7 +96,12 @@ module.exports = {
               'email': process.env.SITE_EMAIL,
               'from': process.env.SITE_NAME,
               'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-              'body': 'Hello ' + user.companyName + '! <br><br> ' + approvalMessage + ' <br><br> Kindly visit the website to continue the registration process. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+              'body': 'Hello ' + user.companyName + '! <br><br> ' +
+                'Congratulations! Your company registration has been approved. <br><br> ' +
+                'Kindly log in <a href="'+ process.env.MEMBERSHIP_LINK +'">MEMBERSHIP LINK HERE</> to complete registration. <br><br> ' +
+                'Thank you. <br><br>' +
+                process.env.SITE_NAME,
+
               'to': user.email
             }
 

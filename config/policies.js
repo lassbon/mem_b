@@ -88,6 +88,7 @@ module.exports.policies = {
         'getCompleted': ['isUser', 'isAuthenticated'],
         'getOngoing': ['isUser', 'isAuthenticated'],
         'searchProjects': ['isUser', 'isAuthenticated'],
+        'getProjects': ['isUser', 'isAuthenticated'],
     },
 
     'TrainingController': {
@@ -96,6 +97,7 @@ module.exports.policies = {
         'getOngoing': ['isUser', 'isAuthenticated'],
         'myTrainings': ['isUser', 'isAuthenticated'],
         'searchTrainings': ['isUser', 'isAuthenticated'],
+        'getTrainings': ['isUser', 'isAuthenticated'],
     },
 
     'EventsController': {
@@ -104,6 +106,7 @@ module.exports.policies = {
         'getOngoing': ['isUser', 'isAuthenticated'],
         'myEvents': ['isUser', 'isAuthenticated'],
         'searchEvents': ['isUser', 'isAuthenticated'],
+        'getEvents': ['isUser', 'isAuthenticated'],
     },
 
     'DonationController': {
@@ -112,6 +115,7 @@ module.exports.policies = {
         'getOngoing': ['isUser', 'isAuthenticated'],
         'myDonations': ['isUser', 'isAuthenticated'],
         'searchDonations': ['isUser', 'isAuthenticated'],
+        'getDonations': ['isUser', 'isAuthenticated'],
     }, 
 
     'LevelsController': {

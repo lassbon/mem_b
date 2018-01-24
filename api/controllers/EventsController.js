@@ -70,7 +70,7 @@
  *     }
  */
 
-  /** 
+/** 
  * @apiDefine UserIdNotProvidedError
  *
  * @apiError UserIdNotProvided No User id provided.
@@ -83,7 +83,7 @@
  *     }
  */
 
- /**
+/**
  * @apiDefine SearchTermNotProvidedError
  *
  * @apiError SearchTermNotProvided No search term provided.
@@ -251,7 +251,7 @@ module.exports = {
                 if (!event) {
                     return res.json(404, { status: 'error', err: 'No Event with such id existing' })
                 } else {
-                    Events.update({ id: req.param('id') }, {status: 'completed'}).exec(function(err) {
+                    Events.update({ id: req.param('id') }, { status: 'completed' }).exec(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
@@ -431,7 +431,7 @@ module.exports = {
                 }
             });
         } else {
-            Events.find({status: 'completed' }).sort('createdAt DESC').exec(function(err, event) {
+            Events.find({ status: 'completed' }).sort('createdAt DESC').exec(function(err, event) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -480,7 +480,7 @@ module.exports = {
                 }
             });
         } else {
-            Events.find({status: 'ongoing' }).sort('createdAt DESC').exec(function(err, event) {
+            Events.find({ status: 'ongoing' }).sort('createdAt DESC').exec(function(err, event) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -519,7 +519,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No user id provided!' });
         }
 
-        EventPayments.find({payer: req.param('id')}).sort('createdAt DESC').exec(function(err, events) {
+        EventPayments.find({ payer: req.param('id') }).sort('createdAt DESC').exec(function(err, events) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
@@ -527,5 +527,32 @@ module.exports = {
 
             return res.json(200, events);
         });
+    },
+
+    getEvents: function(req, res) {
+
+        if (req.param('id')) {
+            Events.findOne({ id: req.param('id')}).sort('createdAt DESC').exec(function(err, event) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!event) {
+                    return res.json(404, { status: 'error', message: 'No event with such id existing' })
+                } else {
+                    return res.json(200, event);
+                }
+            });
+        } else {
+            Events.find().sort('createdAt DESC').exec(function(err, event) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, event);
+            });
+        }
     }
 };

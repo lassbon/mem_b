@@ -75,6 +75,32 @@ module.exports = {
         return res.json(err.status, { err: err });
       }
 
+      // check if user has been fully verified
+      if (user.referred1 == true && user.referred2 == true) {
+        var emailData = {
+          'email': process.env.SITE_EMAIL,
+          'from': process.env.SITE_NAME,
+          'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+          'body': 'Hello ' + user.companyName + '! <br><br> ' +
+            'You have been confirmed by all your financial members. <br><br>' +
+            'Please hold on while we verify and approve your company. An email will be sent to you to proceed with your registration. <br><br>' +
+            'Thank you. <br><br>' +
+            process.env.SITE_NAME,
+
+          'to': user.email
+        }
+
+        azureEmail.send(emailData, function(resp) {
+          if (resp === 'error') {
+            sails.log.error(resp);
+          }
+
+          if (resp === 'success') {
+            return res.json(200, { status: 'success', message: 'Confirmed!' });
+          }
+        });
+      }
+
       if (!user) {
         return res.json(404, { status: 'error', message: 'No User with such id existing' });
       } else {
@@ -115,7 +141,7 @@ module.exports = {
           'email': process.env.SITE_EMAIL,
           'from': process.env.SITE_NAME,
           'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-          'body': 'Hello ' + user.companyName + '! <br><br> '+ confirmationMessage +' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+          'body': 'Hello ' + user.companyName + '! <br><br> ' + confirmationMessage + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
           'to': user.email
         }
 
@@ -215,7 +241,7 @@ module.exports = {
           'email': process.env.SITE_EMAIL,
           'from': process.env.SITE_NAME,
           'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-          'body': 'Hello ' + user.companyName + '! <br><br> '+ rejectionMessage +' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+          'body': 'Hello ' + user.companyName + '! <br><br> ' + rejectionMessage + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
           'to': user.email
         }
 
