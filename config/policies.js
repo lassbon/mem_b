@@ -39,7 +39,7 @@ module.exports.policies = {
     'UserController': { // We dont need authorization here, allowing public access
         '*': ['isUser', 'isAuthenticated'],
         'create': true,
-        'delete': ['isHigh', 'isAdmin', 'isAuthenticated']
+        'delete': ['isAdministrator', 'isAdmin', 'isAuthenticated']
     },
 
     'UserPaymentsController': {
@@ -61,10 +61,10 @@ module.exports.policies = {
     'AdminController': {
         '*': ['isAdmin', 'isAuthenticated'],
         'forgotPassword': true,
-        'create': ['isAdmin', 'isHigh', 'isAuthenticated'],
-        'delete': ['isAdmin', 'isSuper', 'isAuthenticated'],
-        'get': ['isAdmin', 'isSuper', 'isAuthenticated'],
-        'getCount': ['isAdmin', 'isLow', 'isAuthenticated']
+        'create': ['isAdmin', 'isAdministrator', 'isAuthenticated'],
+        'delete': ['isAdmin', 'isSuper', 'isAuthenticated'], 
+        'get': ['isAdmin', 'isAdministrator', 'isAuthenticated'],
+        'getCount': ['isAdmin', 'isAdministrator', 'isAuthenticated']
     },
 
     'AuthController': {
@@ -76,15 +76,15 @@ module.exports.policies = {
     },
 
     'PaymentsController': {
-        'get': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        'get': ['isAdmin', 'isFinance', 'isAuthenticated'],
     },
 
     'AuditController': {
-        '*': ['isAdmin', 'isSuper', 'isAuthenticated']
+        '*': ['isAdmin', 'isAdministrator', 'isAuthenticated'],
     },
 
     'ProjectsController': {
-        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
+        '*': ['isAdmin', 'isContent', 'isAuthenticated'],
         'getCompleted': ['isUser', 'isAuthenticated'],
         'getOngoing': ['isUser', 'isAuthenticated'],
         'searchProjects': ['isUser', 'isAuthenticated'],
@@ -92,7 +92,7 @@ module.exports.policies = {
     },
 
     'TrainingController': {
-        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
+        '*': ['isAdmin', 'isContent', 'isAuthenticated'],
         'getCompleted': ['isUser', 'isAuthenticated'],
         'getOngoing': ['isUser', 'isAuthenticated'],
         'myTrainings': ['isUser', 'isAuthenticated'],
@@ -101,7 +101,7 @@ module.exports.policies = {
     },
 
     'EventsController': {
-        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
+        '*': ['isAdmin', 'isContent', 'isAuthenticated'],
         'getCompleted': ['isUser', 'isAuthenticated'],
         'getOngoing': ['isUser', 'isAuthenticated'],
         'myEvents': ['isUser', 'isAuthenticated'],
@@ -110,7 +110,7 @@ module.exports.policies = {
     },
 
     'DonationController': {
-        '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        '*': ['isAdmin', 'isContent', 'isAuthenticated'],
         'getCompleted': ['isUser', 'isAuthenticated'],
         'getOngoing': ['isUser', 'isAuthenticated'],
         'myDonations': ['isUser', 'isAuthenticated'],
@@ -119,12 +119,12 @@ module.exports.policies = {
     }, 
 
     'LevelsController': {
-        '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        '*': ['isAdmin', 'isAdministrator', 'isAuthenticated'],
         'get': ['isUser', 'isAuthenticated'],
     },
 
     'AdvertController': {
-        '*': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        '*': ['isAdmin', 'isContent', 'isAuthenticated'],
         'get': ['isUser', 'isAuthenticated'],
     },
 
@@ -133,28 +133,23 @@ module.exports.policies = {
     },
 
     'KnowledgeBaseController': {
-        '*': ['isAdmin', 'isAuthenticated'],
+        '*': ['isAdmin', 'isContent', 'isAuthenticated'],
         'get': ['isUser', 'isAuthenticated'],
 
         'create': ['isUser', 'isAuthenticated'],
         'uploadDocument': ['isUser', 'isAuthenticated'],
         'update': ['isUser', 'isAuthenticated'],
-        'delete': ['isAdmin', 'isHigh', 'isAuthenticated'],
+        'delete': ['isAdmin', 'isAdministrator', 'isAuthenticated'],
         'getDoc': ['isUser', 'isAuthenticated'],
         'searchDocuments': ['isUser', 'isAuthenticated'],
     },
 
     'ApproverController': {
-        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
+        '*': ['isAdmin', 'isApprover', 'isAuthenticated'],
     },
 
     'VerifierController': {
-        '*': ['isAdmin', 'isLow', 'isAuthenticated'],
-    },
-
-    'AuditController': {
-        '*': ['isAdmin', 'isSuper', 'isAuthenticated'],
-        //'*': true,
+        '*': ['isAdmin', 'isVerifier', 'isAuthenticated'],
     },
 
     'TestController': {
