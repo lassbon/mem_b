@@ -558,7 +558,7 @@ module.exports = {
                 }
             });
         } else {
-            DonationPayments.find().sort('createdAt DESC').exec(function(err, donations) {
+            Donation.find().sort('createdAt DESC').exec(function(err, donations) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });

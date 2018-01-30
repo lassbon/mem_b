@@ -266,13 +266,13 @@ module.exports = {
      *     }
      */
     alertReferee: function(req, res) {
-        User.findOne({ select: ['referrer1', 'referrer2'], where: { id: req.body.id } }).exec(function(err, referee) {
+        User.findOne({ select: ['referrer1', 'referrer2', 'companyName'], where: { id: req.body.id } }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(404, { status: 'error', err: err });
             }
 
-            if (!referee) {
+            if (!user) {
                 return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
             } else {
                 // Send action email to the users apointed referees
@@ -282,14 +282,14 @@ module.exports = {
                     'subject': 'Action required on ' + process.env.SITE_NAME + ' membership registration for ' + user.companyName,
 
                     'body': 'Hello!<br><br>' +
-                        user.companyName + 'Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
-                        'Click on the appropriate button to APPROVE or REJECT the applicant for membership.<br><br>' +
-                        '<a href=" ' + refereeUrl + user.id + ' " style="color: green;">APPROVE</a>.<br><br>' +
-                        '<a href=" ' + refereeUrl + user.id + ' " style="color: red;">REJECT</a>.<br><br>' +
+                        user.companyName + ' Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
+                        'Click on the appropriate button to CONFIRM or REJECT the applicant for membership.<br><br>' +
+                        '<a href=" ' + process.env.VERIFIER_LINK + user.id + ' " style="color: green;">CONFIRM</a>.<br><br>' +
+                        '<a href=" ' + process.env.VERIFIER_LINK + user.id + ' " style="color: red;">REJECT</a>.<br><br>' +
                         'Thank you for your time.<br><br>' +
                         process.env.SITE_NAME,
 
-                    'to': referee.referrer1
+                    'to': user.referrer1
                 }
 
                 azureEmail.send(refEmailData, function(resp) {
@@ -309,13 +309,13 @@ module.exports = {
 
                     'body': 'Hello!<br><br>' +
                         user.companyName + 'Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
-                        'Click on the appropriate button to APPROVE or REJECT the applicant for membership.<br><br>' +
-                        '<a href=" ' + refereeUrl + user.id + ' " style="color: green;">APPROVE</a>.<br><br>' +
-                        '<a href=" ' + refereeUrl + user.id + ' " style="color: red;">REJECT</a>.<br><br>' +
+                        'Click on the appropriate button to CONFIRM or REJECT the applicant for membership.<br><br>' +
+                        '<a href=" ' + process.env.VERIFIER_LINK + user.id + ' " style="color: green;">CONFIRM</a>.<br><br>' +
+                        '<a href=" ' + process.env.VERIFIER_LINK + user.id + ' " style="color: red;">REJECT</a>.<br><br>' +
                         'Thank you for your time.<br><br>' +
                         process.env.SITE_NAME,
 
-                    'to': referee.referrer2
+                    'to': user.referrer2
                 }
 
                 azureEmail.send(refEmailData, function(resp) {

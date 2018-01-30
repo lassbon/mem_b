@@ -6,6 +6,7 @@
  */
 
 module.exports = {
+    schema: true,
 
     attributes: {
 
@@ -32,8 +33,7 @@ module.exports = {
         },
         status: {
             type: 'string',
-            defaultsTo: 'active',
-            enum: ['active', 'ended']
+            defaultsTo: 'ongoing'
         }
     }
 };

@@ -10,11 +10,14 @@ var bcrypt = require('bcrypt');
 
 module.exports = {
 
+    schema: true,
+
     attributes: {
 
         membershipId: {
             type: 'string',
-            //required: true
+            //required: true,
+            unique: true
         },
         email: {
             type: 'email',
@@ -25,7 +28,7 @@ module.exports = {
             type: 'string',
             //required: true
         },
-        bizNature: {
+        companyBusiness: {
             type: 'string',
             //required: true
         },
@@ -37,7 +40,7 @@ module.exports = {
             type: 'string',
             //required: true
         },
-        phone: {
+        companyPhone: {
             type: 'string',
             //required: true
         },
@@ -81,7 +84,7 @@ module.exports = {
             type: 'string',
             //required: true
         },
-        address: {
+        companyAddress: {
             type: 'text',
             //required: true
         },

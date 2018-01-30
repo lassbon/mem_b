@@ -240,7 +240,7 @@ module.exports = {
         }
       });
     }else{
-      User.find({verified: false}).sort('createdAt DESC').exec(function (err, users){
+      User.find({verified: false, referred1: true, referred2: true}).sort('createdAt DESC').exec(function (err, users){
         if (err) {
           sails.log.error(err);
           return res.json(err.status, {err: err});
