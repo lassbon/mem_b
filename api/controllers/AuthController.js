@@ -122,7 +122,7 @@ module.exports = {
                 } else {
                     res.json({
                         user: {
-                            username: user.username,
+                            companyName: user.companyName,
                             email: user.email,
                             id: user.id,
                             role: user.role

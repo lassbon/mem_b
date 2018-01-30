@@ -266,7 +266,7 @@ module.exports = {
      *     }
      */
     alertReferee: function(req, res) {
-        User.findOne({ select: ['referrer1', 'referrer2'], where: { email: req.body.id } }).exec(function(err, referee) {
+        User.findOne({ select: ['referrer1', 'referrer2'], where: { id: req.body.id } }).exec(function(err, referee) {
             if (err) {
                 sails.log.error(err);
                 return res.json(404, { status: 'error', err: err });
