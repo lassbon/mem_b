@@ -83,7 +83,7 @@
  *     }
  */
 
- /**
+/**
  * @apiDefine SearchTermNotProvidedError
  *
  * @apiError SearchTermNotProvided No search term provided.
@@ -606,6 +606,23 @@ module.exports = {
         }
     },
 
+    getOldMember: function(req, res) {
+        User.findOne({ id: req.param('membershipId') }).sort('createdAt DESC').exec(function(err, user) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            if (!user) {
+                return res.json(404, { status: 'error', err: 'No User with such id existing' })
+            } else {
+                delete user.password;
+                return res.json(200, user);
+            }
+        });
+
+    },
+
     /**
      * `UserController.searchUser()`
      * 
@@ -731,7 +748,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         }
 
-        User.findOne({ select: 'membershipId', where: { id: req.param('id') } }).sort('createdAt DESC').populate('friends', { select: ['email', 'membershipId', 'companyName', 'profileImage']}).exec(function(err, user) {
+        User.findOne({ select: 'membershipId', where: { id: req.param('id') } }).sort('createdAt DESC').populate('friends', { select: ['email', 'membershipId', 'companyName', 'profileImage'] }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });

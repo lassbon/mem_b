@@ -96,6 +96,10 @@ module.exports = {
             type: 'string',
             //required: true
         },
+        oldMember: {
+            type: 'boolean',
+            defaultsTo: false
+        },
         annualProfit: {
             type: 'string',
             //required: true
@@ -116,6 +120,10 @@ module.exports = {
             defaultsTo: 'inactive'
         },
         membershipFee: {
+            type: 'string',
+            defaultsTo: 'unpaid'
+        },
+        membershipDue: {
             type: 'string',
             defaultsTo: 'unpaid'
         },

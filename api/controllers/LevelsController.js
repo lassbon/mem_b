@@ -48,6 +48,7 @@ module.exports = {
      *
      * @apiParam {String} name Name of the membership level.
      * @apiParam {String} fee Fee for the memebership level.
+     * @apiParam {String} due Yearly due for the memebership level.
      * @apiParam {String} description Full description of the membership level.
      *
      * @apiSuccess {String} levels Level name and id returned from the API.
@@ -65,7 +66,7 @@ module.exports = {
      *     HTTP/1.1 401 Not Found
      *     {
      *       "status": "error",
-     *       "err": "No { name | fee | description } provided!"
+     *       "err": "No { name | fee | due | description } provided!"
      *     }
      */
     create: function(req, res) {
@@ -79,7 +80,7 @@ module.exports = {
             if (level) {
                 paystack.plan.create({
                         name: req.body.name,
-                        amount: req.body.fee,
+                        amount: req.body.due,
                         interval: 'annually'
                     })
                     .then(function(body) {
@@ -168,6 +169,7 @@ module.exports = {
      *
      * @apiParam {String} [name] Name of the membership level.
      * @apiParam {String} [fee] Fee for the memebership level.
+     * @apiParam {String} [due] Yearly due for the memebership level.
      * @apiParam {String} [description] Full description of the membership level.
      *
      * @apiSuccess {String} status Status of the response from API.
@@ -205,7 +207,7 @@ module.exports = {
 
                         paystack.plan.update({
                                 name: req.body.name,
-                                amount: req.body.fee,
+                                amount: req.body.due,
                                 interval: 'annually'
                             })
                             .then(function(body) {

@@ -24,6 +24,10 @@ module.exports = {
             type: 'integer',
             required: true
         },
+        due: {
+            type: 'integer',
+            required: true
+        },
         paystack: {
             type: 'json'
         }

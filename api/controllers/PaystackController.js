@@ -11,6 +11,7 @@ var events = regexp().start('event_').toRegExp();
 var project = regexp().start('project_').toRegExp();
 var training = regexp().start('training_').toRegExp();
 var register = regexp().start('registration').toRegExp();
+var membership = regexp().start('membership').toRegExp();
 
 module.exports = {
 
@@ -35,14 +36,19 @@ module.exports = {
                             sails.log.error(err);
                         }
 
-                        User.update({ email: event.data.customer.email }, { membershipFee: 'paid', membershipLevel: event.data.plan.name }).exec(function(err, info) {
+                        var memberId;
+                        if (!user.membershipId) {
+                            memberId = user.id;
+                        } else {
+                            memberId = user.membershipId;
+                        }
+
+                        User.update({ email: event.data.customer.email }, { membershipDue: 'paid', membershipLevel: event.data.plan.name }).exec(function(err, info) {
                             if (err) {
                                 sails.log.error(err);
                             }
 
-                            audit.log('membership', user.companyName + ' paid membership fee');
-
-                            user.membershipId = '1234567890';
+                            audit.log('membership', user.companyName + ' paid membership due');
 
                             // this block of code is written to take care of the double zero
                             // added to the amount paid by the paystack people
@@ -59,6 +65,14 @@ module.exports = {
                                 amount: amountPaid,
                                 data: event
                             }
+
+                            DuePayments.create({ amount: amountPaid, payer: memberId }).exec(function(err, info) {
+                                if (err) {
+                                    sails.log.error(err);
+                                }
+
+                                audit.log('Due', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
+                            });
 
                             Payment.create(data).exec(function(err, level) {
                                 if (err) {
@@ -83,7 +97,14 @@ module.exports = {
                                 sails.log.error(err);
                             }
 
-                            User.update({ email: event.data.customer.email }, { membershipFee: 'paid', membershipLevel: event.data.plan.name }).exec(function(err, info) {
+                            var memberId;
+                            if (!user.membershipId) {
+                                memberId = user.id;
+                            } else {
+                                memberId = user.membershipId;
+                            }
+
+                            User.update({ email: event.data.customer.email }, { membershipDue: 'paid', membershipLevel: event.data.plan.name }).exec(function(err, info) {
                                 if (err) {
                                     sails.log.error(err);
                                 }
@@ -95,7 +116,7 @@ module.exports = {
                                 amountPaid = amountPaid.slice(0, -2);
                                 amountPaid = parseInt(amountPaid);
 
-                                audit.log('membership', user.companyName + ' renewed membership fee');
+                                audit.log('membership', user.companyName + ' renewed membership due');
 
                                 var data = {
                                     memeberID: user.membershipId,
@@ -119,6 +140,13 @@ module.exports = {
                         User.findOne({ select: ['membershipId', 'companyName'], where: { email: event.data.customer.email } }).exec(function(err, user) {
                             if (err) {
                                 sails.log.error(err);
+                            }
+
+                            var memberId;
+                            if(!user.membershipId){
+                                memberId = user.id;
+                            }else{
+                                memberId = user.membershipId;
                             }
 
                             // this block of code is written to take care of the double zero
@@ -172,12 +200,24 @@ module.exports = {
                             // Check if payment is for an event
                             if (events.test(payment_for) === true) {
                                 var eventId = payment_for.split('_')[1];
-                                EventsPayments.create({ amount: amountPaid, payer: memberId, trainingId: trainingId }).exec(function(err, info) {
+                                EventsPayments.create({ amount: amountPaid, payer: memberId, eventId: eventId }).exec(function(err, info) {
                                     if (err) {
                                         sails.log.error(err);
                                     }
 
                                     audit.log('event', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
+                                });
+                            }
+
+                            // Check if payment is for a membership fee
+                            if (membership.test(payment_for) === true) {
+                                var memId = payment_for.split('_')[1];
+                                MembershipPayments.create({ amount: amountPaid, payer: memberId }).exec(function(err, info) {
+                                    if (err) {
+                                        sails.log.error(err);
+                                    }
+
+                                    audit.log('membership', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
                                 });
                             }
 
@@ -207,7 +247,7 @@ module.exports = {
                     break;
 
                 case 'subscription.disable':
-                    User.update({ email: event.data.customer.email }, { membershipFee: 'unpaid' }).exec(function(err, data) {
+                    User.update({ email: event.data.customer.email }, { membershipDue: 'unpaid' }).exec(function(err, data) {
                         if (err) {
                             sails.log.error(err);
                         }

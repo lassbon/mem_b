@@ -216,11 +216,49 @@ module.exports = {
 		});
 	},
 
-	// postuserMemberships: function(req, res) {
+	/**
+     * `UserPaymentsController.userDues()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/userpayments/dues/:id Get user due payments
+     * @apiName Dues
+     * @apiDescription This is where user due payment records are obtained.
+     * @apiGroup Payments
 
-	// 	EventsPayments.create(req.body).exec(function(err, memberships) {
-	// 		//console.log(memberships);
-	// 		return res.json(200, memberships);
-	// 	});
-	// },
+     * @apiParam {Number} id user ID.
+
+     * @apiUse UserIdNotProvidedError
+     */
+	userDues: function(req, res) {
+
+		if (!req.param('id')) {
+			return res.json(401, { status: 'error', err: 'No user id provided!' });
+		}
+
+		DuePayments.find({ payer: req.param('id') }).sort('createdAt DESC').exec(function(err, dues) {
+			if (err) {
+				sails.log.error(err);
+				return res.json(err.status, { err: err });
+			}
+
+			DuePayments.count({ payer: req.param('id') }).exec(function(err, count) {
+				if (err) {
+					sails.log.error(err);
+					return res.json(err.status, { err: err });
+				}
+
+				var dueTotal = 0;
+				dues.forEach(function(due) {
+					dueTotal += due.amount;
+				});
+
+				var paymentData = {};
+				paymentData.dues = dues;
+				paymentData.count = count;
+				paymentData.total = dueTotal;
+
+				return res.json(200, paymentData);
+			});
+		});
+	}
 }

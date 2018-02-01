@@ -634,4 +634,55 @@ module.exports = {
                 });
             });
     },
+
+    /**
+     * `PaymentsController.dues()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/dues Get yearly due payments
+     * @apiName Memberships
+     * @apiDescription This is where yearly due payment records are obtained.
+     * @apiGroup Payments
+     */
+    dues: function(req, res) {
+
+        var offset, limit = 0;
+
+        var field = req.param('field');
+
+        if (req.param('offset')) {
+            offset = req.param('offset');
+        }
+
+        if (req.param('limit')) {
+            limit = req.param('limit');
+        }
+
+        DuePayments.find().limit(limit)
+            .skip(offset).exec(function(err, dues) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                DuePayments.count().exec(function(err, count) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    var dueTotal = 0;
+                    dues.forEach(function(due) {
+                        dueTotal += due.amount;
+                    });
+
+                    var paymentData = {};
+                    paymentData.dues = dues;
+                    paymentData.count = count;
+                    paymentData.total = dueTotal;
+
+                    return res.json(200, paymentData);
+                });
+            });
+    },
 };

@@ -86,6 +86,8 @@ module.exports.routes = {
 
     'GET /api/v1/searchuser/:id/:page/:limit': 'UserController.searchUser',
 
+    'POST /api/v1/oldmember': 'UserController.getOldMember',
+
     /**
      * Projects routes
      */
@@ -321,8 +323,7 @@ module.exports.routes = {
     'GET /api/v1/userpayments/events/:id': 'UserPaymentsController.userEvents',
     'GET /api/v1/userpayments/trainings/:id': 'UserPaymentsController.userTrainings',
     'GET /api/v1/userpayments/memberships/:id': 'UserPaymentsController.userMemberships',
-
-    //'POST /api/v1/userpayments/memberships': 'UserPaymentsController.postuserMemberships',
+    'GET /api/v1/userpayments/dues/:id': 'UserPaymentsController.userDues',
 
     // Audit routes
     'GET /api/v1/audit': 'AuditController.get',
@@ -331,4 +332,5 @@ module.exports.routes = {
 
     // Test routes
     'POST /api/v1/testemail': 'TestController.testEmail',
+    'POST /api/v1/olddata': 'TestController.oldData',
 };
