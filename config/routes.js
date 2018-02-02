@@ -310,6 +310,7 @@ module.exports.routes = {
     'GET /api/v1/payments/trainings': 'PaymentsController.trainings',
     'GET /api/v1/payments/registrations': 'PaymentsController.registrations',
     'GET /api/v1/payments/memberships': 'PaymentsController.memberships',
+    'GET /api/v1/payments/dues': 'PaymentsController.dues',
 
     'POST /api/v1/payments/excel': 'PaymentsController.getExcel',
     'POST /api/v1/payments/donation/excel': 'PaymentsController.getDonationExcel',
@@ -317,6 +318,7 @@ module.exports.routes = {
     'POST /api/v1/payments/training/excel': 'PaymentsController.getTrainingExcel',
     'POST /api/v1/payments/registration/excel': 'PaymentsController.getRegistrationExcel',
     'POST /api/v1/payments/membership/excel': 'PaymentsController.getMembershipExcel',
+    'POST /api/v1/payments/due/excel': 'PaymentsController.getDueExcel',
 
     // User payments routes
     'GET /api/v1/userpayments/donations/:id': 'UserPaymentsController.userDonations',

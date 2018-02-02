@@ -53,7 +53,8 @@ module.exports = {
 
                 var oldMember = {
                     oldMember: true,
-                    password: 'password'
+                    password: 'password',
+                    membershipStatus: 'active'
                 }
 
                 if (record[1].length !== 0) {
@@ -77,7 +78,7 @@ module.exports = {
                 }
 
                 if (record[9].length !== 0) {
-                    oldMember.companyPhone = record[9];
+                    oldMember.companyPhone = record[9].split(' ').join(', ');
                 }
 
                 if (record[11].length !== 0) {
@@ -91,6 +92,8 @@ module.exports = {
                     }
 
                     if (!user) {
+                        console.log(oldMember);
+
                         User.create(oldMember).exec(function(err, member) {
                             if (err) {
                                 sails.log.error(err);

@@ -290,6 +290,36 @@ module.exports = {
     },
 
     /**
+     * `PaymentsController.getDuesExcel()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/payments/due/excel Get dues payment Excel document
+     * @apiName GetDueExcel
+     * @apiDescription This is where membership dues payment records are obtained in excel format.
+     * @apiGroup Payments
+     */
+    getDueExcel: function(req, res) {
+        DuePayments.find().exec(function(err, payments) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            }
+
+            var xls = json2xls(payments);
+
+            fs.writeFileSync('assets/tmp/DuePayments.xlsx', xls, 'binary');
+
+            res.download('assets/tmp/duePayments.xlsx', function(err) {
+                if (err) {
+                    return res.serverError(err)
+                } else {
+                    return res.ok();
+                }
+            });
+        });
+    },
+
+    /**
      * `PaymentsController.getTotals()`
      * 
      * ----------------------------------------------------------------------------------
