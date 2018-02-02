@@ -18,7 +18,7 @@
  *     }
  */
 
-/** 
+/**
  * @apiDefine UserInfoNotCompleteError
  *
  * @apiError UserInfoNotComplete User info not complete.
@@ -44,7 +44,7 @@
  *     }
  */
 
-/** 
+/**
  * @apiDefine UserIdNotProvidedError
  *
  * @apiError UserIdNotProvided No User id provided.
@@ -57,7 +57,7 @@
  *     }
  */
 
-/** 
+/**
  * @apiDefine UserEmailNotProvidedError
  *
  * @apiError UserEmailNotProvided No User email provided.
@@ -70,7 +70,7 @@
  *     }
  */
 
-/** 
+/**
  * @apiDefine UserTokenNotProvidedError
  *
  * @apiError UserTokenNotProvided No User token provided.
@@ -101,14 +101,14 @@ module.exports = {
 
     /**
      * `UserController.create()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {post} /api/v1/user Create a new user
      * @apiName CreateUser
      * @apiDescription This is where a new user is created.
      * @apiGroup User
      *
-     * @apiParam {String} email Email of the new user. 
+     * @apiParam {String} email Email of the new user.
      * @apiParam {String} password Password.
      * @apiParam {String} confirmPassword Confirm the password.
      * @apiParam {String} address Addresse of the business.
@@ -134,7 +134,7 @@ module.exports = {
      * @apiParam {String} referrer2 Email of second referrer.
 
      * @apiParam {String} [profileImage] Profile image for the company/member.
-     * 
+     *
      * @apiSuccess {String} status Status of the response from API.
      * @apiSuccess {String} message  Success message response from API.
      *
@@ -145,9 +145,9 @@ module.exports = {
      *       "id": "59dce9c16b54d91c38847825",
      *       "....": "....................."
      *     }
-     * 
+     *
      * @apiUse PasswordNotMatchError
-     * 
+     *
      * @apiUse UserInfoNotCompleteError
      */
     create: function(req, res) {
@@ -209,7 +209,7 @@ module.exports = {
 
     /**
      * `UserController.validateReferee()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {post} /api/v1/validatereferee Validate a referee
      * @apiName ValidateReferee
@@ -245,7 +245,7 @@ module.exports = {
 
     /**
      * `UserController.alertReferee()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {post} /api/v1/alertreferee Alert a referee
      * @apiName AlertReferee
@@ -352,7 +352,7 @@ module.exports = {
 
     /**
      * `UserController.uploadFile()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {post} /api/v1/user/upload Upload a file
      * @apiName UploadFile
@@ -410,7 +410,7 @@ module.exports = {
 
     /**
      * `UserController.delete()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {delete} /api/v1/user Reject a user
      * @apiName DeleteUser
@@ -430,7 +430,7 @@ module.exports = {
      *     }
      *
      * @apiUse UserIdNotProvidedError
-     * 
+     *
      * @apiUse UserNotFoundError
      */
     delete: function(req, res) {
@@ -470,7 +470,7 @@ module.exports = {
 
     /**
      * `UserController.update()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {put} /api/v1/user Update a user
      * @apiName UpdateUser
@@ -517,7 +517,7 @@ module.exports = {
      *     }
      *
      * @apiUse UserIdNotProvidedError
-     * 
+     *
      * @apiUse UserNotFoundError
      */
     update: function(req, res) {
@@ -558,7 +558,7 @@ module.exports = {
 
     /**
      * `UserController.get()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {get} /api/v1/user/:id Get User(s)
      * @apiName GetUser(s)
@@ -576,7 +576,7 @@ module.exports = {
      *       ".........": "...................."
      *        .................................
      *     }
-     * 
+     *
      * @apiUse UserNotFoundError
      */
     get: function(req, res) {
@@ -607,7 +607,9 @@ module.exports = {
     },
 
     getOldMember: function(req, res) {
-        User.findOne({ id: req.param('membershipId'), oldMember: true }).sort('createdAt DESC').exec(function(err, user) {
+        //  User.findOne({ id: req.param('membershipId'), oldMember: true }).sort('createdAt DESC').exec(function(err, user) {
+        User.findOne({ select: 'membershipId', where: { membershipId: req.param('membershipId') } }).sort('createdAt DESC').exec(function(err, user) {
+
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
@@ -625,7 +627,7 @@ module.exports = {
 
     /**
      * `UserController.searchUser()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {get} /api/v1/searchuser/:id/:page/:limit Search for document(s)
      * @apiName SearchUser
@@ -649,7 +651,7 @@ module.exports = {
      *     }
      *
      * @apiUse SearchTermNotProvidedError
-     * 
+     *
      */
     searchUser: function(req, res) {
         var page = 0;
@@ -679,7 +681,7 @@ module.exports = {
 
     /**
      * `UserController.getAtivity()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {get} /api/v1/useractivity/:id Get User social activity
      * @apiName GetUserActivity
@@ -697,7 +699,7 @@ module.exports = {
      *       ".........": "...................."
      *        .................................
      *     }
-     * 
+     *
      * @apiUse UserNotFoundError
      */
     getActivity: function(req, res) {
@@ -722,7 +724,7 @@ module.exports = {
 
     /**
      * `UserController.getFriends()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {get} /api/v1/useractivity/:id Get user friends
      * @apiName GetUserFriends
@@ -740,7 +742,7 @@ module.exports = {
      *       ".........": "...................."
      *        .................................
      *     }
-     * 
+     *
      * @apiUse UserNotFoundError
      */
     getFriends: function(req, res) {
@@ -765,7 +767,7 @@ module.exports = {
 
     /**
      * `UserController.getCount()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {get} /api/v1/user/usercount Get User count
      * @apiName GetCount
@@ -785,7 +787,7 @@ module.exports = {
 
     /**
      * `UserController.forgotPassword()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {put} /api/v1/user/:id Forgot user password
      * @apiName Forgot
@@ -806,7 +808,7 @@ module.exports = {
      *     }
      *
      * @apiUse UserEmailNotProvidedError
-     * 
+     *
      * @apiUse UserNotFoundError
      */
     forgotPassword: function(req, res) {
@@ -847,7 +849,7 @@ module.exports = {
 
     /**
      * `UserController.changePassword()`
-     * 
+     *
      * ----------------------------------------------------------------------------------
      * @api {put} /api/v1/user/change/:token Change user password
      * @apiName Change
