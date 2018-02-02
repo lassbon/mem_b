@@ -607,11 +607,7 @@ module.exports = {
     },
 
     getOldMember: function(req, res) {
-        //  User.findOne({ id: req.param('membershipId'), oldMember: true }).sort('createdAt DESC').exec(function(err, user) {
-        //  User.findOne({ select: ['membershipFee', 'membershipStatus'], where: { membershipFee: 'paid', membershipStatus: 'active', email: req.body.email } }).exec(function(err, referee) {
-
-        User.findOne({ select: ['membershipId'], where: { membershipId: req.param.membershipId, oldMember: 'true' } }).exec(function(err, user) {
-
+        User.findOne({ id: req.param('membershipId'), oldMember: true }).sort('createdAt DESC').exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
