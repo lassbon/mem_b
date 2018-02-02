@@ -614,7 +614,7 @@ module.exports = {
             }
 
             if (!user) {
-                return res.json(404, { status: 'error', err: 'No User with such id existing' })
+                return res.json(404, { status: 'error', err: 'No User with such id existing.............' })
             } else {
                 delete user.password;
                 return res.json(200, user);
