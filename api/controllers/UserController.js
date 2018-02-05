@@ -130,8 +130,8 @@ module.exports = {
      * @apiParam {String} annualReturn Annual return of company.
      * @apiParam {String} annualProfits Annual profits of company.
      * @apiParam {String} employees Employee count of company.
-     * @apiParam {String} referrer1 Email of first referrer.
-     * @apiParam {String} referrer2 Email of second referrer.
+     * @apiParam {String} referee1 Email of first referrer.
+     * @apiParam {String} referee2 Email of second referrer.
 
      * @apiParam {String} [profileImage] Profile image for the company/member.
      *
@@ -266,7 +266,7 @@ module.exports = {
      *     }
      */
     alertReferee: function(req, res) {
-        User.findOne({ select: ['referrer1', 'referrer2', 'companyName'], where: { id: req.body.id } }).exec(function(err, user) {
+        User.findOne({ select: ['referee1', 'referee2', 'companyName'], where: { id: req.body.id } }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(404, { status: 'error', err: err });
@@ -276,7 +276,7 @@ module.exports = {
                 return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
             } else {
                 // Send action email to the users apointed referees
-                var refEmailData = {
+                var refEmailData1 = {
                     'email': process.env.SITE_EMAIL,
                     'from': process.env.SITE_NAME,
                     'subject': 'Action required on ' + process.env.SITE_NAME + ' membership registration for ' + user.companyName,
@@ -289,10 +289,10 @@ module.exports = {
                         'Thank you for your time.<br><br>' +
                         process.env.SITE_NAME,
 
-                    'to': user.referrer1
+                    'to': user.referee1
                 }
 
-                azureEmail.send(refEmailData, function(resp) {
+                azureEmail.send(refEmailData1, function(resp) {
                     if (resp === 'success') {
                         sails.log.info('The email was sent successfully.');
                     }
@@ -302,7 +302,7 @@ module.exports = {
                     }
                 });
 
-                var refEmailData = {
+                var refEmailData2 = {
                     'email': process.env.SITE_EMAIL,
                     'from': process.env.SITE_NAME,
                     'subject': 'Action required on ' + process.env.SITE_NAME + ' membership registration for ' + user.companyName,
@@ -315,10 +315,10 @@ module.exports = {
                         'Thank you for your time.<br><br>' +
                         process.env.SITE_NAME,
 
-                    'to': user.referrer2
+                    'to': user.referee2
                 }
 
-                azureEmail.send(refEmailData, function(resp) {
+                azureEmail.send(refEmailData2, function(resp) {
                     if (resp === 'success') {
                         sails.log.info('The email was sent successfully.');
                     }
@@ -501,8 +501,8 @@ module.exports = {
      * @apiParam {String} annualReturn Annual return of company.
      * @apiParam {String} annualProfits Annual profits of company.
      * @apiParam {String} employees Employee count of company.
-     * @apiParam {String} referrer1 Email of first referrer.
-     * @apiParam {String} referrer2 Email of second referrer.
+     * @apiParam {String} referee1 Email of first referrer.
+     * @apiParam {String} referee2 Email of second referrer.
 
      * @apiParam {String} [profileImage] Profile image for the company/member.
      *

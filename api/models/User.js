@@ -177,19 +177,19 @@ module.exports = {
             type: 'boolean',
             defaultsTo: false
         },
-        referrer1: {
+        referee1: {
             type: 'string',
             //required: 'true'
         },
-        referrer2: {
+        referee2: {
             type: 'string',
             //required: 'true'
         },
-        referrerMemberId1: {
+        refereeMemberId1: {
             type: 'string',
             //required: 'true'
         },
-        referrerMemberId2: {
+        refereeMemberId2: {
             type: 'string',
             //required: 'true'
         },

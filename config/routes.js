@@ -335,4 +335,5 @@ module.exports.routes = {
     // Test routes
     'POST /api/v1/testemail': 'TestController.testEmail',
     'POST /api/v1/olddata': 'TestController.oldData',
+    'POST /api/v1/alertoldmembers': 'TestController.alertOldMembers',
 };

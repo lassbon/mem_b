@@ -107,4 +107,40 @@ module.exports = {
             return res.json(200, { status: 'success', message: 'success' });
         });
     },
+
+    alertOldMembers: function(req, res) {
+        User.find({ select: ['membershipId', 'email', 'companyName'], where: { oldMember: true } }).exec(function(err, users) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(404, { status: 'error', err: err });
+            }
+
+            users.forEach(function(user) {
+                var emailData = {
+                    'email': process.env.SITE_EMAIL,
+                    'from': process.env.SITE_NAME,
+                    'subject': 'Your ' + process.env.SITE_NAME + ' membership onboarding.',
+
+                    'body': 'Hello ' + user.companyName + '!<br><br>' +
+                        'We have recently blah blah blah......<br><br>' +
+                        'Kindly click on the "Onboard" button to be redirected to the onboarding form.<br><br>' +
+                        '<a href=" ' + process.env.ONBOARD_LINK + ' " style="color: green;">Onboard</a>.<br><br>' +
+                        'Thank you for your time.<br><br>' +
+                        process.env.SITE_NAME,
+
+                    'to': user.email
+                }
+
+                azureEmail.send(emailData, function(resp) {
+                    if (resp === 'success') {
+                        sails.log.info(resp);
+                    }
+
+                    if (resp === 'error') {
+                        sails.log.error(resp);
+                    }
+                });
+            });
+        });
+    },
 }
