@@ -308,7 +308,7 @@ module.exports = {
                     'subject': 'Action required on ' + process.env.SITE_NAME + ' membership registration for ' + user.companyName,
 
                     'body': 'Hello!<br><br>' +
-                        user.companyName + 'Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
+                        user.companyName + ' Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
                         'Click on the appropriate button to CONFIRM or REJECT the applicant for membership.<br><br>' +
                         '<a href=" ' + process.env.VERIFIER_LINK + user.id + ' " style="color: green;">CONFIRM</a>.<br><br>' +
                         '<a href=" ' + process.env.VERIFIER_LINK + user.id + ' " style="color: red;">REJECT</a>.<br><br>' +
@@ -534,24 +534,24 @@ module.exports = {
                     return res.json(404, { status: 'error', err: 'No User with such id existing' })
                 } else {
 
+                    var recommendedmembershipType = '';
+
                     // Recommend a membership type for the user based on annual profits
                     if (req.body.regState && req.body.regState == 1) {
-                        
-                        var recommendedmembershipType = '';
 
-                        if (user.annualProfit == 'N100,000,001 and above') {
+                        if (user.annualProfit === 'N100,000,001 and above') {
                             recommendedmembershipType = 'Gold';
                         }
 
-                        if (user.annualProfit == 'N5,000,001 - N10,000,000' || user.annualProfit == 'N3,000,001 - N5,000,000') {
+                        if (user.annualProfit === 'N5,000,001 - N10,000,000' || user.annualProfit === 'N3,000,001 - N5,000,000') {
                             recommendedmembershipType = 'Silver';
                         }
 
-                        if (user.annualProfit == 'N1,000,001 - N3,000,000' || user.annualProfit == 'N501,000 - N1,000,000') {
+                        if (user.annualProfit === 'N1,000,001 - N3,000,000' || user.annualProfit === 'N501,000 - N1,000,000') {
                             recommendedmembershipType = 'Bronze';
                         }
 
-                        if (user.annualProfit == 'N100,000 - N500,000') {
+                        if (user.annualProfit === 'N100,000 - N500,000') {
                             recommendedmembershipType = 'Brass';
                         }
 
