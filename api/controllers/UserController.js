@@ -539,15 +539,15 @@ module.exports = {
                         
                         var recommendedmembershipType = '';
 
-                        if (req.body.annualProfit === 'N100,000,001 and above') {
+                        if (req.body.annualProfit === 'N100,000,001 and above' || req.body.annualProfit === 'N5,000,001 - N10,000,000' || req.body.annualProfit === 'N3,000,001 - N5,000,000') {
                             recommendedmembershipType = 'Gold';
                         }
 
-                        if (req.body.annualProfit === 'N5,000,001 - N10,000,000' || req.body.annualProfit === 'N3,000,001 - N5,000,000') {
+                        if (req.body.annualProfit === req.body.annualProfit === 'N1,000,001 - N3,000,000') {
                             recommendedmembershipType = 'Silver';
                         }
 
-                        if (req.body.annualProfit === 'N1,000,001 - N3,000,000' || req.body.annualProfit === 'N501,000 - N1,000,000') {
+                        if (req.body.annualProfit === req.body.annualProfit === 'N501,000 - N1,000,000') {
                             recommendedmembershipType = 'Bronze';
                         }
 
