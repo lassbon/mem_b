@@ -535,7 +535,7 @@ module.exports = {
                 } else {
 
                     // Recommend a membership type for the user based on annual profits
-                    if (user.regState == 1) {
+                    if (req.body.regState && req.body.regState == 1) {
                         
                         var recommendedmembershipType = '';
 
@@ -554,14 +554,14 @@ module.exports = {
                         if (user.annualProfit == 'N100,000 - N500,000') {
                             recommendedmembershipType = 'Brass';
                         }
+
+                        req.body.recommendedLevel = recommendedmembershipType;
                     }
 
                     if (user.profileImage && user.profileImage !== req.param('image')) {
                         var url = user.profileImage;
                         azureBlob.delete('user', url.split('/').reverse()[0]);
                     }
-
-                    req.body.recommendedLevel = recommendedmembershipType;
 
                     User.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {
