@@ -229,7 +229,7 @@ module.exports = {
      *     }
      */
     validateReferee: function(req, res) {
-        User.findOne({ select: ['membershipFee', 'membershipStatus'], where: { membershipFee: 'paid', membershipStatus: 'active', email: req.body.email } }).exec(function(err, referee) {
+        User.findOne({ select: ['membershipFee', 'membershipStatus', 'membershipDue'], where: { membershipDue: 'paid', membershipFee: 'paid', membershipStatus: 'active', email: req.body.email } }).exec(function(err, referee) {
             if (err) {
                 sails.log.error(err);
                 return res.json(status, { status: 'error', err: err });
