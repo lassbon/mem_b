@@ -258,14 +258,14 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Levels.findOne({ id: req.param('id') }).sort('createdAt ASC').exec(function(err, level) {
+            Levels.findOne({ id: req.param('id') }).sort('fee DESC').exec(function(err, level) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
                 if (!level) {
-                    return res.json(404, { status: 'error', err: 'No Level with such id existing' })
+                    return res.json(401, { status: 'error', err: 'No Level with such id existing' })
                 } else {
                     return res.json(200, level);
                 }
