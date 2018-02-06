@@ -112,8 +112,8 @@ module.exports = {
 
         // check if user has been fully verified
         if (user.referred1 == true && user.referred2 == true) {
-          
-          user.regState = 5;
+
+          user.regState = 4;
 
           var emailData = {
             'email': process.env.SITE_EMAIL,

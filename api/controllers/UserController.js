@@ -236,7 +236,7 @@ module.exports = {
             }
 
             if (!referee) {
-                return res.json(401, { status: 'error', err: 'The referee is either invalid or not fully paid' })
+                return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
             } else {
                 return res.json(200, { status: 'success', message: 'The referee is valid' });
             }
