@@ -232,11 +232,11 @@ module.exports = {
         User.findOne({ select: ['membershipFee', 'membershipStatus'], where: { membershipFee: 'paid', membershipStatus: 'active', email: req.body.email } }).exec(function(err, referee) {
             if (err) {
                 sails.log.error(err);
-                return res.json(404, { status: 'error', err: err });
+                return res.json(err.status, { status: 'error', err: err });
             }
 
             if (!referee) {
-                return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
+                return res.json(401, { status: 'error', err: 'The referee is either invalid or not fully paid' })
             } else {
                 return res.json(200, { status: 'success', message: 'The referee is valid' });
             }
