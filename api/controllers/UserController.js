@@ -535,7 +535,7 @@ module.exports = {
                 } else {
 
                     // Recommend a membership type for the user based on annual profits
-                    if (user.regState == 2) {
+                    if (user.regState == 1) {
                         
                         var recommendedmembershipType;
 
