@@ -258,7 +258,7 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Levels.findOne({ id: req.param('id') }).sort('fee DESC').exec(function(err, level) {
+            Levels.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, level) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
