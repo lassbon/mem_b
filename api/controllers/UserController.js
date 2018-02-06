@@ -232,7 +232,7 @@ module.exports = {
         User.findOne({ select: ['membershipFee', 'membershipStatus'], where: { membershipFee: 'paid', membershipStatus: 'active', email: req.body.email } }).exec(function(err, referee) {
             if (err) {
                 sails.log.error(err);
-                return res.json(err.status, { status: 'error', err: err });
+                return res.json(status, { status: 'error', err: err });
             }
 
             if (!referee) {
@@ -534,24 +534,24 @@ module.exports = {
                     return res.json(404, { status: 'error', err: 'No User with such id existing' })
                 } else {
 
-                    var recommendedmembershipType = '';
-
                     // Recommend a membership type for the user based on annual profits
                     if (req.body.regState && req.body.regState == 1) {
+                        
+                        var recommendedmembershipType = '';
 
-                        if (user.annualProfit === 'N100,000,001 and above') {
+                        if (user.annualProfit == 'N100,000,001 and above') {
                             recommendedmembershipType = 'Gold';
                         }
 
-                        if (user.annualProfit === 'N5,000,001 - N10,000,000' || user.annualProfit === 'N3,000,001 - N5,000,000') {
+                        if (user.annualProfit == 'N5,000,001 - N10,000,000' || user.annualProfit == 'N3,000,001 - N5,000,000') {
                             recommendedmembershipType = 'Silver';
                         }
 
-                        if (user.annualProfit === 'N1,000,001 - N3,000,000' || user.annualProfit === 'N501,000 - N1,000,000') {
+                        if (user.annualProfit == 'N1,000,001 - N3,000,000' || user.annualProfit == 'N501,000 - N1,000,000') {
                             recommendedmembershipType = 'Bronze';
                         }
 
-                        if (user.annualProfit === 'N100,000 - N500,000') {
+                        if (user.annualProfit == 'N100,000 - N500,000') {
                             recommendedmembershipType = 'Brass';
                         }
 
