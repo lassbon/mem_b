@@ -524,7 +524,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         } else {
-            User.findOne({ select: ['username', 'profileImage'], where: { id: req.param('id') } }).exec(function(err, user) {
+            User.findOne({ select: ['username', 'profileImage', 'regState', 'annualProfit'], where: { id: req.param('id') } }).exec(function(err, user) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -534,10 +534,34 @@ module.exports = {
                     return res.json(404, { status: 'error', err: 'No User with such id existing' })
                 } else {
 
+                    // Recommend a membership type for the user based on annual profits
+                    if (user.regState == 2) {
+                        
+                        var recommendedmembershipType;
+
+                        if (user.annualProfit === 'N100,000,001 and above') {
+                            recommendedmembershipType = 'Gold';
+                        }
+
+                        if (user.annualProfit === 'N5,000,001 - N10,000,000' || user.annualProfit === 'N3,000,001 - N5,000,000') {
+                            recommendedmembershipType = 'Silver';
+                        }
+
+                        if (user.annualProfit === 'N1,000,001 - N3,000,000' || user.annualProfit === 'N501,000 - N1,000,000') {
+                            recommendedmembershipType = 'Bronze';
+                        }
+
+                        if (user.annualProfit === 'N100,000 - N500,000') {
+                            recommendedmembershipType = 'Brass';
+                        }
+                    }
+
                     if (user.profileImage && user.profileImage !== req.param('image')) {
                         var url = user.profileImage;
                         azureBlob.delete('user', url.split('/').reverse()[0]);
                     }
+
+                    req.body.recommendedLevel = recommendedmembershipType;
 
                     User.update({ id: req.param('id') }, req.body).exec(function(err, data) {
                         if (err) {

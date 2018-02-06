@@ -470,6 +470,142 @@ module.exports = {
         }
     },
 
+    /**
+     * `ForumController.unlikePost()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/forum/post/unlike Unlike a post
+     * @apiName UnlikePost
+     * @apiDescription This is where a forum post is unliked
+     * @apiGroup Forum
+     *
+     * @apiParam {String} id Post ID.
+     * @apiParam {String} liker User id of the post liker.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "Post unliked"
+     *     }
+     *
+     * @apiUse PostIdNotProvidedError
+     * 
+     * @apiUse PostNotFoundError
+     */
+    unlikePost: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: "error", err: 'No Post id provided!' });
+        } else {
+            ForumPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).exec(function(err, post) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!post) {
+                    return res.json(404, { status: 'error', err: 'No Post with such id existing' });
+                } else {
+
+                    var likes = post.likes ? post.likes : [];
+
+                    var stat = false;
+
+                    for (var i = 0; i < likes.length; i++) {
+                        var name = likes[i];
+                        if (name == req.param('liker')) {
+                            stat = true;
+                            break;
+                        }
+                    }
+
+                    if (stat == false) {
+                        return res.json(403, { status: 'error', err: 'Post not previously liked' });
+                    } else {
+                        for (var i = post.likes.length; i--;) {
+                            if (post.likes[i] === req.param('liker')) {
+                                post.likes.splice(i, 1);
+                            }
+                        }
+
+                        ForumPosts.update({ id: req.param('id') }, { likes: post.likes }).exec(function(err, post) {
+                            return res.json(200, { status: 'success', message: 'Post unliked' });
+                        });
+                    }
+                }
+            });
+        }
+    },
+
+    /**
+     * `SocialController.likePost()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/forum/post/like Like a post
+     * @apiName LikePost
+     * @apiDescription This is where a forum post is liked
+     * @apiGroup Forum
+     *
+     * @apiParam {String} id Post ID.
+     * @apiParam {String} liker User id of the post liker.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "Post liked"
+     *     }
+     *
+     * @apiUse PostIdNotProvidedError
+     * 
+     * @apiUse PostNotFoundError
+     */
+    likePost: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Post id provided!' });
+        } else {
+            ForumPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).exec(function(err, post) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!post) {
+                    return res.json(404, { status: 'error', message: 'No Post with such id existing' });
+                } else {
+
+                    var likes = post.likes ? post.likes : [];
+
+                    var stat = true;
+
+                    for (var i = 0; i < likes.length; i++) {
+                        var name = likes[i];
+                        if (name == req.param('liker')) {
+                            stat = false;
+                            break;
+                        }
+                    }
+
+                    if (stat == false) {
+                        return res.json(403, { status: 'error', err: 'Post already liked' });
+                    } else {
+                        likes.push(req.param('liker'));
+
+                        ForumPosts.update({ id: req.param('id') }, { likes: likes }).exec(function(err, post) {
+                            return res.json(200, { status: 'success', message: 'Post liked' });
+                        });
+                    }
+                }
+            });
+        }
+    },
+
 
     /**
      * `ForumController.getPost()`

@@ -116,7 +116,7 @@ module.exports = {
                                 amountPaid = amountPaid.slice(0, -2);
                                 amountPaid = parseInt(amountPaid);
 
-                                audit.log('membership', user.companyName + ' renewed membership due');
+                                audit.log('membership', user.companyName + ' paid membership annual due');
 
                                 var data = {
                                     memeberID: user.membershipId,

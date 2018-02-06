@@ -131,6 +131,9 @@ module.exports = {
             type: 'string',
             defaultsTo: null
         },
+        recommendedLevel: {
+            type: 'string',
+        },
         friends: {
             collection: 'user',
             via: 'id'

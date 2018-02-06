@@ -13,8 +13,24 @@ module.exports.membershipId = function() {
 			sails.log.error(err);
 		}
 
-		var num = 1567 + usercount + 1;
+		var num = usercount + 1;
 
 		return 'ABUCCI/MEM/' + num;
 	});
+
+	// User.findOne({select: ['membershipId']}).sort('membershipId DESC').exec(function(err, member){
+	// 	if (err) {
+	// 		sails.log.error(err);
+	// 	}
+
+	// 	if(member){
+	// 		var id = member.membershipId;
+	// 		var serialNumber = id.split('/')[2];
+	// 		serialNumber = parseInt(serialNumber);
+
+	// 		serialNumber = serialNumber++;
+
+	// 		return 'ABUCCI/MEM/' + serialNumber;
+	// 	}
+	// });
 };

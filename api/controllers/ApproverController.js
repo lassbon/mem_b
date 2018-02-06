@@ -73,7 +73,7 @@ module.exports = {
           return res.json(404, { status: 'error', err: 'No User with such id existing' });
         } else {
 
-          // create and associate memebership id to the new user
+          // create and associate membership id to the new user
           var membershipId = utility.membershipId();
 
           User.update({ id: req.param('id') }, { approved: true, membershipStatus: 'active', membershipId: membershipId }).exec(function(err, data) {

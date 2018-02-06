@@ -75,32 +75,6 @@ module.exports = {
         return res.json(err.status, { err: err });
       }
 
-      // check if user has been fully verified
-      if (user.referred1 == true && user.referred2 == true) {
-        var emailData = {
-          'email': process.env.SITE_EMAIL,
-          'from': process.env.SITE_NAME,
-          'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-          'body': 'Hello ' + user.companyName + '! <br><br> ' +
-            'You have been confirmed by all your financial members. <br><br>' +
-            'Please hold on while we verify and approve your company. An email will be sent to you to proceed with your registration. <br><br>' +
-            'Thank you. <br><br>' +
-            process.env.SITE_NAME,
-
-          'to': user.email
-        }
-
-        azureEmail.send(emailData, function(resp) {
-          if (resp === 'error') {
-            sails.log.error(resp);
-          }
-
-          if (resp === 'success') {
-            return res.json(200, { status: 'success', message: 'Confirmed!' });
-          }
-        });
-      }
-
       if (!user) {
         return res.json(404, { status: 'error', message: 'No User with such id existing' });
       } else {
@@ -112,7 +86,7 @@ module.exports = {
           User.update({ id: req.param('id') }, { referred1: true }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
-              return res.json(err.status, { err: err });
+              //return res.json(err.status, { err: err });
             }
 
             confirmationMessage = 'The first of your referees has confirmed your registration.';
@@ -122,7 +96,7 @@ module.exports = {
           User.update({ id: req.param('id') }, { referred2: true }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
-              return res.json(err.status, { err: err });
+              //return res.json(err.status, { err: err });
             }
 
             confirmationMessage = 'The second of your referees has confirmed your registration.';
@@ -135,6 +109,31 @@ module.exports = {
             sails.log.error(err);
           }
         });
+
+        // check if user has been fully verified
+        if (user.referred1 == true && user.referred2 == true) {
+          
+          user.regState = 5;
+
+          var emailData = {
+            'email': process.env.SITE_EMAIL,
+            'from': process.env.SITE_NAME,
+            'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+            'body': 'Hello ' + user.companyName + '! <br><br> ' +
+              'You have been confirmed by all your financial members. <br><br>' +
+              'Please hold on while we verify and approve your company. An email will be sent to you to proceed with your registration. <br><br>' +
+              'Thank you. <br><br>' +
+              process.env.SITE_NAME,
+
+            'to': user.email
+          }
+
+          azureEmail.send(emailData, function(resp) {
+            if (resp === 'error') {
+              sails.log.error(resp);
+            }
+          });
+        }
 
         // Send email to the user alerting him/her to the state of affairs
         var emailData = {

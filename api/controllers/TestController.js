@@ -122,9 +122,13 @@ module.exports = {
                     'subject': 'Your ' + process.env.SITE_NAME + ' membership onboarding.',
 
                     'body': 'Hello ' + user.companyName + '!<br><br>' +
-                        'We have recently blah blah blah......<br><br>' +
+                        'Welcome to ' + process.env.SITE_NAME + ' Membership platform.<br><br>' +
+                        'You can now easily access your membership account with ease and get all information on on-going, completed and past events/projects.<br><br>' +
+                        'You can also track your financial reports and pay your annual dues on the go.<br><br>' +
                         'Kindly click on the "Onboard" button to be redirected to the onboarding form.<br><br>' +
                         '<a href=" ' + process.env.ONBOARD_LINK + ' " style="color: green;">Onboard</a>.<br><br>' +
+                        'Your generic password is "password".<br><br>' +
+                        '<strong>Kindly change your password once logged on.</strong><br><br>' +
                         'Thank you for your time.<br><br>' +
                         process.env.SITE_NAME,
 

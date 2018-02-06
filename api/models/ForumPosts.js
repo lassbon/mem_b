@@ -30,10 +30,12 @@ module.exports = {
       model: 'forumTopics',
       required: true
     },
+    likes: {
+      type: 'array',
+    },
     censored: {
       type: 'boolean',
       defaultsTo: false
     }
   }
 };
-
