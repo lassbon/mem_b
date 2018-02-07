@@ -116,3 +116,29 @@ module.exports.referee = function(companyName, userId, email) {
 
 	});
 };
+
+// Alert the user on referee rejection
+module.exports.rejected = function(res, companyName, email, referee) {
+
+	var rejectionMessage = 'One of your referee ' + referee + ' has rejected your registration.<br> please provide a new and valid referee through this <a href="'+ process.env.REFEREE_LINK +'" target="blank">LINK</a>.';
+
+	// Send email to the user alerting him/her to the state of affairs
+	var emailData = {
+		'email': process.env.SITE_EMAIL,
+		'from': process.env.SITE_NAME,
+		'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+		'body': 'Hello ' + companyName + '! <br><br> ' + rejectionMessage + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+		'to': email
+	}
+
+	azureEmail.send(emailData, function(resp) {
+		if (resp === 'success') {
+			return res.json(200, { status: 'success', message: 'Rejected!' });
+		}
+
+		if (resp === 'error') {
+			sails.log.error(resp);
+			return res.json(401, { status: 'error', err: 'There was an error while sending the rejection email.' });
+		}
+	});
+};

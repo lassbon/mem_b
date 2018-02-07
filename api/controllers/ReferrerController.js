@@ -75,88 +75,73 @@ module.exports = {
         return res.json(err.status, { err: err });
       }
 
-      if (!user) {
-        return res.json(404, { status: 'error', message: 'No User with such id existing' });
-      } else {
+      User.findOne({ select: ['email', 'membershipId'], where: { id: req.param('refereeId') } }).exec(function(err, referee) {
+        if (err) {
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
+        }
 
-        var confirmationMessage;
+        if (!user) {
+          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+        } else {
 
-        if (user.referee1 == req.param('refereeId')) {
+          var confirmationMessage = '';
 
-          User.update({ id: req.param('id') }, { referred1: true }).exec(function(err, data) {
+          if (user.referee1 == referee.email) {
+
+            User.update({ id: req.param('id') }, { referred1: true }).exec(function(err, data) {
+              if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+              }
+            });
+          } else if (user.referee2 == referee.email) {
+
+            User.update({ id: req.param('id') }, { referred2: true }).exec(function(err, data) {
+              if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+              }
+            });
+          } else {
+            return res.json(404, { status: 'error', message: 'No referee with such id existing' });
+          }
+
+          // Send notification to the user alerting him/her on the state of affairs
+          Notifications.create({ id: req.param('id'), message: confirmationMessage }).exec(function(err, info) {
             if (err) {
               sails.log.error(err);
-              return res.json(err.status, { err: err });
-            }
-
-            confirmationMessage = 'The first of your referees has confirmed your registration.';
-          });
-        } else if (user.referee2 == req.param('refereeId')) {
-
-          User.update({ id: req.param('id') }, { referred2: true }).exec(function(err, data) {
-            if (err) {
-              sails.log.error(err);
-              return res.json(err.status, { err: err });
-            }
-
-            confirmationMessage = 'The second of your referees has confirmed your registration.';
-          });
-        }
-
-        // Send notification to the user alerting him/her on the state of affairs
-        Notifications.create({ id: req.param('id'), message: confirmationMessage }).exec(function(err, info) {
-          if (err) {
-            sails.log.error(err);
-          }
-        });
-
-        // check if user has been fully verified
-        if (user.referred1 == true && user.referred2 == true) {
-
-          user.regState = 5;
-
-          alert.verifier(user.companyName);
-
-          var emailData = {
-            'email': process.env.SITE_EMAIL,
-            'from': process.env.SITE_NAME,
-            'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-            'body': 'Hello ' + user.companyName + '! <br><br> ' +
-              'You have been confirmed by all your financial members. <br><br>' +
-              'Please hold on while we verify and approve your company. An email will be sent to you to proceed with your registration. <br><br>' +
-              'Thank you. <br><br>' +
-              process.env.SITE_NAME,
-
-            'to': user.email
-          }
-
-          azureEmail.send(emailData, function(resp) {
-            if (resp === 'error') {
-              sails.log.error(resp);
             }
           });
-        }
 
-        // Send email to the user alerting him/her to the state of affairs
-        var emailData = {
-          'email': process.env.SITE_EMAIL,
-          'from': process.env.SITE_NAME,
-          'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-          'body': 'Hello ' + user.companyName + '! <br><br> ' + confirmationMessage + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-          'to': user.email
-        }
+          // check if user has been fully verified
+          if (user.referred1 == true && user.referred2 == true) {
 
-        azureEmail.send(emailData, function(resp) {
-          if (resp === 'success') {
-            return res.json(200, { status: 'success', message: 'Confirmed!' });
+            user.regState = 5;
+
+            alert.verifier(user.companyName);
+
+            var emailData = {
+              'email': process.env.SITE_EMAIL,
+              'from': process.env.SITE_NAME,
+              'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+              'body': 'Hello ' + user.companyName + '! <br><br> ' +
+                'You have been confirmed by all your financial members. <br><br>' +
+                'Please hold on while we verify and approve your company. An email will be sent to you to proceed with your registration. <br><br>' +
+                'Thank you. <br><br>' +
+                process.env.SITE_NAME,
+
+              'to': user.email
+            }
+
+            azureEmail.send(emailData, function(resp) {
+              if (resp === 'error') {
+                sails.log.error(resp);
+              }
+            });
           }
-
-          if (resp === 'error') {
-            sails.log.error(resp);
-            return res.json(401, { status: 'error', err: 'There was an error while sending the rejection email.' });
-          }
-        });
-      }
+        }
+      });
     });
   },
 
@@ -202,61 +187,48 @@ module.exports = {
         return res.json(err.status, { err: err });
       }
 
-      if (!user) {
-        return res.json(404, { status: 'error', message: 'No User with such id existing' });
-      } else {
-
-        var rejectionMessage;
-
-        if (user.referee1 == req.param('refereeId')) {
-
-          User.update({ id: req.param('id') }, { referred1: false }).exec(function(err, data) {
-            if (err) {
-              sails.log.error(err);
-              return res.json(err.status, { err: err });
-            }
-
-            rejectionMessage = 'The first of your referees has rejected your registration.';
-          });
-        } else if (user.referee2 == req.param('refereeId')) {
-
-          User.update({ id: req.param('id') }, { referred2: false }).exec(function(err, data) {
-            if (err) {
-              sails.log.error(err);
-              return res.json(err.status, { err: err });
-            }
-
-            rejectionMessage = 'The second of your referees has rejected your registration.';
-          });
+      User.findOne({ select: ['email', 'membershipId'], where: { id: req.param('refereeId') } }).exec(function(err, referee) {
+        if (err) {
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
         }
 
-        // Send notification to the user alerting him/her on the state of affairs
-        Notifications.create({ id: req.param('id'), message: rejectionMessage }).exec(function(err, info) {
-          if (err) {
-            sails.log.error(err);
-          }
-        });
+        if (!user) {
+          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+        } else {
 
-        // Send email to the user alerting him/her to the state of affairs
-        var emailData = {
-          'email': process.env.SITE_EMAIL,
-          'from': process.env.SITE_NAME,
-          'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-          'body': 'Hello ' + user.companyName + '! <br><br> ' + rejectionMessage + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-          'to': user.email
+          if (user.referee1 == referee.email) {
+
+            User.update({ id: req.param('id') }, { referred1: false }).exec(function(err, data) {
+              if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+              }
+
+              alert.rejected(res, user.companyName, user.email, referee.email)
+            });
+          } else if (user.referee2 == referee.email) {
+
+            User.update({ id: req.param('id') }, { referred2: false }).exec(function(err, data) {
+              if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+              }
+
+              alert.rejected(res, user.companyName, user.email, referee.email);
+            });
+          } else {
+            return res.json(404, { status: 'error', message: 'No referee with such id existing' });
+          }
+
+          // Send notification to the user alerting him/her on the state of affairs
+          // Notifications.create({ id: req.param('id'), message: rejectionMessage }).exec(function(err, info) {
+          //   if (err) {
+          //     sails.log.error(err);
+          //   }
+          // });
         }
-
-        azureEmail.send(emailData, function(resp) {
-          if (resp === 'success') {
-            return res.json(200, { status: 'success', message: 'Rejected!' });
-          }
-
-          if (resp === 'error') {
-            sails.log.error(resp);
-            return res.json(401, { status: 'error', err: 'There was an error while sending the rejection email.' });
-          }
-        });
-      }
+      });
     });
   },
 

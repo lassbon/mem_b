@@ -98,7 +98,7 @@ module.exports = {
               'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
               'body': 'Hello ' + user.companyName + '! <br><br> ' + 
                 'We are pleased to inform you that your request has been confirmed. <br><br> ' +
-                'Kindly click <a href="'+ process.env.MEMBERSHIP_LINK +'"> HERE</> to proceed with your registration<br> ' +
+                'Kindly click <a href="'+ process.env.MEMBERSHIP_LINK +'"> HERE</a> to proceed with your registration<br> ' +
                 'and make the necessary payments. <br><br>' +
                 'Thank you. <br><br>' +
                 process.env.SITE_NAME,
