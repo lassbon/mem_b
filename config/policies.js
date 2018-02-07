@@ -154,7 +154,7 @@ module.exports.policies = {
     },
 
     'ReferrerController': {
-        '*': ['isUser', 'isAuthenticated'],
+        '*': true,
     },
 
     'TestController': {
