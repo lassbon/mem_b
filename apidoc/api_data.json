@@ -3557,6 +3557,182 @@
     }
   },
   {
+    "type": "post",
+    "url": "/api/v1/forum/post/like",
+    "title": "Like a post",
+    "name": "LikePost",
+    "description": "<p>This is where a forum post is liked</p>",
+    "group": "Forum",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Post ID.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "liker",
+            "description": "<p>User id of the post liker.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Post liked\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/ForumController.js",
+    "groupTitle": "Forum",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PostIdNotProvided",
+            "description": "<p>No post id provided.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PostNotFound",
+            "description": "<p>The id of the Post was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Post id provided!\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Post with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/v1/forum/post/unlike",
+    "title": "Unlike a post",
+    "name": "UnlikePost",
+    "description": "<p>This is where a forum post is unliked</p>",
+    "group": "Forum",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Post ID.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "liker",
+            "description": "<p>User id of the post liker.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status of the response from API.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message response from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"message\": \"Post unliked\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/ForumController.js",
+    "groupTitle": "Forum",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PostIdNotProvided",
+            "description": "<p>No post id provided.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PostNotFound",
+            "description": "<p>The id of the Post was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No Post id provided!\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Post with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "put",
     "url": "/api/v1/forum/comment/:id",
     "title": "Update a forum comment",
@@ -4693,6 +4869,13 @@
             "group": "Parameter",
             "type": "String",
             "optional": true,
+            "field": "due",
+            "description": "<p>Yearly due for the memebership level.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
             "field": "description",
             "description": "<p>Full description of the membership level.</p>"
           }
@@ -4788,6 +4971,13 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
+            "field": "due",
+            "description": "<p>Yearly due for the memebership level.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
             "field": "description",
             "description": "<p>Full description of the membership level.</p>"
           }
@@ -4828,7 +5018,7 @@
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { name | fee | description } provided!\"\n}",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { name | fee | due | description } provided!\"\n}",
           "type": "json"
         }
       ]
@@ -5222,6 +5412,49 @@
   },
   {
     "type": "get",
+    "url": "/api/v1/userpayments/dues/:id",
+    "title": "Get user due payments",
+    "name": "Dues",
+    "description": "<p>This is where user due payment records are obtained.</p>",
+    "group": "Payments",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>user ID.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/UserPaymentsController.js",
+    "groupTitle": "Payments",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserIdNotProvided",
+            "description": "<p>No User id provided.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No User id provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/api/v1/payments/events",
     "title": "Get event payments",
     "name": "Events",
@@ -5237,6 +5470,17 @@
     "title": "Get donation payment Excel document",
     "name": "GetDonationExcel",
     "description": "<p>This is where donation payment records are obtained in excel format.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/due/excel",
+    "title": "Get dues payment Excel document",
+    "name": "GetDueExcel",
+    "description": "<p>This is where membership dues payment records are obtained in excel format.</p>",
     "group": "Payments",
     "version": "0.0.0",
     "filename": "api/controllers/PaymentsController.js",
@@ -5394,10 +5638,10 @@
   },
   {
     "type": "get",
-    "url": "/api/v1/payments/memberships",
-    "title": "Get registration payments",
+    "url": "/api/v1/payments/dues",
+    "title": "Get yearly due payments",
     "name": "Memberships",
-    "description": "<p>This is where registration payment records are obtained.</p>",
+    "description": "<p>This is where yearly due payment records are obtained.</p>",
     "group": "Payments",
     "version": "0.0.0",
     "filename": "api/controllers/PaymentsController.js",
@@ -5445,6 +5689,17 @@
         }
       ]
     }
+  },
+  {
+    "type": "get",
+    "url": "/api/v1/payments/memberships",
+    "title": "Get registration payments",
+    "name": "Memberships",
+    "description": "<p>This is where registration payment records are obtained.</p>",
+    "group": "Payments",
+    "version": "0.0.0",
+    "filename": "api/controllers/PaymentsController.js",
+    "groupTitle": "Payments"
   },
   {
     "type": "get",
@@ -8901,14 +9156,14 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "referrer1",
+            "field": "referee1",
             "description": "<p>Email of first referrer.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "referrer2",
+            "field": "referee2",
             "description": "<p>Email of second referrer.</p>"
           },
           {
@@ -9703,14 +9958,14 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "referrer1",
+            "field": "referee1",
             "description": "<p>Email of first referrer.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "referrer2",
+            "field": "referee2",
             "description": "<p>Email of second referrer.</p>"
           },
           {

@@ -81,22 +81,22 @@ module.exports = {
 
         var confirmationMessage;
 
-        if (user.referrer1 == req.param('refereeId')) {
+        if (user.referee1 == req.param('refereeId')) {
 
           User.update({ id: req.param('id') }, { referred1: true }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
-              //return res.json(err.status, { err: err });
+              return res.json(err.status, { err: err });
             }
 
             confirmationMessage = 'The first of your referees has confirmed your registration.';
           });
-        } else if (user.referrer2 == req.param('refereeId')) {
+        } else if (user.referee2 == req.param('refereeId')) {
 
           User.update({ id: req.param('id') }, { referred2: true }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
-              //return res.json(err.status, { err: err });
+              return res.json(err.status, { err: err });
             }
 
             confirmationMessage = 'The second of your referees has confirmed your registration.';
@@ -113,7 +113,9 @@ module.exports = {
         // check if user has been fully verified
         if (user.referred1 == true && user.referred2 == true) {
 
-          user.regState = 4;
+          user.regState = 5;
+
+          alert.verifier(user.companyName);
 
           var emailData = {
             'email': process.env.SITE_EMAIL,
@@ -206,7 +208,7 @@ module.exports = {
 
         var rejectionMessage;
 
-        if (user.referrer1 == req.param('refereeId')) {
+        if (user.referee1 == req.param('refereeId')) {
 
           User.update({ id: req.param('id') }, { referred1: false }).exec(function(err, data) {
             if (err) {
@@ -216,7 +218,7 @@ module.exports = {
 
             rejectionMessage = 'The first of your referees has rejected your registration.';
           });
-        } else if (user.referrer2 == req.param('refereeId')) {
+        } else if (user.referee2 == req.param('refereeId')) {
 
           User.update({ id: req.param('id') }, { referred2: false }).exec(function(err, data) {
             if (err) {

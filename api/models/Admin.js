@@ -35,7 +35,7 @@ module.exports = {
         },
         role: {
             type: 'string',
-            required: 'true'
+            required: 'verifier'
         }
     },
 

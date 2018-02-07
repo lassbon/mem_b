@@ -155,6 +155,7 @@ module.exports.policies = {
 
     'TestController': {
         '*': ['isUser', 'isAuthenticated'],
+        'testEmail': true,
         'oldData': true,
     },
 

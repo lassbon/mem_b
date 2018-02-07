@@ -1,31 +1,46 @@
 var parseXlsx = require('excel');
 const multer = require('multer');
+var base64 = require('base-64');
 
 module.exports = {
 
     testEmail: function(req, res) {
-        var email = 'lemuel@karixchange.com';
-
-        var emailData = {
-            'email': process.env.SITE_EMAIL,
-            'from': process.env.SITE_NAME,
-            'subject': process.env.SITE_NAME + ' test email',
-            'body': 'Hello <br><br> This is just a test email.',
-            'to': email
-        }
-
-        azureEmail.send(emailData, function(resp) {
-            if (resp === 'success') {
-                sails.log.info('The email was sent successfully.');
-
-                return res.json(200, { status: 'success', message: 'The email test was successful' });
+        User.find({ select: ['membershipId', 'email', 'companyName'], where: { oldMember: true, email: 'sogbolutoluwalase@yahoo.com' } }).exec(function(err, users) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(404, { status: 'error', err: err });
             }
 
-            if (resp === 'error') {
-                sails.log.error(resp);
+            users.forEach(function(user) {
+                var emailData = {
+                    'email': process.env.SITE_EMAIL,
+                    'from': process.env.SITE_NAME,
+                    'subject': 'Your ' + process.env.SITE_NAME + ' membership onboarding.',
 
-                return res.json(200, { status: 'error', err: resp });
-            }
+                    'body': 'Hello ' + user.companyName + '!<br><br>' +
+                        'Welcome to ' + process.env.SITE_NAME + ' Membership platform.<br><br>' +
+                        'You can now easily access your membership account with ease and get all information on on-going, completed and past events/projects.<br><br>' +
+                        'You can also track your financial reports and pay your annual dues on the go.<br><br>' +
+                        'Kindly click on the "Onboard" button to be redirected to the onboarding form.<br><br>' +
+                        '<a href=" ' + process.env.ONBOARD_LINK + base64.encode(user.membershipId) + ' " style="color: green;">Onboard</a>.<br><br>' +
+                        'Your generic password is <strong>"password"</strong>.<br><br>' +
+                        '<strong>Kindly change your password once logged on.</strong><br><br>' +
+                        'Thank you for your time.<br><br>' +
+                        process.env.SITE_NAME,
+
+                    'to': user.email
+                }
+
+                azureEmail.send(emailData, function(resp) {
+                    if (resp === 'success') {
+                        return sails.log.info(resp);
+                    }
+
+                    if (resp === 'error') {
+                        sails.log.error(resp);
+                    }
+                });
+            });
         });
     },
 
@@ -126,8 +141,8 @@ module.exports = {
                         'You can now easily access your membership account with ease and get all information on on-going, completed and past events/projects.<br><br>' +
                         'You can also track your financial reports and pay your annual dues on the go.<br><br>' +
                         'Kindly click on the "Onboard" button to be redirected to the onboarding form.<br><br>' +
-                        '<a href=" ' + process.env.ONBOARD_LINK + ' " style="color: green;">Onboard</a>.<br><br>' +
-                        'Your generic password is "password".<br><br>' +
+                        '<a href=" ' + process.env.ONBOARD_LINK + base64.encode(user.membershipId) + ' " style="color: green;">Onboard</a>.<br><br>' +
+                        'Your generic password is <strong>"password"</strong>.<br><br>' +
                         '<strong>Kindly change your password once logged on.</strong><br><br>' +
                         'Thank you for your time.<br><br>' +
                         process.env.SITE_NAME,

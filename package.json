@@ -9,6 +9,7 @@
         "@sailshq/body-parser": "^1.13.4",
         "apidoc": "^0.17.6",
         "azure-storage": "^2.6.0",
+        "base-64": "^0.1.0",
         "bcrypt": "^1.0.3",
         "chance": "^1.0.12",
         "crypto": "^1.0.1",

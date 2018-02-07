@@ -224,7 +224,7 @@ module.exports.routes = {
      * Referrer routes
      */
     'POST /api/v1/referrer': 'ReferrerController.confirm',
-    'DELETE /api/v1/referrer/:id': 'ReferrerController.reject',
+    'DELETE /api/v1/referrer/:id/:refereeId': 'ReferrerController.reject',
     'GET /api/v1/referrer/:id': 'ReferrerController.get',
     'GET /api/v1/referrer': 'ReferrerController.get',
 

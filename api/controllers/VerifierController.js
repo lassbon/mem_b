@@ -79,6 +79,8 @@ module.exports = {
               return res.json(err.status, { err: err });
             }
 
+            alert.approver(user.companyName);
+
             var verificationMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been verified.';
 
             // Send notification to the user alerting him/her on the state of affairs
