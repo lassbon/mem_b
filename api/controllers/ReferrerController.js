@@ -85,8 +85,6 @@ module.exports = {
           return res.json(404, { status: 'error', message: 'No User with such id existing' });
         } else {
 
-          var confirmationMessage = '';
-
           if (user.referee1 == referee.email) {
 
             User.update({ id: req.param('id') }, { referred1: true }).exec(function(err, data) {
@@ -108,11 +106,11 @@ module.exports = {
           }
 
           // Send notification to the user alerting him/her on the state of affairs
-          Notifications.create({ id: req.param('id'), message: confirmationMessage }).exec(function(err, info) {
-            if (err) {
-              sails.log.error(err);
-            }
-          });
+          // Notifications.create({ id: req.param('id'), message: confirmationMessage }).exec(function(err, info) {
+          //   if (err) {
+          //     sails.log.error(err);
+          //   }
+          // });
 
           // check if user has been fully verified
           if (user.referred1 == true && user.referred2 == true) {
@@ -140,6 +138,8 @@ module.exports = {
               }
             });
           }
+
+          return res.json(200, { status: 'success', message: 'Success' });
         }
       });
     });
