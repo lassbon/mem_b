@@ -96,9 +96,10 @@ module.exports = {
               'email': process.env.SITE_EMAIL,
               'from': process.env.SITE_NAME,
               'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-              'body': 'Hello ' + user.companyName + '! <br><br> ' +
-                'Congratulations! Your company registration has been approved. <br><br> ' +
-                'Kindly log in <a href="'+ process.env.MEMBERSHIP_LINK +'">MEMBERSHIP LINK HERE</> to complete registration. <br><br> ' +
+              'body': 'Hello ' + user.companyName + '! <br><br> ' + 
+                'We are pleased to inform you that your request has been confirmed. <br><br> ' +
+                'Kindly click <a href="'+ process.env.MEMBERSHIP_LINK +'"> HERE</> to proceed with your registration<br> ' +
+                'and make the necessary payments. <br><br>' +
                 'Thank you. <br><br>' +
                 process.env.SITE_NAME,
 
