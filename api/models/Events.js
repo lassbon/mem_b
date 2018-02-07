@@ -29,6 +29,9 @@ module.exports = {
         venue: {
             type: 'text'
         },
+        organizer: {
+            type: 'string'
+        },
         fee: {
             type: 'integer',
             defaultsTo: 0

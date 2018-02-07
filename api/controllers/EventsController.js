@@ -114,6 +114,7 @@ module.exports = {
      * @apiParam {String} description Full description of the event.
      * @apiParam {String} [date] Date/Duration of the event.
      * @apiParam {String} [venue] Venue of the event.
+     * @apiParam {String} [organizer] Organizer of the event.
      * @apiParam {String} [fee] Fee for the event.
      *
      * @apiSuccess {String} status Status of the response from API.
@@ -287,6 +288,7 @@ module.exports = {
      * @apiParam {String} [description] Full description of the event.
      * @apiParam {String} [date] Date/Duration of the event.
      * @apiParam {String} [venue] Venue of the event.
+     * @apiParam {String} [organizer] Organizer of the event.
      * @apiParam {String} [fee] Fee for the event.
      *
      * @apiSuccess {String} status Status of the response from API.

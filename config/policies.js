@@ -153,6 +153,10 @@ module.exports.policies = {
         '*': ['isAdmin', 'isVerifier', 'isAuthenticated'],
     },
 
+    'ReferrerController': {
+        '*': ['isUser', 'isAuthenticated'],
+    },
+
     'TestController': {
         '*': ['isUser', 'isAuthenticated'],
         'testEmail': true,
