@@ -96,8 +96,8 @@ module.exports.referee = function(companyName, userId, email) {
 			'body': 'Hello!<br><br>' +
 				companyName + ' Appointed you as referee to it\'s registration on the ' + process.env.SITE_NAME + ' membership plartform.<br><br>' +
 				'Click on the appropriate button to CONFIRM or REJECT the applicant for membership.<br><br>' +
-				'<a href=" ' + process.env.VERIFIER_CONFIRM + userId + '/' + referee + ' " style="color: green;">CONFIRM</a>.<br><br>' +
-				'<a href=" ' + process.env.VERIFIER_REJECT + userId + '/' + referee + ' " style="color: red;">REJECT</a>.<br><br>' +
+				'<a href=" ' + process.env.VERIFIER_CONFIRM + userId + '/' + referee.id + ' " style="color: green;">CONFIRM</a>.<br><br>' +
+				'<a href=" ' + process.env.VERIFIER_REJECT + userId + '/' + referee.id + ' " style="color: red;">REJECT</a>.<br><br>' +
 				'Thank you for your time.<br><br>' +
 				process.env.SITE_NAME,
 
