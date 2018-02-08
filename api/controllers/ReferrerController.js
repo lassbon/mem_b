@@ -117,6 +117,12 @@ module.exports = {
 
             user.regState = 5;
 
+            User.update({ id: req.param('id') }, { regState: regState }).exec(function(err, data) {
+              if (err) {
+                sails.log.error(err);
+              }
+            });
+
             alert.verifier(user.companyName);
 
             var emailData = {
