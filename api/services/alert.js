@@ -20,7 +20,7 @@ module.exports.verifier = function(companyName, ) {
 				'subject': 'Your member verification.',
 
 				'body': 'Hello ' + verifier.username + '!<br><br>' +
-					'A prospective member' + companyName + ' needs to be verified .<br><br>' +
+					'A prospective member ' + companyName + ' needs to be verified .<br><br>' +
 					'Kindly click on the "Verifier" button to be redirected to the verification page on the admin portal.<br><br>' +
 					'<a href=" ' + process.env.VERIFIER_ADMIN + ' " style="color: green;">Verifier</a>.<br><br>' +
 					'Thank you for your time.<br><br>' +
@@ -54,10 +54,10 @@ module.exports.approver = function(companyName, ) {
 			var emailData = {
 				'email': process.env.SITE_EMAIL,
 				'from': process.env.SITE_NAME,
-				'subject': 'Your member verification.',
+				'subject': 'Your member approval.',
 
 				'body': 'Hello ' + approver.username + '!<br><br>' +
-					'A prospective member' + companyName + ' needs to be verified .<br><br>' +
+					'A prospective member ' + companyName + ' needs to be verified .<br><br>' +
 					'Kindly click on the "Approver" button to be redirected to the verification page on the admin portal.<br><br>' +
 					'<a href=" ' + process.env.APPROVER_ADMIN + ' " style="color: green;">Approver</a>.<br><br>' +
 					'Thank you for your time.<br><br>' +
