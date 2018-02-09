@@ -43,7 +43,7 @@ module.exports.verifier = function(companyName) {
 };
 
 // Alert the approvers in the admin portal to approve a new user
-module.exports.approver = function(companyName, ) {
+module.exports.approver = function(companyName) {
 
 	Admin.find({ permission: 'approver' }).exec(function(err, approvers) {
 		if (err) {
