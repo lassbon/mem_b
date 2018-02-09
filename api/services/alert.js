@@ -6,7 +6,7 @@
  */
 
 // Alert the verifiers in the admin portal to verify a new user
-module.exports.verifier = function(companyName, ) {
+module.exports.verifier = function(companyName) {
 
 	Admin.find({ permission: 'verifier' }).exec(function(err, verifiers) {
 		if (err) {
