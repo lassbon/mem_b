@@ -71,7 +71,7 @@ module.exports = {
                                     sails.log.error(err);
                                 }
 
-                                audit.log('Due', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
+                                audit.log('Due', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name );
                             });
 
                             Payment.create(data).exec(function(err, level) {
