@@ -82,7 +82,7 @@ module.exports.approver = function(companyName) {
 // Alert the referees to confirm a new user
 module.exports.referee = function(companyName, userId, email) {
 
-	User.findOne({ select: 'membershipId', where: { email: email } }).exec(function(err, referee) {
+	User.findOne({ select: ['membershipId', 'email'], where: { email: email } }).exec(function(err, referee) {
 		if (err) {
 			sails.log.error(err);
 		}
