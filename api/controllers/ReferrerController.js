@@ -211,7 +211,7 @@ module.exports = {
                 return res.json(err.status, { err: err });
               }
 
-              alert.rejected(res, user.companyName, user.email, referee.email)
+              alert.rejected(res, user.companyName, user.email, referee.email, 1)
             });
           } else if (user.referee2 == referee.email) {
 
@@ -221,7 +221,7 @@ module.exports = {
                 return res.json(err.status, { err: err });
               }
 
-              alert.rejected(res, user.companyName, user.email, referee.email);
+              alert.rejected(res, user.companyName, user.email, referee.email, 2);
             });
           } else {
             return res.json(404, { status: 'error', message: 'No referee with such id existing' });

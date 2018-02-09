@@ -118,9 +118,9 @@ module.exports.referee = function(companyName, userId, email) {
 };
 
 // Alert the user on referee rejection
-module.exports.rejected = function(res, companyName, email, referee) {
+module.exports.rejected = function(res, companyName, email, referee, whoRejected) {
 
-	var rejectionMessage = 'One of your referee ' + referee + ' has rejected your registration.<br> please provide a new and valid referee through this <a href="'+ process.env.REFEREE_LINK +'" target="blank">LINK</a>.';
+	var rejectionMessage = 'One of your referee ' + referee + ' has rejected your registration.<br> please provide a new and valid referee through this <a href="'+ process.env.REFEREE_LINK + '/' + whoRejected +'" target="blank">LINK</a>.';
 
 	// Send email to the user alerting him/her to the state of affairs
 	var emailData = {
