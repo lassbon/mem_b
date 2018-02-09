@@ -266,7 +266,7 @@ module.exports = {
      *     }
      */
     alertReferee: function(req, res) {
-        User.findOne({ select: ['referee1', 'referee2', 'companyName'], where: { id: req.body.id } }).exec(function(err, user) {
+        User.findOne({ select: ['referee1', 'referee2', 'referred1', 'referred2', 'companyName'], where: { id: req.body.id } }).exec(function(err, user) {
             if (err) {
                 sails.log.error(err);
                 return res.json(404, { status: 'error', err: err });
@@ -277,8 +277,13 @@ module.exports = {
             } else {
                 
                 // Send action email to the users apointed referees
-                alert.referee(user.companyName, user.id, user.referee1);
-                alert.referee(user.companyName, user.id, user.referee2);
+                if(user.referred1 == false){
+                    alert.referee(user.companyName, user.id, user.referee1);
+                }
+
+                if(user.referred2 == false){
+                    alert.referee(user.companyName, user.id, user.referee2);
+                }
 
                 // Send email to the user alerting him/her to the state of affairs
                 var emailData = {
