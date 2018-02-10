@@ -277,11 +277,11 @@ module.exports = {
             } else {
                 
                 // Send action email to the users apointed referees
-                if(user.referred1 == false){
+                if(user. referee1 && user.referred1 == false){
                     alert.referee(user.companyName, user.id, user.referee1);
                 }
 
-                if(user.referred2 == false){
+                if(user.referee2 && user.referred2 == false){
                     alert.referee(user.companyName, user.id, user.referee2);
                 }
 
