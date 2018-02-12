@@ -1,6 +1,6 @@
 {
     "name": "accimembership-api",
-    "private": false,
+    "private": true,
     "version": "0.0.0",
     "description": "API for the Abuja Chamber of Commerce and Industry membership plartform",
     "author": "Lemuel Okoli, for Karixchange",
