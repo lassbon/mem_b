@@ -136,7 +136,7 @@ module.exports.policies = {
     },
 
     'KnowledgeBaseController': {
-        '*': ['isUser', 'isContent', 'isAuthenticated'],
+        '*': ['isUser', 'isAuthenticated'],
         'get': ['isUser', 'isAuthenticated'],
 
         'create': ['isUser', 'isAuthenticated'],
