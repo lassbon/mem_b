@@ -275,13 +275,13 @@ module.exports = {
             if (!user) {
                 return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
             } else {
-                
+
                 // Send action email to the users apointed referees
-                if(user. referee1 && user.referred1 == false){
+                if (user.referee1 && user.referred1 == false) {
                     alert.referee(user.companyName, user.id, user.referee1);
                 }
 
-                if(user.referee2 && user.referred2 == false){
+                if (user.referee2 && user.referred2 == false) {
                     alert.referee(user.companyName, user.id, user.referee2);
                 }
 
@@ -493,7 +493,7 @@ module.exports = {
 
                     // Recommend a membership type for the user based on annual profits
                     if (req.body.regState && req.body.regState == 1) {
-                        
+
                         var recommendedmembershipType = '';
 
                         if (req.body.annualProfit === 'N100,000,001 and above' || req.body.annualProfit === 'N5,000,001 - N10,000,000' || req.body.annualProfit === 'N3,000,001 - N5,000,000') {
