@@ -110,7 +110,7 @@ module.exports = {
 
             //var regState = 6;
             console.log('Updating user details to 6');
-            User.update({ id: req.param('id') }, { regState: 6 }).exec(function(err, data) {
+            User.update({ id: user.id }, { regState: 6 }).exec(function(err, data) {
               if (err) {
                 sails.log.error(err);
               }
