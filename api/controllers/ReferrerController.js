@@ -110,11 +110,12 @@ module.exports = {
 
             //var regState = 6;
             console.log('Updating user details to 6');
-            User.update({ id: user.id }, { regState: 6 }).exec(function(err, data) {
+            User.update({ email: user.email }, { regState: 6 }).exec(function(err, data) {
               if (err) {
                 sails.log.error(err);
               }
               console.log('Successfully updated');
+              console.log(user);
               // alert the verifier about a new user to be verified
               alert.verifier(user.companyName);
             });
