@@ -116,7 +116,6 @@ module.exports = {
               }
 
               // alert the verifier about a new user to be verified
-              console.log(user);
               alert.verifier(user.companyName);
             });
 
