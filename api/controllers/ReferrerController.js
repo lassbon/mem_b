@@ -109,12 +109,12 @@ module.exports = {
           if (user.referred1 == true && user.referred2 == true) {
 
             //var regState = 6;
-
+            console.log('Updating user details to 6');
             User.update({ id: req.param('id') }, { regState: 6 }).exec(function(err, data) {
               if (err) {
                 sails.log.error(err);
               }
-
+              console.log('Successfully updated');
               // alert the verifier about a new user to be verified
               alert.verifier(user.companyName);
             });
