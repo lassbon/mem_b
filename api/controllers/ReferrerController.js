@@ -105,7 +105,7 @@ module.exports = {
             return res.json(404, { status: 'error', message: 'No referee with such id existing' });
           }
 
-          // check if user has been fully verified
+          // check if user has been fully confirmed
           if (user.referred1 == true && user.referred2 == true) {
 
             var regState = 5;
@@ -116,6 +116,7 @@ module.exports = {
               }
 
               // alert the verifier about a new user to be verified
+              console.log(user);
               alert.verifier(user.companyName);
             });
 

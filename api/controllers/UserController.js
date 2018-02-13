@@ -808,7 +808,7 @@ module.exports = {
                         'email': process.env.SITE_EMAIL,
                         'from': process.env.SITE_NAME,
                         'subject': 'Your ' + process.env.SITE_NAME + ' Password Reset',
-                        'body': 'Hello ' + user.username + '! <br><br> Click the link below to change your password: <br><br> <a href="' + resetUrl + '" >Change Password</a> <br><br>',
+                        'body': 'Hello ' + user.companyName + '! <br><br> Click the link below to change your password: <br><br> <a href="' + resetUrl + '" >Change Password</a> <br><br>',
                         'to': req.param('email')
                     }
 
