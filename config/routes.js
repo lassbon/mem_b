@@ -51,6 +51,7 @@ module.exports.routes = {
      * Auth routes
      */
     'POST /api/v1/auth/user': 'AuthController.userLogin',
+    'POST /api/v1/auth/oldmember': 'AuthController.oldMemberLogin',
     'POST /api/v1/auth/admin': 'AuthController.adminLogin',
     '/api/v1/auth/': 'AuthController.index',
 

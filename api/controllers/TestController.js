@@ -72,51 +72,54 @@ module.exports = {
                     membershipStatus: 'active'
                 }
 
-                if (record[1].length !== 0) {
-                    oldMember.membershipId = record[1];
-                }
+                if (record[1].length !== 0 && record[8].length !== 0) {
 
-                if (record[2].length !== 0) {
-                    oldMember.companyName = record[2];
-                }
-
-                if (record[5].length !== 0) {
-                    oldMember.membershipPlan = record[5];
-                }
-
-                if (record[7].length !== 0) {
-                    oldMember.companyAddress = record[7];
-                }
-
-                if (record[8].length !== 0) {
-                    oldMember.email = record[8];
-                }
-
-                if (record[9].length !== 0) {
-                    oldMember.companyPhone = record[9].split(' ').join(', ');
-                }
-
-                if (record[11].length !== 0) {
-                    oldMember.tradeGroup = record[11];
-                }
-
-                User.findOne({ membershipId: oldMember.membershipId }).exec(function(err, user) {
-                    if (err) {
-                        sails.log.error(err);
-                        //return res.json(err.status, { err: err });
+                    if (record[1].length !== 0) {
+                        oldMember.membershipId = record[1];
                     }
 
-                    if (!user) {
-                        console.log(oldMember);
-
-                        User.create(oldMember).exec(function(err, member) {
-                            if (err) {
-                                sails.log.error(err);
-                                //return res.json(err.status, { err: err });
-                            }
-                        });
+                    if (record[2].length !== 0) {
+                        oldMember.companyName = record[2];
                     }
-                });
+
+                    if (record[5].length !== 0) {
+                        oldMember.membershipPlan = record[5];
+                    }
+
+                    if (record[7].length !== 0) {
+                        oldMember.companyAddress = record[7];
+                    }
+
+                    if (record[8].length !== 0) {
+                        oldMember.email = record[8];
+                    }
+
+                    if (record[9].length !== 0) {
+                        oldMember.companyPhone = record[9].split(' ').join(', ');
+                    }
+
+                    if (record[11].length !== 0) {
+                        oldMember.tradeGroup = record[11];
+                    }
+
+                    User.findOne({ membershipId: oldMember.membershipId }).exec(function(err, user) {
+                        if (err) {
+                            sails.log.error(err);
+                            //return res.json(err.status, { err: err });
+                        }
+
+                        if (!user) {
+                            console.log(oldMember);
+
+                            User.create(oldMember).exec(function(err, member) {
+                                if (err) {
+                                    sails.log.error(err);
+                                    //return res.json(err.status, { err: err });
+                                }
+                            });
+                        }
+                    });
+                }
             }
 
             return res.json(200, { status: 'success', message: 'success' });

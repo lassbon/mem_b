@@ -139,6 +139,76 @@ module.exports = {
     },
 
     /**
+     * `AuthController.userLogin()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/auth/oldmember Login an old member
+     * @apiName Login
+     * @apiDescription This is where a old member is logged in, and a token generated and returned.
+     * @apiGroup Auth
+     *
+     * @apiParam {Number} membershipId Membership Id of the old member.
+     * @apiParam {Number} password Password of the old member.
+     *
+     * @apiSuccess {String} user Details of the logged in old member.
+     * @apiSuccess {String} token  Access token for accessing all parts of the plartform.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "user": {},
+     *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM"
+     *     }
+     *
+     * 
+     * @apiUse PasswordOrEmailInvalidError
+     * 
+     * @apiUse PasswordAndEmailRequiredError
+     * 
+     */
+    oldMemberLogin: function(req, res) {
+        var membershipId = req.body.membershipId;
+        var password = req.body.password;
+
+        if (!membershipId || !password) {
+            return res.json(401, { status: 'error', err: 'membershipId and password required' });
+        }
+
+        User.findOne({ membershipId: membershipId }, function(err, user) {
+            if (!user) {
+                return res.json(401, { status: 'error', err: 'invalid membershipId or password' });
+            }
+
+
+
+            User.comparePassword(password, user, function(err, valid) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(403, { status: 'error', err: 'forbidden' });
+                }
+
+                if (!valid) {
+                    return res.json(401, { status: 'error', err: 'invalid membershipId or password' });
+                } else {
+                    res.json({
+                        user: {
+                            companyName: user.companyName,
+                            membershipId: user.membershipId,
+                            id: user.id,
+                            role: user.role
+                        },
+                        token: jwToken.issue({
+                            membershipId: user.membershipId,
+                            id: user.id,
+                            role: user.role
+                        })
+                    });
+                }
+            });
+        });
+    },
+
+    /**
      * `AuthController.adminLogin()`
      * 
      * ----------------------------------------------------------------------------------
