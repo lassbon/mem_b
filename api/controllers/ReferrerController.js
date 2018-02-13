@@ -108,9 +108,9 @@ module.exports = {
           // check if user has been fully confirmed
           if (user.referred1 == true && user.referred2 == true) {
 
-            var regState = 6;
+            //var regState = 6;
 
-            User.update({ id: req.param('id') }, { regState: regState }).exec(function(err, data) {
+            User.update({ id: req.param('id') }, { regState: 6 }).exec(function(err, data) {
               if (err) {
                 sails.log.error(err);
               }
