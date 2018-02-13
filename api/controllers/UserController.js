@@ -875,6 +875,28 @@ module.exports = {
                     var who = jwToken.who(req.headers.authorization);
                     audit.log('user', who + ' changed password');
 
+                    User.findOne({ select: ['companyName', 'email'], where: { email: token.email }}).exec(function(err, user) {
+
+                        var emailData = {
+                            'email': process.env.SITE_EMAIL,
+                            'from': process.env.SITE_NAME,
+                            'subject': 'Your ' + process.env.SITE_NAME + ' password change.',
+                            'body': 'Hello ' + user.companyName + '! <br><br> ' +
+                                'You have successfully changed your password. <br><br>' +
+                                'Thank you. <br><br>' +
+                                process.env.SITE_NAME,
+
+                            'to': user.email
+                        }
+
+                        azureEmail.send(emailData, function(resp) {
+                            if (resp === 'error') {
+                                sails.log.error(resp);
+                            }
+                        });
+
+                    });
+
                     return res.json(200, { status: 'success', message: 'Password successfully changed.' });
                 });
             });
