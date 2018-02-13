@@ -105,13 +105,6 @@ module.exports = {
             return res.json(404, { status: 'error', message: 'No referee with such id existing' });
           }
 
-          // Send notification to the user alerting him/her on the state of affairs
-          // Notifications.create({ id: req.param('id'), message: confirmationMessage }).exec(function(err, info) {
-          //   if (err) {
-          //     sails.log.error(err);
-          //   }
-          // });
-
           // check if user has been fully verified
           if (user.referred1 == true && user.referred2 == true) {
 

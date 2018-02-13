@@ -500,11 +500,11 @@ module.exports = {
                             recommendedmembershipType = 'Gold';
                         }
 
-                        if (req.body.annualProfit === req.body.annualProfit === 'N1,000,001 - N3,000,000') {
+                        if (req.body.annualProfit === 'N1,000,001 - N3,000,000') {
                             recommendedmembershipType = 'Silver';
                         }
 
-                        if (req.body.annualProfit === req.body.annualProfit === 'N501,000 - N1,000,000') {
+                        if (req.body.annualProfit === 'N501,000 - N1,000,000') {
                             recommendedmembershipType = 'Bronze';
                         }
 
