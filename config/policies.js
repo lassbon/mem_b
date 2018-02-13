@@ -39,6 +39,8 @@ module.exports.policies = {
     'UserController': { // We dont need authorization here, allowing public access
         '*': ['isUser', 'isAuthenticated'],
         'create': true,
+        'forgotPassword': true,
+        'changePassword': true,
         'delete': ['isAdministrator', 'isAdmin', 'isAuthenticated'],
         'getOldMember': ['isUser', 'isAuthenticated'],
     },
@@ -161,6 +163,7 @@ module.exports.policies = {
         '*': ['isUser', 'isAuthenticated'],
         'testEmail': true,
         'oldData': true,
+        'testPage': true,
     },
 
     /***************************************************************************

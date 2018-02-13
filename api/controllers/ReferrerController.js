@@ -115,15 +115,16 @@ module.exports = {
           // check if user has been fully verified
           if (user.referred1 == true && user.referred2 == true) {
 
-            user.regState = 5;
+            var regState = 5;
 
             User.update({ id: req.param('id') }, { regState: regState }).exec(function(err, data) {
               if (err) {
                 sails.log.error(err);
               }
-            });
 
-            alert.verifier(user.companyName);
+              // alert the verifier about a new user to be verified
+              alert.verifier(user.companyName);
+            });
 
             var emailData = {
               'email': process.env.SITE_EMAIL,

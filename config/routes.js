@@ -71,8 +71,10 @@ module.exports.routes = {
      */
     'POST /api/v1/user': 'UserController.create',
     'POST /api/v1/user/upload': 'UserController.uploadImage',
+
     'POST /api/v1/user/reset': 'UserController.forgotPassword',
     'PUT /api/v1/user/change': 'UserController.changePassword',
+    
     'PUT /api/v1/user/:id': 'UserController.update',
     'DELETE /api/v1/user/:id': 'UserController.delete',
     'GET /api/v1/user/:id': 'UserController.get',
@@ -335,6 +337,7 @@ module.exports.routes = {
 
     // Test routes
     'POST /api/v1/testemail': 'TestController.testEmail',
+    'POST /api/v1/testam': 'TestController.testPage',
     'POST /api/v1/olddata': 'TestController.oldData',
     'POST /api/v1/alertoldmembers': 'TestController.alertOldMembers',
 };

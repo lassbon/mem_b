@@ -18,7 +18,7 @@
  *     }
  */
 
-  /** 
+/** 
  * @apiDefine UserIdNotProvidedError
  *
  * @apiError UserIdNotProvided No User id provided.
@@ -32,7 +32,7 @@
  */
 
 module.exports = {
-	
+
 
 
   /**
@@ -60,60 +60,60 @@ module.exports = {
    * 
    * @apiUse UserNotFoundError
    */
-  verify: function (req, res) {
+  verify: function(req, res) {
     if (!req.param('id')) {
       return res.json(401, { status: 'error', err: 'No User id provided!' });
-    } else {
-      User.findOne({ id: req.param('id') }).exec(function(err, user) {
-        if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
-        }
+    }
 
-        if (!user) {
-          return res.json(404, { status: 'error', err: 'No User with such id existing' });
-        } else {
-          User.update({ id: req.param('id') }, { verified: true }).exec(function(err, data) {
+    User.findOne({ id: req.param('id') }).exec(function(err, user) {
+      if (err) {
+        sails.log.error(err);
+        return res.json(err.status, { err: err });
+      }
+
+      if (!user) {
+        return res.json(404, { status: 'error', err: 'No User with such id existing' });
+      } else {
+        User.update({ id: req.param('id') }, { verified: true }).exec(function(err, data) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          alert.approver(user.companyName);
+
+          var verificationMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been verified.';
+
+          // Send notification to the user alerting him/her on the state of affairs
+          Notifications.create({ id: req.param('id'), message: verificationMessage }).exec(function(err, info) {
             if (err) {
               sails.log.error(err);
-              return res.json(err.status, { err: err });
             }
-
-            alert.approver(user.companyName);
-
-            var verificationMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been verified.';
-
-            // Send notification to the user alerting him/her on the state of affairs
-            Notifications.create({ id: req.param('id'), message: verificationMessage }).exec(function(err, info) {
-              if (err) {
-                sails.log.error(err);
-              }
-            });
-
-            // Send email to the user alerting him/her to the state of affairs
-            var emailData = {
-              'email': process.env.SITE_EMAIL,
-              'from': process.env.SITE_NAME,
-              'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-              'body': 'Hello ' + user.companyName + '! <br><br> ' + verificationMessage + ' <br><br> Kindly wait for the approval step to take place. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-              'to': user.email
-            }
-
-            azureEmail.send(emailData, function(resp) {
-              if (resp === 'success') {
-                sails.log.info('The email was sent successfully.');
-              }
-
-              if (resp === 'error') {
-                sails.log.error(resp);
-              }
-            });
-
-            return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been verified' });
           });
-        }
-      });
-    }
+
+          // Send email to the user alerting him/her to the state of affairs
+          var emailData = {
+            'email': process.env.SITE_EMAIL,
+            'from': process.env.SITE_NAME,
+            'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+            'body': 'Hello ' + user.companyName + '! <br><br> ' + verificationMessage + ' <br><br> Kindly wait for the approval step to take place. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+            'to': user.email
+          }
+
+          azureEmail.send(emailData, function(resp) {
+            if (resp === 'success') {
+              sails.log.info('The email was sent successfully.');
+            }
+
+            if (resp === 'error') {
+              sails.log.error(resp);
+            }
+          });
+
+          return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been verified' });
+        });
+      }
+    });
   },
 
 
@@ -143,7 +143,7 @@ module.exports = {
    * 
    * @apiUse UserNotFoundError
    */
-  reject: function (req, res) {
+  reject: function(req, res) {
     if (!req.param('id')) {
       return res.json(401, { status: 'error', err: 'No User id provided!' });
     }
@@ -226,30 +226,30 @@ module.exports = {
    * @apiUse UserNotFoundError
    * 
    */
-  get: function (req, res) {
-    if(req.param('id')){
-      User.findOne({id : req.param('id'), verified: false}).sort('createdAt DESC').exec(function (err, user){
+  get: function(req, res) {
+    if (req.param('id')) {
+      User.findOne({ id: req.param('id'), verified: false }).sort('createdAt DESC').exec(function(err, user) {
         if (err) {
           sails.log.error(err);
-          return res.json(err.status, {err: err});
+          return res.json(err.status, { err: err });
         }
 
-        if(!user){
-          return res.json(404, {status: 'error', message: 'No User with such id existing'});
-        }else{
+        if (!user) {
+          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+        } else {
           delete user.password; // delete the password from the returned user object
           return res.json(200, user);
         }
       });
-    }else{
-      User.find({verified: false, referred1: true, referred2: true}).sort('createdAt DESC').exec(function (err, users){
+    } else {
+      User.find({ verified: false, referred1: true, referred2: true }).sort('createdAt DESC').exec(function(err, users) {
         if (err) {
           sails.log.error(err);
-          return res.json(err.status, {err: err});
+          return res.json(err.status, { err: err });
         }
 
         // delete the password from the returned user objects
-        users.forEach(function(user){
+        users.forEach(function(user) {
           delete user.password;
         });
 
@@ -258,4 +258,3 @@ module.exports = {
     }
   }
 };
-

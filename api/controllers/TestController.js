@@ -165,4 +165,19 @@ module.exports = {
             });
         });
     },
+
+    testPage: function(req, res) {
+        // User.find({ select: ['membershipId', 'email', 'companyName'], where: { oldMember: true, email: 'lemuel@karixchange.com' } }).exec(function(err, users) {
+        //     if (err) {
+        //         sails.log.error(err);
+        //         return res.json(404, { status: 'error', err: err });
+        //     }
+
+        //     users.forEach(function(user) {
+        //         alert.verifier('og prime');
+        //     });
+        // });
+
+        alert.verifier('og prime');
+    },
 }
