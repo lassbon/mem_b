@@ -169,6 +169,7 @@ module.exports = {
      *     }
      */
     uploadDocument: function(req, res) {
+        
         if (req.method != 'POST') return res.notFound();
 
         var container = 'knowledgebase';
@@ -182,12 +183,14 @@ module.exports = {
                     secret: process.env.AZURE_STORAGE_ACCESS_KEY,
                     container: container
                 }, function whenDone(err, uploadedFiles) {
-                    if (err) return res.negotiate(err);
-                    else if (uploadedFiles.length === 0) {
-                        return res.json(401, { status: 'error', err: 'No image uploaded!' });
+                    if (err) {
+                        sails.log.error(err);
+                        return res.negotiate(err);
+                    } else if (uploadedFiles.length === 0) {
+                        return res.json(401, { status: 'error', err: 'No file uploaded!' });
                     } else return res.ok({
                         status: 'success',
-                        docUrl: process.env.AZURE_STORAGE_ACCOUNT_URL + container + '/' + uploadedFiles[0].fd
+                        bannerUrl: process.env.AZURE_STORAGE_ACCOUNT_URL + container + '/' + uploadedFiles[0].fd
                     });
                 });
         });
