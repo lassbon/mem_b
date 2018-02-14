@@ -63,63 +63,70 @@ module.exports = {
     if (!req.param('id')) {
       return res.json(401, { status: 'error', err: 'No User id provided!' });
     } else {
-      User.findOne({ id: req.param('id') }).exec(function(err, user) {
-        if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
-        }
+      User.findOne({ id: req.param('id') }).then(function(user) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
 
-        if (!user) {
-          return res.json(404, { status: 'error', err: 'No User with such id existing' });
-        } else {
+          if (!user) {
+            return res.json(404, { status: 'error', err: 'No User with such id existing' });
+          } else {
 
-          // create and associate membership id to the new user
-          var membershipId = utility.membershipId();
+            // create and associate membership id to the new user
+            var membershipId = utility.membershipId();
 
-          User.update({ id: req.param('id') }, { approved: true, membershipStatus: 'active', membershipId: membershipId }).exec(function(err, data) {
-            if (err) {
-              sails.log.error(err);
-              return res.json(err.status, { err: err });
-            }
-
-            var approvalMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been approved.';
-
-            // Send notification to the user alerting him/her on the state of affairs
-            Notifications.create({ id: req.param('id'), message: approvalMessage }).exec(function(err, info) {
+            User.update({ id: req.param('id') }, { approved: true, membershipStatus: 'active', membershipId: membershipId }).exec(function(err, data) {
               if (err) {
                 sails.log.error(err);
+                return res.json(err.status, { err: err });
               }
+
+              var approvalMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been approved.';
+
+              // Send notification to the user alerting him/her on the state of affairs
+              Notifications.create({ id: req.param('id'), message: approvalMessage }).exec(function(err, info) {
+                if (err) {
+                  sails.log.error(err);
+                }
+              });
+
+              // Send email to the user alerting him/her to the state of affairs
+              var emailData = {
+                'email': process.env.SITE_EMAIL,
+                'from': process.env.SITE_NAME,
+                'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+                'body': 'Hello ' + user.companyName + '! <br><br> ' +
+                  'We are pleased to inform you that your request has been confirmed. <br><br> ' +
+                  'Kindly click <a href="' + process.env.MEMBERSHIP_LINK + '"> HERE</a> to proceed with your registration<br> ' +
+                  'and make the necessary payments. <br><br>' +
+                  'Thank you. <br><br>' +
+                  process.env.SITE_NAME,
+
+                'to': user.email
+              }
+
+              azureEmail.send(emailData, function(resp) {
+                if (resp === 'success') {
+                  sails.log.info('The email was sent successfully.');
+                }
+
+                if (resp === 'error') {
+                  sails.log.error(resp);
+                }
+              });
+
+              return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been approved' });
             });
-
-            // Send email to the user alerting him/her to the state of affairs
-            var emailData = {
-              'email': process.env.SITE_EMAIL,
-              'from': process.env.SITE_NAME,
-              'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-              'body': 'Hello ' + user.companyName + '! <br><br> ' + 
-                'We are pleased to inform you that your request has been confirmed. <br><br> ' +
-                'Kindly click <a href="'+ process.env.MEMBERSHIP_LINK +'"> HERE</a> to proceed with your registration<br> ' +
-                'and make the necessary payments. <br><br>' +
-                'Thank you. <br><br>' +
-                process.env.SITE_NAME,
-
-              'to': user.email
-            }
-
-            azureEmail.send(emailData, function(resp) {
-              if (resp === 'success') {
-                sails.log.info('The email was sent successfully.');
-              }
-
-              if (resp === 'error') {
-                sails.log.error(resp);
-              }
-            });
-
-            return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been approved' });
-          });
-        }
-      });
+          }
+        })
+        .catch(function(err) {
+          throw new Error(err.message);
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
+        });
     }
   },
 
@@ -160,53 +167,60 @@ module.exports = {
       return res.json(401, { status: 'error', err: 'No rejection reason provided!' });
     }
 
-    User.findOne({ id: req.param('id') }).exec(function(err, user) {
-      if (err) {
-        sails.log.error(err);
-        return res.json(err.status, { err: err });
-      }
+    User.findOne({ id: req.param('id') }).then(function(user) {
+        if (err) {
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
+        }
 
-      if (!user) {
-        return res.json(404, { status: 'error', err: 'No User with such id existing' });
-      } else {
-        User.update({ id: req.param('id') }, { approved: false, approvedRejectionReason: req.param('reason') }).exec(function(err, data) {
-          if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
-          }
-
-          var rejectionMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been rejected.';
-
-          // Send notification to the user alerting him/her on the state of affairs
-          Notifications.create({ id: req.param('id'), message: rejectionMessage }).exec(function(err, info) {
+        if (!user) {
+          return res.json(404, { status: 'error', err: 'No User with such id existing' });
+        } else {
+          User.update({ id: req.param('id') }, { approved: false, approvedRejectionReason: req.param('reason') }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
+              return res.json(err.status, { err: err });
             }
+
+            var rejectionMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been rejected.';
+
+            // Send notification to the user alerting him/her on the state of affairs
+            Notifications.create({ id: req.param('id'), message: rejectionMessage }).exec(function(err, info) {
+              if (err) {
+                sails.log.error(err);
+              }
+            });
+
+            // Send email to the user alerting him/her to the state of affairs
+            var emailData = {
+              'email': process.env.SITE_EMAIL,
+              'from': process.env.SITE_NAME,
+              'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+              'body': 'Hello ' + user.companyName + '! <br><br> ' + rejectionMessage + ' <br><br> ' + req.param('reason') + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+              'to': user.email
+            }
+
+            azureEmail.send(emailData, function(resp) {
+              if (resp === 'success') {
+                sails.log.info('The email was sent successfully.');
+              }
+
+              if (resp === 'error') {
+                sails.log.error(resp);
+              }
+            });
+
+            return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been approved' });
           });
-
-          // Send email to the user alerting him/her to the state of affairs
-          var emailData = {
-            'email': process.env.SITE_EMAIL,
-            'from': process.env.SITE_NAME,
-            'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-            'body': 'Hello ' + user.companyName + '! <br><br> ' + rejectionMessage + ' <br><br> ' + req.param('reason') + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-            'to': user.email
-          }
-
-          azureEmail.send(emailData, function(resp) {
-            if (resp === 'success') {
-              sails.log.info('The email was sent successfully.');
-            }
-
-            if (resp === 'error') {
-              sails.log.error(resp);
-            }
-          });
-
-          return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been approved' });
-        });
-      }
-    });
+        }
+      })
+      .catch(function(err) {
+        throw new Error(err.message);
+      })
+      .catch(function(err) {
+        sails.log.error(err);
+        return res.json(err.status, { err: err });
+      });
   },
 
 
@@ -235,33 +249,47 @@ module.exports = {
    */
   get: function(req, res) {
     if (req.param('id')) {
-      User.findOne({ id: req.param('id'), approved: false }).sort('createdAt DESC').exec(function(err, user) {
-        if (err) {
+      User.findOne({ id: req.param('id'), approved: false }).sort('createdAt DESC').then(function(user) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          if (!user) {
+            return res.json(404, { status: 'error', message: 'No User with such id existing' });
+          } else {
+            delete user.password; // delete the password from the returned user object
+            return res.json(200, user);
+          }
+        })
+        .catch(function(err) {
+          throw new Error(err.message);
+        })
+        .catch(function(err) {
           sails.log.error(err);
           return res.json(err.status, { err: err });
-        }
-
-        if (!user) {
-          return res.json(404, { status: 'error', message: 'No User with such id existing' });
-        } else {
-          delete user.password; // delete the password from the returned user object
-          return res.json(200, user);
-        }
-      });
-    } else {
-      User.find({ approved: false, verified: true }).sort('createdAt DESC').exec(function(err, users) {
-        if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
-        }
-
-        // delete the password from the returned user objects
-        users.forEach(function(user) {
-          delete user.password;
         });
+    } else {
+      User.find({ approved: false, verified: true }).sort('createdAt DESC').then(function(users) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
 
-        return res.json(200, users);
-      });
+          // delete the password from the returned user objects
+          users.forEach(function(user) {
+            delete user.password;
+          });
+
+          return res.json(200, users);
+        })
+        .catch(function(err) {
+          throw new Error(err.message);
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
+        });
     }
   }
 };

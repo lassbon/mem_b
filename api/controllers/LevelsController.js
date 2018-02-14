@@ -71,38 +71,45 @@ module.exports = {
      */
     create: function(req, res) {
 
-        Levels.create(req.body).exec(function(err, level) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { status: 'error', err: err });
-            }
+        Levels.create(req.body).then(function(level) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { status: 'error', err: err });
+                }
 
-            if (level) {
-                paystack.plan.create({
-                        name: req.body.name,
-                        amount: req.body.due,
-                        interval: 'annually'
-                    })
-                    .then(function(body) {
-                        Levels.update({ id: level.id }, { paystack: body }).exec(function(err, data) {
-                            if (err) {
-                                sails.log.error(err);
-                                return res.json(err.status, { status: 'error', err: err });
-                            }
+                if (level) {
+                    paystack.plan.create({
+                            name: req.body.name,
+                            amount: req.body.due,
+                            interval: 'annually'
+                        })
+                        .then(function(body) {
+                            Levels.update({ id: level.id }, { paystack: body }).exec(function(err, data) {
+                                if (err) {
+                                    sails.log.error(err);
+                                    return res.json(err.status, { status: 'error', err: err });
+                                }
 
-                            res.json(200, {
-                                status: 'success',
-                                id: level.id
+                                res.json(200, {
+                                    status: 'success',
+                                    id: level.id
+                                });
                             });
+                        })
+                        .catch(function(error) {
+                            if (error) {
+                                return res.json(401, { status: 'error', err: error });
+                            }
                         });
-                    })
-                    .catch(function(error) {
-                        if (error) {
-                            return res.json(401, { status: 'error', err: error });
-                        }
-                    });
-            }
-        });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            });
     },
 
 
@@ -135,25 +142,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Level id provided!' });
         } else {
-            Levels.findOne({ select: 'name', where: { id: req.param('id') } }).exec(function(err, level) {
-                if (err) {
+            Levels.findOne({ select: 'name', where: { id: req.param('id') } }).then(function(level) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!level) {
+                        return res.json(404, { status: 'error', err: 'No Level with such id existing' })
+                    } else {
+                        Levels.destroy({ id: req.param('id') }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Level with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!level) {
-                    return res.json(404, { status: 'error', err: 'No Level with such id existing' })
-                } else {
-                    Levels.destroy({ id: req.param('id') }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Level with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -190,45 +204,52 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Level id provided!' });
         } else {
-            Levels.findOne({ select: 'name', where: { id: req.param('id') } }).exec(function(err, level) {
-                if (err) {
+            Levels.findOne({ select: 'name', where: { id: req.param('id') } }).then(function(level) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!level) {
+                        return res.json(404, { status: 'error', err: 'No Level with such id existing' })
+                    } else {
+                        Levels.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            paystack.plan.update({
+                                    name: req.body.name,
+                                    amount: req.body.due,
+                                    interval: 'annually'
+                                })
+                                .then(function(body) {
+                                    Levels.update({ id: req.param('id') }, { "paystack.data.name": req.body.name, "paystack.data.amount": req.body.fee }).exec(function(err, data) {
+                                        if (err) {
+                                            sails.log.error(err);
+                                            return res.json(err.status, { status: 'error', err: err });
+                                        }
+
+                                        return res.json(200, { status: 'success', message: 'Level with id ' + req.param('id') + ' has been updated' });
+                                    });
+                                })
+                                .catch(function(error) {
+                                    if (error) {
+                                        sails.log.error(error);
+                                        return res.json(401, { status: 'error', err: error });
+                                    }
+                                });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!level) {
-                    return res.json(404, { status: 'error', err: 'No Level with such id existing' })
-                } else {
-                    Levels.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        paystack.plan.update({
-                                name: req.body.name,
-                                amount: req.body.due,
-                                interval: 'annually'
-                            })
-                            .then(function(body) {
-                                Levels.update({ id: req.param('id') }, { "paystack.data.name": req.body.name, "paystack.data.amount": req.body.fee }).exec(function(err, data) {
-                                    if (err) {
-                                        sails.log.error(err);
-                                        return res.json(err.status, { status: 'error', err: err });
-                                    }
-
-                                    return res.json(200, { status: 'success', message: 'Level with id ' + req.param('id') + ' has been updated' });
-                                });
-                            })
-                            .catch(function(error) {
-                                if (error) {
-                                    sails.log.error(error);
-                                    return res.json(401, { status: 'error', err: error });
-                                }
-                            });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -258,27 +279,43 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Levels.findOne({ id: req.param('id') }).exec(function(err, level) {
-                if (err) {
+            Levels.findOne({ id: req.param('id') }).then(function(level) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!level) {
+                        return res.json(401, { status: 'error', err: 'No Level with such id existing' })
+                    } else {
+                        return res.json(200, level);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!level) {
-                    return res.json(401, { status: 'error', err: 'No Level with such id existing' })
-                } else {
-                    return res.json(200, level);
-                }
-            });
         } else {
-            Levels.find().sort('fee DESC').exec(function(err, level) {
-                if (err) {
+
+            Levels.find().sort('fee DESC').then(function(level) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, level);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, level);
-            });
+                });
         }
     }
 };

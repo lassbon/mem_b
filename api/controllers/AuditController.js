@@ -63,7 +63,7 @@ module.exports = {
         if (field && req.param('term')) {
 
             Audit.find({ field: req.param('term') }).limit(limit)
-                .skip(offset).exec(function(err, audits) {
+                .skip(offset).then(function(audits) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -81,11 +81,19 @@ module.exports = {
 
                         return res.json(200, auditData);
                     });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 });
+
         } else {
 
             Audit.find().limit(limit)
-                .skip(offset).sort('createdAt DESC').exec(function(err, audits) {
+                .skip(offset).sort('createdAt DESC').then(function(audits) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -103,9 +111,16 @@ module.exports = {
 
                         return res.json(200, auditData);
                     });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 });
         }
-    }, 
+    },
 
     /**
      * `AuditController.getExcel()`
@@ -117,23 +132,30 @@ module.exports = {
      * @apiGroup Audit
      */
     getExcel: function(req, res) {
-        Audit.find().sort('createdAt DESC').exec(function(err, audits) {
-            if (err) {
+        Audit.find().sort('createdAt DESC').then(function(audits) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                var xls = json2xls(audits);
+
+                fs.writeFileSync('assets/tmp/audit.xlsx', xls, 'binary');
+
+                res.download('assets/tmp/audit.xlsx', function(err) {
+                    if (err) {
+                        return res.serverError(err)
+                    } else {
+                        return res.ok();
+                    }
+                });
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            var xls = json2xls(audits);
-
-            fs.writeFileSync('assets/tmp/audit.xlsx', xls, 'binary');
-
-            res.download('assets/tmp/audit.xlsx', function(err) {
-                if (err) {
-                    return res.serverError(err)
-                } else {
-                    return res.ok();
-                }
             });
-        });
     },
 };

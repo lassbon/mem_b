@@ -137,24 +137,31 @@ module.exports = {
      */
     createTraining: function(req, res) {
 
-        Training.create(req.body).exec(function(err, training) {
-            if (err) {
+        Training.create(req.body).then(function(training) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+                // If training is created successfuly we return training id and title
+                if (training) {
+
+                    var who = jwToken.who(req.headers.authorization);
+                    audit.log('training', who + ' created ' + training.title);
+
+                    // NOTE: payload is { id: training.id}
+                    res.json(200, {
+                        status: 'success',
+                        id: training.id
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-            // If training is created successfuly we return training id and title
-            if (training) {
-
-                var who = jwToken.who(req.headers.authorization);
-                audit.log('training', who + ' created ' + training.title);
-
-                // NOTE: payload is { id: training.id}
-                res.json(200, {
-                    status: 'success',
-                    id: training.id
-                });
-            }
-        });
+            });
     },
 
     /**
@@ -242,33 +249,40 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Training id provided!' });
         } else {
-            Training.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, training) {
-                if (err) {
+            Training.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(training) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!training) {
+                        return res.json(404, { status: 'error', err: 'No Training with such id existing' })
+                    } else {
+                        Training.update({ id: req.param('id') }, { status: 'completed' }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            // if (training.banner) {
+                            //     var url = training.banner;
+                            //     azureBlob.delete('training', url.split('/').reverse()[0]);
+                            // }
+
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('training', who + ' deleted ' + training.title);
+
+                            return res.json(200, { status: 'success', message: 'Training with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!training) {
-                    return res.json(404, { status: 'error', err: 'No Training with such id existing' })
-                } else {
-                    Training.update({ id: req.param('id') }, { status: 'completed' }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        // if (training.banner) {
-                        //     var url = training.banner;
-                        //     azureBlob.delete('training', url.split('/').reverse()[0]);
-                        // }
-
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('training', who + ' deleted ' + training.title);
-
-                        return res.json(200, { status: 'success', message: 'Training with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -308,34 +322,41 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Training id provided!' });
         } else {
-            Training.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, training) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!training) {
-                    return res.json(404, { status: 'error', err: 'No Training with such id existing' })
-                } else {
-
-                    if (training.banner && training.banner !== req.param('banner')) {
-                        var url = training.banner;
-                        azureBlob.delete('training', url.split('/').reverse()[0]);
+            Training.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(training) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
                     }
 
-                    Training.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
+                    if (!training) {
+                        return res.json(404, { status: 'error', err: 'No Training with such id existing' })
+                    } else {
+
+                        if (training.banner && training.banner !== req.param('banner')) {
+                            var url = training.banner;
+                            azureBlob.delete('training', url.split('/').reverse()[0]);
                         }
 
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('training', who + ' edited ' + training.title);
+                        Training.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
 
-                        return res.json(200, { status: 'success', message: 'Training with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('training', who + ' edited ' + training.title);
+
+                            return res.json(200, { status: 'success', message: 'Training with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -382,14 +403,21 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            Training.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, trainings) {
-                if (err) {
+            Training.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(trainings) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, { page: page, limit: limit, result: trainings });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, { page: page, limit: limit, result: trainings });
-            });
+                });
         }
     },
 
@@ -418,27 +446,43 @@ module.exports = {
      */
     getCompleted: function(req, res) {
         if (req.param('id')) {
-            Training.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, training) {
-                if (err) {
+            Training.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(training) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!training) {
+                        return res.json(404, { status: 'error', message: 'No training with such id existing' })
+                    } else {
+                        return res.json(200, training);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!training) {
-                    return res.json(404, { status: 'error', message: 'No training with such id existing' })
-                } else {
-                    return res.json(200, training);
-                }
-            });
         } else {
-            Training.find({ status: 'completed' }).sort('createdAt DESC').exec(function(err, training) {
-                if (err) {
+
+            Training.find({ status: 'completed' }).sort('createdAt DESC').then(function(training) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, training);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, training);
-            });
+                });
         }
     },
 
@@ -467,27 +511,43 @@ module.exports = {
      */
     getOngoing: function(req, res) {
         if (req.param('id')) {
-            Training.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, training) {
-                if (err) {
+            Training.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(training) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!training.id) {
+                        return res.json(404, { status: 'error', message: 'No training with such id existing' })
+                    } else {
+                        return res.json(200, training);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!training.id) {
-                    return res.json(404, { status: 'error', message: 'No training with such id existing' })
-                } else {
-                    return res.json(200, training);
-                }
-            });
         } else {
-            Training.find({ status: 'ongoing' }).sort('createdAt DESC').exec(function(err, training) {
-                if (err) {
+
+            Training.find({ status: 'ongoing' }).sort('createdAt DESC').then(function(training) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, training);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, training);
-            });
+                });
         }
     },
 
@@ -531,27 +591,43 @@ module.exports = {
 
     getTrainings: function(req, res) {
         if (req.param('id')) {
-            Training.findOne({ id: req.param('id')}).sort('createdAt DESC').exec(function(err, training) {
-                if (err) {
+            Training.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(training) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!training.id) {
+                        return res.json(404, { status: 'error', message: 'No training with such id existing' })
+                    } else {
+                        return res.json(200, training);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!training.id) {
-                    return res.json(404, { status: 'error', message: 'No training with such id existing' })
-                } else {
-                    return res.json(200, training);
-                }
-            });
         } else {
-            Training.find().sort('createdAt DESC').exec(function(err, trainings) {
-                if (err) {
+
+            Training.find().sort('createdAt DESC').then(function(trainings) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, trainings);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, trainings);
-            });
+                });
         }
     }
 };

@@ -70,7 +70,7 @@
  *     }
  */
 
- /** 
+/** 
  * @apiDefine CensorActionNotProvidedError
  *
  * @apiError CensorActionNotProvided No action provided.
@@ -137,19 +137,26 @@ module.exports = {
         if (!req.param('creator')) {
             return res.json(401, { status: "error", err: 'No creator id provided!' });
         } else {
-            ForumTopics.create(req.body).exec(function(err, topic) {
-                if (err) {
+            ForumTopics.create(req.body).then(function(topic) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (topic) {
+                        res.json(200, {
+                            status: "success",
+                            id: topic.id
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (topic) {
-                    res.json(200, {
-                        status: "success",
-                        id: topic.id
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -186,25 +193,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Topic id provided!' });
         } else {
-            ForumTopics.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, topic) {
-                if (err) {
+            ForumTopics.findOne({ select: 'title', where: { id: req.param('id') } }).then(function(topic) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!topic) {
+                        return res.json(404, { status: 'error', err: 'No Topic with such id existing' });
+                    } else {
+                        ForumTopics.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Topic with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!topic) {
-                    return res.json(404, { status: 'error', err: 'No Topic with such id existing' });
-                } else {
-                    ForumTopics.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Topic with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -238,25 +252,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Topic id provided!' });
         } else {
-            ForumTopics.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, topic) {
-                if (err) {
+            ForumTopics.findOne({ select: 'title', where: { id: req.param('id') } }).then(function(topic) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!topic) {
+                        return res.json(404, { status: 'error', err: 'No Topic with such id existing' });
+                    } else {
+                        ForumTopics.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Topic with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!topic) {
-                    return res.json(404, { status: 'error', err: 'No Topic with such id existing' });
-                } else {
-                    ForumTopics.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Topic with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -285,27 +306,43 @@ module.exports = {
      */
     getTopic: function(req, res) {
         if (req.param('id')) {
-            ForumTopics.findOne({ id: req.param('id') }).populate('posts', { sort: 'createdAt DESC' }).exec(function(err, topic) {
-                if (err) {
+            ForumTopics.findOne({ id: req.param('id') }).populate('posts', { sort: 'createdAt DESC' }).then(function(topic) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!topic) {
+                        return res.json(404, { status: 'error', err: 'No Topic with such id existing' })
+                    } else {
+                        return res.json(200, topic);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!topic) {
-                    return res.json(404, { status: 'error', err: 'No Topic with such id existing' })
-                } else {
-                    return res.json(200, topic);
-                }
-            });
         } else {
-            ForumTopics.find().populate('posts', { sort: 'createdAt DESC' }).sort('createdAt DESC').exec(function(err, topics) {
-                if (err) {
+
+            ForumTopics.find().populate('posts', { sort: 'createdAt DESC' }).sort('createdAt DESC').then(function(topics) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, topics);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, topics);
-            });
+                });
         }
     },
 
@@ -347,19 +384,26 @@ module.exports = {
         if (!req.param('creator')) {
             return res.json(401, { status: "error", err: 'No Creator id provided!' });
         } else {
-            ForumPosts.create(req.body).exec(function(err, post) {
-                if (err) {
+            ForumPosts.create(req.body).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (post) {
+                        res.json(200, {
+                            status: "success",
+                            id: post.id
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (post) {
-                    res.json(200, {
-                        status: "success",
-                        id: post.id
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -396,25 +440,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No Post id provided!' });
         } else {
-            ForumPosts.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, post) {
-                if (err) {
+            ForumPosts.findOne({ select: 'title', where: { id: req.param('id') } }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!post) {
+                        return res.json(404, { status: 'error', err: 'No Post with such id existing' });
+                    } else {
+                        ForumPosts.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!post) {
-                    return res.json(404, { status: 'error', err: 'No Post with such id existing' });
-                } else {
-                    ForumPosts.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -448,25 +499,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Post id provided!' });
         } else {
-            ForumPosts.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, post) {
-                if (err) {
+            ForumPosts.findOne({ select: 'title', where: { id: req.param('id') } }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!post) {
+                        return res.json(404, { status: 'error', err: 'No Post with such id existing' });
+                    } else {
+                        ForumPosts.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!post) {
-                    return res.json(404, { status: 'error', err: 'No Post with such id existing' });
-                } else {
-                    ForumPosts.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -500,43 +558,50 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No Post id provided!' });
         } else {
-            ForumPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).exec(function(err, post) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!post) {
-                    return res.json(404, { status: 'error', err: 'No Post with such id existing' });
-                } else {
-
-                    var likes = post.likes ? post.likes : [];
-
-                    var stat = false;
-
-                    for (var i = 0; i < likes.length; i++) {
-                        var name = likes[i];
-                        if (name == req.param('liker')) {
-                            stat = true;
-                            break;
-                        }
+            ForumPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
                     }
 
-                    if (stat == false) {
-                        return res.json(403, { status: 'error', err: 'Post not previously liked' });
+                    if (!post) {
+                        return res.json(404, { status: 'error', err: 'No Post with such id existing' });
                     } else {
-                        for (var i = post.likes.length; i--;) {
-                            if (post.likes[i] === req.param('liker')) {
-                                post.likes.splice(i, 1);
+
+                        var likes = post.likes ? post.likes : [];
+
+                        var stat = false;
+
+                        for (var i = 0; i < likes.length; i++) {
+                            var name = likes[i];
+                            if (name == req.param('liker')) {
+                                stat = true;
+                                break;
                             }
                         }
 
-                        ForumPosts.update({ id: req.param('id') }, { likes: post.likes }).exec(function(err, post) {
-                            return res.json(200, { status: 'success', message: 'Post unliked' });
-                        });
+                        if (stat == false) {
+                            return res.json(403, { status: 'error', err: 'Post not previously liked' });
+                        } else {
+                            for (var i = post.likes.length; i--;) {
+                                if (post.likes[i] === req.param('liker')) {
+                                    post.likes.splice(i, 1);
+                                }
+                            }
+
+                            ForumPosts.update({ id: req.param('id') }, { likes: post.likes }).exec(function(err, post) {
+                                return res.json(200, { status: 'success', message: 'Post unliked' });
+                            });
+                        }
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -570,39 +635,46 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Post id provided!' });
         } else {
-            ForumPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).exec(function(err, post) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
+            ForumPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
 
-                if (!post) {
-                    return res.json(404, { status: 'error', message: 'No Post with such id existing' });
-                } else {
+                    if (!post) {
+                        return res.json(404, { status: 'error', message: 'No Post with such id existing' });
+                    } else {
 
-                    var likes = post.likes ? post.likes : [];
+                        var likes = post.likes ? post.likes : [];
 
-                    var stat = true;
+                        var stat = true;
 
-                    for (var i = 0; i < likes.length; i++) {
-                        var name = likes[i];
-                        if (name == req.param('liker')) {
-                            stat = false;
-                            break;
+                        for (var i = 0; i < likes.length; i++) {
+                            var name = likes[i];
+                            if (name == req.param('liker')) {
+                                stat = false;
+                                break;
+                            }
+                        }
+
+                        if (stat == false) {
+                            return res.json(403, { status: 'error', err: 'Post already liked' });
+                        } else {
+                            likes.push(req.param('liker'));
+
+                            ForumPosts.update({ id: req.param('id') }, { likes: likes }).exec(function(err, post) {
+                                return res.json(200, { status: 'success', message: 'Post liked' });
+                            });
                         }
                     }
-
-                    if (stat == false) {
-                        return res.json(403, { status: 'error', err: 'Post already liked' });
-                    } else {
-                        likes.push(req.param('liker'));
-
-                        ForumPosts.update({ id: req.param('id') }, { likes: likes }).exec(function(err, post) {
-                            return res.json(200, { status: 'success', message: 'Post liked' });
-                        });
-                    }
-                }
-            });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -631,27 +703,43 @@ module.exports = {
      */
     getPost: function(req, res) {
         if (req.param('id')) {
-            ForumPosts.findOne({ id: req.param('id'), censored: false }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).exec(function(err, post) {
-                if (err) {
+            ForumPosts.findOne({ id: req.param('id'), censored: false }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!post) {
+                        return res.json(404, { status: 'error', err: 'No Post with such id existing' })
+                    } else {
+                        return res.json(200, post);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!post) {
-                    return res.json(404, { status: 'error', err: 'No Post with such id existing' })
-                } else {
-                    return res.json(200, post);
-                }
-            });
         } else {
-            ForumPosts.find({censored: false }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).exec(function(err, posts) {
-                if (err) {
+
+            ForumPosts.find({ censored: false }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).then(function(posts) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, posts);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, posts);
-            });
+                });
         }
     },
 
@@ -676,15 +764,22 @@ module.exports = {
      * @apiUse PostNotFoundError
      */
     getCensoredPost: function(req, res) {
-        
-        ForumPosts.find({ censored: true }).exec(function(err, posts) {
-            if (err) {
+
+        ForumPosts.find({ censored: true }).then(function(posts) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, posts);
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            return res.json(200, posts);
-        });
+            });
     },
 
     /**
@@ -718,41 +813,48 @@ module.exports = {
     censorPost: function(req, res) {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No Post id provided!' });
-        } 
+        }
 
         if (!req.param('action')) {
             return res.json(401, { status: "error", err: 'No action provided!' });
         }
 
-        
-        ForumPosts.findOne({ select: 'censored', where: { id: req.param('id') } }).exec(function(err, post) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
 
-            if (!post) {
-                return res.json(404, { status: 'error', err: 'No Post with such id existing' });
-            } else {
-
-                var censored;
-
-                if(!req.param('action') == 'true'){
-                    censored = true;
-                }else{
-                    censored = false;
+        ForumPosts.findOne({ select: 'censored', where: { id: req.param('id') } }).then(function(post) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 }
 
-                ForumPosts.update({ id: req.param('id') }, {censored: censored}).exec(function(err, data) {
-                    if (err) {
-                        sails.log.error(err);
-                        return res.json(err.status, { err: err });
+                if (!post) {
+                    return res.json(404, { status: 'error', err: 'No Post with such id existing' });
+                } else {
+
+                    var censored;
+
+                    if (!req.param('action') == 'true') {
+                        censored = true;
+                    } else {
+                        censored = false;
                     }
 
-                    return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been updated' });
-                });
-            }
-        });
+                    ForumPosts.update({ id: req.param('id') }, { censored: censored }).exec(function(err, data) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
+
+                        return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been updated' });
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            });
     },
 
     /**
@@ -798,19 +900,26 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Post id provided!' });
         }
 
-        ForumComments.create(req.body).exec(function(err, comment) {
-            if (err) {
+        ForumComments.create(req.body).then(function(comment) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (comment) {
+                    res.json(200, {
+                        status: 'success',
+                        id: comment.id
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            if (comment) {
-                res.json(200, {
-                    status: 'success',
-                    id: comment.id
-                });
-            }
-        });
+            });
     },
 
     /**
@@ -843,25 +952,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Comment id provided!' });
         } else {
-            ForumComments.findOne({ select: 'comment', where: { id: req.param('id') } }).exec(function(err, comment) {
-                if (err) {
+            ForumComments.findOne({ select: 'comment', where: { id: req.param('id') } }).then(function(comment) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
+                    } else {
+                        ForumComments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!comment) {
-                    return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
-                } else {
-                    ForumComments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -894,25 +1010,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Comment id provided!' });
         } else {
-            ForumComments.findOne({ select: 'comment', where: { id: req.param('id') } }).exec(function(err, comment) {
-                if (err) {
+            ForumComments.findOne({ select: 'comment', where: { id: req.param('id') } }).then(function(comment) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
+                    } else {
+                        ForumComments.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!comment) {
-                    return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
-                } else {
-                    ForumComments.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -940,27 +1063,43 @@ module.exports = {
      */
     getComment: function(req, res) {
         if (req.param('id')) {
-            ForumComments.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, comment) {
-                if (err) {
+            ForumComments.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(comment) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(204, { status: 'error', err: 'No Comment with such id existing' })
+                    } else {
+                        return res.json(200, comment);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!comment) {
-                    return res.json(204, { status: 'error', err: 'No Comment with such id existing' })
-                } else {
-                    return res.json(200, comment);
-                }
-            });
         } else {
-            ForumComments.find().sort('createdAt DESC').exec(function(err, comments) {
-                if (err) {
+
+            ForumComments.find().sort('createdAt DESC').then(function(comments) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, comments);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, comments);
-            });
+                });
         }
     },
 
@@ -977,33 +1116,40 @@ module.exports = {
 
         var forumCounts = {};
 
-        ForumTopics.count().exec(function(err, topics) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            forumCounts.topics = topics;
-
-            ForumPosts.count().exec(function(err, posts) {
+        ForumTopics.count().then(function(topics) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                forumCounts.posts = posts;
+                forumCounts.topics = topics;
 
-                ForumComments.count().exec(function(err, comments) {
+                ForumPosts.count().exec(function(err, posts) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
                     }
 
-                    forumCounts.comments = comments;
+                    forumCounts.posts = posts;
 
-                    return res.json(200, forumCounts);
+                    ForumComments.count().exec(function(err, comments) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
+
+                        forumCounts.comments = comments;
+
+                        return res.json(200, forumCounts);
+                    });
                 });
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
             });
-        });
     },
 };

@@ -159,52 +159,59 @@ module.exports = {
         // remove the confirmPassword element from the body object before saving to DB
         delete req.body.confirmPassword;
 
-        User.findOne({ email: req.param('email') }).exec(function(err, user) {
-            if (err) {
+        User.findOne({ email: req.param('email') }).then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                }
+
+                if (user) {
+                    return res.json(404, { status: 'error', err: 'An account with that email already exists.' })
+                } else {
+                    User.create(req.body).exec(function(user, err) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(500, { err: err });
+                        }
+
+                        // If user created successfuly we return user and token as response
+                        if (user) {
+
+                            // // Send email to the user alerting him/her to the state of affairs
+                            // var emailData = {
+                            //     'email': process.env.SITE_EMAIL,
+                            //     'from': process.env.SITE_NAME,
+                            //     'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+                            //     'body': 'Hello ' + user.companyName + '! <br><br> Your registration process has begun.<br><br> Kindly execise patience as your apointed referees aprove your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+                            //     'to': user.email
+                            // }
+
+                            // azureEmail.send(emailData, function(resp) {
+                            //     if (resp === 'success') {
+                            //         sails.log.info('The email was sent successfully.');
+                            //     }
+
+                            //     if (resp === 'error') {
+                            //         sails.log.error(resp);
+                            //     }
+                            // });
+
+                            res.json(200, {
+                                email: user.email,
+                                id: user.id,
+                                role: user.role
+                            });
+                        }
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            if (user) {
-                return res.json(404, { status: 'error', err: 'An account with that email already exists.' })
-            } else {
-                User.create(req.body).exec(function(err, user) {
-                    if (err) {
-                        sails.log.error(err);
-                        return res.json(err.status, { err: err });
-                    }
-
-                    // If user created successfuly we return user and token as response
-                    if (user) {
-
-                        // // Send email to the user alerting him/her to the state of affairs
-                        // var emailData = {
-                        //     'email': process.env.SITE_EMAIL,
-                        //     'from': process.env.SITE_NAME,
-                        //     'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-                        //     'body': 'Hello ' + user.companyName + '! <br><br> Your registration process has begun.<br><br> Kindly execise patience as your apointed referees aprove your registration. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-                        //     'to': user.email
-                        // }
-
-                        // azureEmail.send(emailData, function(resp) {
-                        //     if (resp === 'success') {
-                        //         sails.log.info('The email was sent successfully.');
-                        //     }
-
-                        //     if (resp === 'error') {
-                        //         sails.log.error(resp);
-                        //     }
-                        // });
-
-                        res.json(200, {
-                            email: user.email,
-                            id: user.id,
-                            role: user.role
-                        });
-                    }
-                });
-            }
-        });
+                return res.json(500, { err: err });
+            });
     },
 
     /**
@@ -229,18 +236,25 @@ module.exports = {
      *     }
      */
     validateReferee: function(req, res) {
-        User.findOne({ select: ['membershipFee', 'membershipStatus', 'membershipDue'], where: { membershipDue: 'paid', membershipFee: 'paid', membershipStatus: 'active', email: req.body.email } }).exec(function(err, referee) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(status, { status: 'error', err: err });
-            }
+        User.findOne({ select: ['membershipFee', 'membershipStatus', 'membershipDue'], where: { membershipDue: 'paid', membershipFee: 'paid', membershipStatus: 'active', email: req.body.email } }).then(function(referee) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(status, { status: 'error', err: err });
+                }
 
-            if (!referee) {
-                return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
-            } else {
-                return res.json(200, { status: 'success', message: 'The referee is valid' });
-            }
-        });
+                if (!referee) {
+                    return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
+                } else {
+                    return res.json(200, { status: 'success', message: 'The referee is valid' });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
     },
 
     /**
@@ -266,45 +280,52 @@ module.exports = {
      *     }
      */
     alertReferee: function(req, res) {
-        User.findOne({ select: ['referee1', 'referee2', 'referred1', 'referred2', 'companyName'], where: { id: req.body.id } }).exec(function(err, user) {
-            if (err) {
+        User.findOne({ select: ['referee1', 'referee2', 'referred1', 'referred2', 'companyName'], where: { id: req.body.id } }).then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(404, { status: 'error', err: err });
+                }
+
+                if (!user) {
+                    return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
+                } else {
+
+                    // Send action email to the users apointed referees
+                    if (user.referee1 && user.referred1 == false) {
+                        alert.referee(user.companyName, user.id, user.referee1);
+                    }
+
+                    if (user.referee2 && user.referred2 == false) {
+                        alert.referee(user.companyName, user.id, user.referee2);
+                    }
+
+                    // Send email to the user alerting him/her to the state of affairs
+                    var emailData = {
+                        'email': process.env.SITE_EMAIL,
+                        'from': process.env.SITE_NAME,
+                        'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+                        'body': 'Hello ' + user.companyName + '! <br><br> Your registration process has begun. <br><br> Kindly execise patience as your apointed referees confirm your application. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
+                        'to': user.email
+                    }
+
+                    azureEmail.send(emailData, function(resp) {
+                        if (resp === 'success') {
+                            return res.json(200, { status: 'success', message: 'The referees has been alerted.' });
+                        }
+
+                        if (resp === 'error') {
+                            sails.log.error(resp);
+                        }
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(404, { status: 'error', err: err });
-            }
-
-            if (!user) {
-                return res.json(404, { status: 'error', err: 'The referee is either invalid or not fully paid' })
-            } else {
-
-                // Send action email to the users apointed referees
-                if (user.referee1 && user.referred1 == false) {
-                    alert.referee(user.companyName, user.id, user.referee1);
-                }
-
-                if (user.referee2 && user.referred2 == false) {
-                    alert.referee(user.companyName, user.id, user.referee2);
-                }
-
-                // Send email to the user alerting him/her to the state of affairs
-                var emailData = {
-                    'email': process.env.SITE_EMAIL,
-                    'from': process.env.SITE_NAME,
-                    'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-                    'body': 'Hello ' + user.companyName + '! <br><br> Your registration process has begun. <br><br> Kindly execise patience as your apointed referees confirm your application. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-                    'to': user.email
-                }
-
-                azureEmail.send(emailData, function(resp) {
-                    if (resp === 'success') {
-                        return res.json(200, { status: 'success', message: 'The referees has been alerted.' });
-                    }
-
-                    if (resp === 'error') {
-                        sails.log.error(resp);
-                    }
-                });
-            }
-        });
+                return res.json(500, { err: err });
+            });
     },
 
     /**
@@ -394,33 +415,40 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         } else {
-            User.findOne({ select: ['username', 'profileImage'], where: { id: req.param('id') } }).exec(function(err, user) {
-                if (err) {
+            User.findOne({ select: ['username', 'profileImage'], where: { id: req.param('id') } }).then(function(user, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(500, { err: err });
+                    }
+
+                    if (!user) {
+                        return res.json(404, { status: 'error', err: 'No User with such id existing' });
+                    } else {
+                        User.destroy({ id: req.param('id') }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(500, { err: err });
+                            }
+
+                            if (user.profileImage) {
+                                var url = user.profileImage;
+                                azureBlob.delete('user', url.split('/').reverse()[0]);
+                            }
+
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('user', who + ' deleted ' + user.companyName);
+
+                            return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!user) {
-                    return res.json(404, { status: 'error', err: 'No User with such id existing' });
-                } else {
-                    User.destroy({ id: req.param('id') }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        if (user.profileImage) {
-                            var url = user.profileImage;
-                            azureBlob.delete('user', url.split('/').reverse()[0]);
-                        }
-
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('user', who + ' deleted ' + user.companyName);
-
-                        return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                    return res.json(500, { err: err });
+                });
         }
     },
 
@@ -481,58 +509,65 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         } else {
-            User.findOne({ select: ['username', 'profileImage', 'regState', 'annualProfit'], where: { id: req.param('id') } }).exec(function(err, user) {
-                if (err) {
+            User.findOne({ select: ['username', 'profileImage', 'regState', 'annualProfit'], where: { id: req.param('id') } }).then(function(user, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(500, { err: err });
+                    }
+
+                    if (!user) {
+                        return res.json(404, { status: 'error', err: 'No User with such id existing' })
+                    } else {
+
+                        // Recommend a membership type for the user based on annual profits
+                        if (req.body.regState && req.body.regState == 1) {
+
+                            var recommendedmembershipType = '';
+
+                            if (req.body.annualProfit === 'N100,000,001 and above' || req.body.annualProfit === 'N5,000,001 - N10,000,000' || req.body.annualProfit === 'N3,000,001 - N5,000,000') {
+                                recommendedmembershipType = 'Gold';
+                            }
+
+                            if (req.body.annualProfit === 'N1,000,001 - N3,000,000') {
+                                recommendedmembershipType = 'Silver';
+                            }
+
+                            if (req.body.annualProfit === 'N501,000 - N1,000,000') {
+                                recommendedmembershipType = 'Bronze';
+                            }
+
+                            if (req.body.annualProfit === 'N100,000 - N500,000') {
+                                recommendedmembershipType = 'Brass';
+                            }
+
+                            req.body.recommendedLevel = recommendedmembershipType;
+                        }
+
+                        if (user.profileImage && user.profileImage !== req.param('image')) {
+                            var url = user.profileImage;
+                            azureBlob.delete('user', url.split('/').reverse()[0]);
+                        }
+
+                        User.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(500, { err: err });
+                            }
+
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('user', who + ' edited ' + user.companyName);
+
+                            return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!user) {
-                    return res.json(404, { status: 'error', err: 'No User with such id existing' })
-                } else {
-
-                    // Recommend a membership type for the user based on annual profits
-                    if (req.body.regState && req.body.regState == 1) {
-
-                        var recommendedmembershipType = '';
-
-                        if (req.body.annualProfit === 'N100,000,001 and above' || req.body.annualProfit === 'N5,000,001 - N10,000,000' || req.body.annualProfit === 'N3,000,001 - N5,000,000') {
-                            recommendedmembershipType = 'Gold';
-                        }
-
-                        if (req.body.annualProfit === 'N1,000,001 - N3,000,000') {
-                            recommendedmembershipType = 'Silver';
-                        }
-
-                        if (req.body.annualProfit === 'N501,000 - N1,000,000') {
-                            recommendedmembershipType = 'Bronze';
-                        }
-
-                        if (req.body.annualProfit === 'N100,000 - N500,000') {
-                            recommendedmembershipType = 'Brass';
-                        }
-
-                        req.body.recommendedLevel = recommendedmembershipType;
-                    }
-
-                    if (user.profileImage && user.profileImage !== req.param('image')) {
-                        var url = user.profileImage;
-                        azureBlob.delete('user', url.split('/').reverse()[0]);
-                    }
-
-                    User.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('user', who + ' edited ' + user.companyName);
-
-                        return res.json(200, { status: 'success', message: 'User with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                    return res.json(500, { err: err });
+                });
         }
     },
 
@@ -562,36 +597,46 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            User.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, user) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
+            User.findOne({ id: req.param('id') }).then(function(user, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(500, { err: err });
+                    }
 
-                if (!user) {
-                    return res.json(404, { status: 'error', err: 'No User with such id existing..............' })
-                } else {
-                    delete user.password;
-                    return res.json(200, user);
-                }
-            });
+                    if (!user) {
+                        return res.json(404, { status: 'error', err: 'No User with such id existing..............' })
+                    } else {
+                        delete user.password;
+                        return res.json(200, user);
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+
         } else {
-            User.find().sort('createdAt DESC').exec(function(err, user) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
 
-                return res.json(200, user);
-            });
+            User.find().sort('createdAt DESC').then(function(user, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(500, { err: err });
+                    }
+
+                    return res.json(200, user);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
         }
     },
 
     getOldMember: function(req, res) {
-        User.findOne({ membershipId: req.param('membershipId'), oldMember: true }).sort('createdAt DESC').exec(function(err, user) {
+        User.findOne({ membershipId: req.param('membershipId'), oldMember: true }).sort('createdAt DESC').exec(function(user, err) {
             if (err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             }
 
             if (!user) {
@@ -647,14 +692,21 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            User.find({ companyName: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, users) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
+            User.find({ companyName: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(users) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(500, { err: err });
+                    }
 
-                return res.json(200, { page: page, limit: limit, result: users });
-            });
+                    return res.json(200, { page: page, limit: limit, result: users });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
         }
     },
 
@@ -686,19 +738,26 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         }
 
-        User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).sort('createdAt DESC').populate('posts', { sort: 'createdAt DESC' }).exec(function(err, user) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
+        User.findOne({ select: ['membershipId', 'profileImage'], where: { id: req.param('id') } }).sort('createdAt DESC').populate('posts', { sort: 'createdAt DESC' }).then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                }
 
-            if (!user) {
-                return res.json(404, { status: 'error', err: 'No User with such id existing' })
-            } else {
-                delete user.password;
-                return res.json(200, user);
-            }
-        });
+                if (!user) {
+                    return res.json(404, { status: 'error', err: 'No User with such id existing' })
+                } else {
+                    delete user.password;
+                    return res.json(200, user);
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
     },
 
     /**
@@ -729,19 +788,26 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No User id provided!' });
         }
 
-        User.findOne({ select: 'membershipId', where: { id: req.param('id') } }).sort('createdAt DESC').populate('friends', { select: ['email', 'membershipId', 'companyName', 'profileImage'] }).exec(function(err, user) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
+        User.findOne({ select: 'membershipId', where: { id: req.param('id') } }).sort('createdAt DESC').populate('friends', { select: ['email', 'membershipId', 'companyName', 'profileImage'] }).then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                }
 
-            if (!user) {
-                return res.json(404, { status: 'error', err: 'No User with such id existing' })
-            } else {
-                delete user.password;
-                return res.json(200, user);
-            }
-        });
+                if (!user) {
+                    return res.json(404, { status: 'error', err: 'No User with such id existing' })
+                } else {
+                    delete user.password;
+                    return res.json(200, user);
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
     },
 
     /**
@@ -754,14 +820,21 @@ module.exports = {
      * @apiGroup User
      */
     getCount: function(req, res) {
-        User.count().exec(function(err, userCount) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
+        User.count().then(function(userCount) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                }
 
-            return res.json(200, userCount.toString());
-        });
+                return res.json(200, userCount.toString());
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
     },
 
     /**
@@ -794,35 +867,42 @@ module.exports = {
         if (!req.param('email')) {
             return res.json(401, { status: 'error', err: 'No user email provided!' });
         } else {
-            User.findOne({ select: ['email', 'password', 'username'], where: { email: req.param('email') } }).exec(function(err, user) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!user) {
-                    return res.json(404, { status: 'error', err: 'No User with such email existing' })
-                } else {
-                    var resetUrl = req.param('url') + '?token=' + jwToken.resetPassword({ email: req.param('email'), password: user.password, time: Date.now() });
-                    var emailData = {
-                        'email': process.env.SITE_EMAIL,
-                        'from': process.env.SITE_NAME,
-                        'subject': 'Your ' + process.env.SITE_NAME + ' Password Reset',
-                        'body': 'Hello ' + user.companyName + '! <br><br> Click the link below to change your password: <br><br> <a href="' + resetUrl + '" >Change Password</a> <br><br>',
-                        'to': req.param('email')
+            User.findOne({ select: ['email', 'password', 'username'], where: { email: req.param('email') } }).then(function(user, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(500, { err: err });
                     }
 
-                    azureEmail.send(emailData, function(resp) {
-                        if (resp === 'success') {
-                            return res.json(200, { status: 'success', message: 'Click on the link sent to your email to change your password.' });
+                    if (!user) {
+                        return res.json(404, { status: 'error', err: 'No User with such email existing' })
+                    } else {
+                        var resetUrl = req.param('url') + '?token=' + jwToken.resetPassword({ email: req.param('email'), password: user.password, time: Date.now() });
+                        var emailData = {
+                            'email': process.env.SITE_EMAIL,
+                            'from': process.env.SITE_NAME,
+                            'subject': 'Your ' + process.env.SITE_NAME + ' Password Reset',
+                            'body': 'Hello ' + user.companyName + '! <br><br> Click the link below to change your password: <br><br> <a href="' + resetUrl + '" >Change Password</a> <br><br>',
+                            'to': req.param('email')
                         }
 
-                        if (resp === 'error') {
-                            return res.json(401, { status: 'error', message: 'There was an error while sending your password reset email.' });
-                        }
-                    });
-                }
-            });
+                        azureEmail.send(emailData, function(resp) {
+                            if (resp === 'success') {
+                                return res.json(200, { status: 'success', message: 'Click on the link sent to your email to change your password.' });
+                            }
+
+                            if (resp === 'error') {
+                                return res.json(401, { status: 'error', message: 'There was an error while sending your password reset email.' });
+                            }
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
         }
     },
 
@@ -866,39 +946,46 @@ module.exports = {
                     return res.json(401, { status: "error", err: 'Password doesn\'t match, What a shame!' });
                 }
 
-                User.update({ email: token.email }, { password: req.param('password') }).exec(function(err, data) {
-                    if (err) {
-                        sails.log.error(err);
-                        return res.json(err.status, { err: err });
-                    }
-
-                    var who = jwToken.who(req.headers.authorization);
-                    audit.log('user', who + ' changed password');
-
-                    User.findOne({ select: ['companyName', 'email'], where: { email: token.email }}).exec(function(err, user) {
-
-                        var emailData = {
-                            'email': process.env.SITE_EMAIL,
-                            'from': process.env.SITE_NAME,
-                            'subject': 'Your ' + process.env.SITE_NAME + ' password change.',
-                            'body': 'Hello ' + user.companyName + '! <br><br> ' +
-                                'You have successfully changed your password. <br><br>' +
-                                'Thank you. <br><br>' +
-                                process.env.SITE_NAME,
-
-                            'to': user.email
+                User.update({ email: token.email }, { password: req.param('password') }).then(function(data) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(500, { err: err });
                         }
 
-                        azureEmail.send(emailData, function(resp) {
-                            if (resp === 'error') {
-                                sails.log.error(resp);
+                        var who = jwToken.who(req.headers.authorization);
+                        audit.log('user', who + ' changed password');
+
+                        User.findOne({ select: ['companyName', 'email'], where: { email: token.email } }).exec(function(user, err) {
+
+                            var emailData = {
+                                'email': process.env.SITE_EMAIL,
+                                'from': process.env.SITE_NAME,
+                                'subject': 'Your ' + process.env.SITE_NAME + ' password change.',
+                                'body': 'Hello ' + user.companyName + '! <br><br> ' +
+                                    'You have successfully changed your password. <br><br>' +
+                                    'Thank you. <br><br>' +
+                                    process.env.SITE_NAME,
+
+                                'to': user.email
                             }
+
+                            azureEmail.send(emailData, function(resp) {
+                                if (resp === 'error') {
+                                    sails.log.error(resp);
+                                }
+                            });
+
                         });
 
+                        return res.json(200, { status: 'success', message: 'Password successfully changed.' });
+                    })
+                    .catch(function(err) {
+                        throw new Error(err.message);
+                    })
+                    .catch(function(err) {
+                        sails.log.error(err);
+                        return res.json(500, { err: err });
                     });
-
-                    return res.json(200, { status: 'success', message: 'Password successfully changed.' });
-                });
             });
         }
     },

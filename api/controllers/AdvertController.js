@@ -67,24 +67,31 @@ module.exports = {
      */
     createAdvert: function(req, res) {
 
-        Advert.create(req.body).exec(function(err, advert) {
-            if (err) {
+        Advert.create(req.body).then(function(advert) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+                // If advert is created successfuly we return advert id and title
+                if (advert) {
+
+                    var who = jwToken.who(req.headers.authorization);
+                    audit.log('advert', who + ' created ' + advert.title);
+
+                    // NOTE: payload is { id: advert.id}
+                    res.json(200, {
+                        status: 'success',
+                        id: advert.id
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-            // If advert is created successfuly we return advert id and title
-            if (advert) {
-
-                var who = jwToken.who(req.headers.authorization);
-                audit.log('advert', who + ' created ' + advert.title);
-
-                // NOTE: payload is { id: advert.id}
-                res.json(200, {
-                    status: 'success',
-                    id: advert.id
-                });
-            }
-        });
+            });
     },
 
     /**
@@ -172,33 +179,40 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Advert id provided!' });
         } else {
-            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, advert) {
-                if (err) {
+            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(advert) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!advert) {
+                        return res.json(404, { status: 'error', err: 'No Advert with such id existing' })
+                    } else {
+                        Advert.destroy({ id: req.param('id') }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            if (advert.banner) {
+                                var url = advert.banner;
+                                azureBlob.delete('advert', url.split('/').reverse()[0]);
+                            }
+
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('advert', who + ' deleted ' + advert.title);
+
+                            return res.json(200, { status: 'success', message: 'Advert with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!advert) {
-                    return res.json(404, { status: 'error', err: 'No Advert with such id existing' })
-                } else {
-                    Advert.destroy({ id: req.param('id') }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        if (advert.banner) {
-                            var url = advert.banner;
-                            azureBlob.delete('advert', url.split('/').reverse()[0]);
-                        }
-
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('advert', who + ' deleted ' + advert.title);
-
-                        return res.json(200, { status: 'success', message: 'Advert with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -235,34 +249,41 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Advert id provided!' });
         } else {
-            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, advert) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!advert) {
-                    return res.json(404, { status: 'error', err: 'No Advert with such id existing' })
-                } else {
-
-                    if (advert.banner && advert.banner !== req.param('banner')) {
-                        var url = advert.banner;
-                        azureBlob.delete('advert', url.split('/').reverse()[0]);
+            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(advert) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
                     }
 
-                    Advert.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
+                    if (!advert) {
+                        return res.json(404, { status: 'error', err: 'No Advert with such id existing' })
+                    } else {
+
+                        if (advert.banner && advert.banner !== req.param('banner')) {
+                            var url = advert.banner;
+                            azureBlob.delete('advert', url.split('/').reverse()[0]);
                         }
 
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('advert', who + ' edited ' + advert.title);
+                        Advert.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
 
-                        return res.json(200, { status: 'success', message: 'Advert with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('advert', who + ' edited ' + advert.title);
+
+                            return res.json(200, { status: 'success', message: 'Advert with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -292,27 +313,43 @@ module.exports = {
      */
     getAdvert: function(req, res) {
         if (req.param('id')) {
-            Advert.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, advert) {
-                if (err) {
+            Advert.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(advert) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!advert) {
+                        return res.json(404, { status: 'error', err: 'No Advert with such id existing' })
+                    } else {
+                        return res.json(200, advert);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!advert) {
-                    return res.json(404, { status: 'error', err: 'No Advert with such id existing' })
-                } else {
-                    return res.json(200, advert);
-                }
-            });
         } else {
-            Advert.find().sort('createdAt DESC').exec(function(err, advert) {
-                if (err) {
+            
+            Advert.find().sort('createdAt DESC').then(function(advert) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, advert);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, advert);
-            });
+                });
         }
     }
 };

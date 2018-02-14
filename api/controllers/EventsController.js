@@ -138,24 +138,31 @@ module.exports = {
      */
     createEvent: function(req, res) {
 
-        Events.create(req.body).exec(function(err, event) {
-            if (err) {
+        Events.create(req.body).then(function(event) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                var who = jwToken.who(req.headers.authorization);
+                audit.log('event', who + ' created ' + event.title);
+
+                // If event is created successfuly we return event id
+                if (event) {
+                    // NOTE: payload is { id: event.id}
+                    res.json(200, {
+                        status: 'success',
+                        id: event.id
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            var who = jwToken.who(req.headers.authorization);
-            audit.log('event', who + ' created ' + event.title);
-
-            // If event is created successfuly we return event id
-            if (event) {
-                // NOTE: payload is { id: event.id}
-                res.json(200, {
-                    status: 'success',
-                    id: event.id
-                });
-            }
-        });
+            });
     },
 
     /**
@@ -243,33 +250,40 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Event id provided!' });
         } else {
-            Events.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, event) {
-                if (err) {
+            Events.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(event) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!event) {
+                        return res.json(404, { status: 'error', err: 'No Event with such id existing' })
+                    } else {
+                        Events.update({ id: req.param('id') }, { status: 'completed' }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            // if (event.banner) {
+                            //     var url = event.banner;
+                            //     azureBlob.delete('event', url.split('/').reverse()[0]);
+                            // }
+
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('event', who + ' deleted ' + event.title);
+
+                            return res.json(200, { status: 'success', message: 'Event with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!event) {
-                    return res.json(404, { status: 'error', err: 'No Event with such id existing' })
-                } else {
-                    Events.update({ id: req.param('id') }, { status: 'completed' }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        // if (event.banner) {
-                        //     var url = event.banner;
-                        //     azureBlob.delete('event', url.split('/').reverse()[0]);
-                        // }
-
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('event', who + ' deleted ' + event.title);
-
-                        return res.json(200, { status: 'success', message: 'Event with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -310,34 +324,41 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Event id provided!' });
         } else {
-            Events.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, event) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!event) {
-                    return res.json(404, { status: 'error', err: 'No Event with such id existing' })
-                } else {
-
-                    if (event.banner && event.banner !== req.param('banner')) {
-                        var url = event.banner;
-                        azureBlob.delete('event', url.split('/').reverse()[0]);
+            Events.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(event) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
                     }
 
-                    Events.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
+                    if (!event) {
+                        return res.json(404, { status: 'error', err: 'No Event with such id existing' })
+                    } else {
+
+                        if (event.banner && event.banner !== req.param('banner')) {
+                            var url = event.banner;
+                            azureBlob.delete('event', url.split('/').reverse()[0]);
                         }
 
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('event', who + ' edited ' + event.title);
+                        Events.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
 
-                        return res.json(200, { status: 'success', message: 'Event with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('event', who + ' edited ' + event.title);
+
+                            return res.json(200, { status: 'success', message: 'Event with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -384,7 +405,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            Events.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, events) {
+            Events.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(events) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -420,27 +441,43 @@ module.exports = {
      */
     getCompleted: function(req, res) {
         if (req.param('id')) {
-            Events.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, event) {
-                if (err) {
+            Events.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(event) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!event) {
+                        return res.json(404, { status: 'error', message: 'No event with such id existing' })
+                    } else {
+                        return res.json(200, event);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!event) {
-                    return res.json(404, { status: 'error', message: 'No event with such id existing' })
-                } else {
-                    return res.json(200, event);
-                }
-            });
         } else {
-            Events.find({ status: 'completed' }).sort('createdAt DESC').exec(function(err, event) {
-                if (err) {
+
+            Events.find({ status: 'completed' }).sort('createdAt DESC').then(function(event) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, event);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, event);
-            });
+                });
         }
     },
 
@@ -469,27 +506,43 @@ module.exports = {
      */
     getOngoing: function(req, res) {
         if (req.param('id')) {
-            Events.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, event) {
-                if (err) {
+            Events.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(event) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!event) {
+                        return res.json(404, { status: 'error', message: 'No event with such id existing' })
+                    } else {
+                        return res.json(200, event);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!event) {
-                    return res.json(404, { status: 'error', message: 'No event with such id existing' })
-                } else {
-                    return res.json(200, event);
-                }
-            });
         } else {
-            Events.find({ status: 'ongoing' }).sort('createdAt DESC').exec(function(err, event) {
-                if (err) {
+
+            Events.find({ status: 'ongoing' }).sort('createdAt DESC').then(function(event) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, event);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, event);
-            });
+                });
         }
     },
 
@@ -521,40 +574,61 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No user id provided!' });
         }
 
-        EventPayments.find({ payer: req.param('id') }).sort('createdAt DESC').exec(function(err, events) {
-            if (err) {
+        EventPayments.find({ payer: req.param('id') }).sort('createdAt DESC').then(function(events) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, events);
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            return res.json(200, events);
-        });
+            });
     },
 
     getEvents: function(req, res) {
 
         if (req.param('id')) {
-            Events.findOne({ id: req.param('id')}).sort('createdAt DESC').exec(function(err, event) {
-                if (err) {
+            Events.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(event) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!event) {
+                        return res.json(404, { status: 'error', message: 'No event with such id existing' })
+                    } else {
+                        return res.json(200, event);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!event) {
-                    return res.json(404, { status: 'error', message: 'No event with such id existing' })
-                } else {
-                    return res.json(200, event);
-                }
-            });
+                });
         } else {
-            Events.find().sort('createdAt DESC').exec(function(err, event) {
-                if (err) {
+            Events.find().sort('createdAt DESC').then(function(event) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, event);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, event);
-            });
+                });
         }
     }
 };

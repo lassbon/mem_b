@@ -166,33 +166,40 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Requestee id provided!' });
         }
 
-        SocialConnections.create(req.body).exec(function(err, friendRequest) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-
-            User.findOne({ id: req.param('requester') }).exec(function(err, user) {
+        SocialConnections.create(req.body).then(function(friendRequest) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                if (!user) {
-                    return res.json(404, { status: 'error', err: 'No User with such id existing' });
-                } else {
 
-                    Notifications.create({ id: req.param('requestee'), message: user.companyName + ' sent you a friend request' }).exec(function(err, info) {
-                        if (err) {
-                            sails.log.error(err);
-                        }
-                    });
-                }
+                User.findOne({ id: req.param('requester') }).exec(function(err, user) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
 
-                return res.json(200, { status: 'success', message: 'Friend request sent' });
+                    if (!user) {
+                        return res.json(404, { status: 'error', err: 'No User with such id existing' });
+                    } else {
+
+                        Notifications.create({ id: req.param('requestee'), message: user.companyName + ' sent you a friend request' }).exec(function(err, info) {
+                            if (err) {
+                                sails.log.error(err);
+                            }
+                        });
+                    }
+
+                    return res.json(200, { status: 'success', message: 'Friend request sent' });
+                });
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
             });
-        });
     },
 
     /**
@@ -232,25 +239,32 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Requestee id provided!' });
         }
 
-        SocialConnections.findOne({ select: 'requester', where: { requester: req.param('requester'), requestee: req.param('requestee') } }).exec(function(err, requester) {
-            if (err) {
+        SocialConnections.findOne({ select: 'requester', where: { requester: req.param('requester'), requestee: req.param('requestee') } }).then(function(requester) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!requester) {
+                    return res.json(404, { status: 'error', err: 'No User with such requester id existing' })
+                } else {
+                    SocialConnections.destroy({ requester: req.param('requester'), requestee: req.param('requestee') }).exec(function(err) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
+
+                        return res.json(200, { message: 'success', message: 'Friend request canceled' });
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            if (!requester) {
-                return res.json(404, { status: 'error', err: 'No User with such requester id existing' })
-            } else {
-                SocialConnections.destroy({ requester: req.param('requester'), requestee: req.param('requestee') }).exec(function(err) {
-                    if (err) {
-                        sails.log.error(err);
-                        return res.json(err.status, { err: err });
-                    }
-
-                    return res.json(200, { message: 'success', message: 'Friend request canceled' });
-                });
-            }
-        });
+            });
     },
 
 
@@ -291,27 +305,34 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Requestee id provided!' });
         }
 
-        User.findOne({ select: 'username', where: { id: req.param('requestee') } }).populate('friends').exec(function(err, user) {
-            if (err) {
+        User.findOne({ select: 'username', where: { id: req.param('requestee') } }).populate('friends').then(function(user) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!user) {
+                    return res.json(404, { status: 'error', err: 'No User with such requestee id existing' });
+                } else {
+
+                    user.friends.remove(req.param('requester'));
+                    user.save(function(err) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
+
+                        return res.json(200, { status: 'success', message: 'Friendship terminated' });
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            if (!user) {
-                return res.json(404, { status: 'error', err: 'No User with such requestee id existing' });
-            } else {
-
-                user.friends.remove(req.param('requester'));
-                user.save(function(err) {
-                    if (err) {
-                        sails.log.error(err);
-                        return res.json(err.status, { err: err });
-                    }
-
-                    return res.json(200, { status: 'success', message: 'Friendship terminated' });
-                });
-            }
-        });
+            });
     },
 
 
@@ -352,45 +373,52 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Requestee id provided!' });
         }
 
-        User.findOne({ select: 'email', where: { id: req.param('requestee') } }).populate('friends').exec(function(err, user) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
+        User.findOne({ select: 'email', where: { id: req.param('requestee') } }).populate('friends').then(function(user) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
 
-            if (!user) {
-                return res.json(404, { status: 'error', err: 'No User with such id existing' });
-            } else {
+                if (!user) {
+                    return res.json(404, { status: 'error', err: 'No User with such id existing' });
+                } else {
 
-                user.friends.add(req.param('requester'));
-                user.save(function(err) {
-                    if (err) {
-                        sails.log.error(err);
-                        return res.json(err.status, { err: err });
-                    }
-
-                    User.findOne({ id: req.param('requester') }).exec(function(err, requester) {
+                    user.friends.add(req.param('requester'));
+                    user.save(function(err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
-                        if (!requester) {
-                            return res.json(404, { status: 'error', err: 'No User with such id existing' });
-                        } else {
+                        User.findOne({ id: req.param('requester') }).exec(function(err, requester) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
 
-                            Notifications.create({ id: req.param('requester'), message: requester.companyName + ' sent you a friend request' }).exec(function(err, info) {
-                                if (err) {
-                                    sails.log.error(err);
-                                }
-                            });
-                        }
+                            if (!requester) {
+                                return res.json(404, { status: 'error', err: 'No User with such id existing' });
+                            } else {
+
+                                Notifications.create({ id: req.param('requester'), message: requester.companyName + ' sent you a friend request' }).exec(function(err, info) {
+                                    if (err) {
+                                        sails.log.error(err);
+                                    }
+                                });
+                            }
+                        });
+
+                        return res.json(200, { status: 'success', message: 'Friend request accepted' });
                     });
-
-                    return res.json(200, { status: 'success', message: 'Friend request accepted' });
-                });
-            }
-        });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            });
     },
 
     /**
@@ -443,25 +471,32 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No post content provided!' });
         }
 
-        User.findOne({ select: ['companyName', 'membershipId'], where: { id: req.param('owner') } }).exec(function(err, user) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            req.body.companyName = user.companyName;
-
-            SocialPosts.create(req.body).exec(function(err, post) {
+        User.findOne({ select: ['companyName', 'membershipId'], where: { id: req.param('owner') } }).then(function(user) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                if (post) {
-                    res.json(200, { status: 'success', id: post.id });
-                }
+                req.body.companyName = user.companyName;
+
+                SocialPosts.create(req.body).exec(function(err, post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (post) {
+                        res.json(200, { status: 'success', id: post.id });
+                    }
+                });
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
             });
-        });
     },
 
     /**
@@ -551,31 +586,38 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No Post id provided!' });
         } else {
-            SocialPosts.findOne({ select: ['postText', 'postImage'], where: { id: req.param('id') } }).exec(function(err, post) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!post) {
-                    return res.json(404, { status: 'error', message: 'No Post with such id existing' });
-                } else {
-
-                    if (post.postImage && post.postImage !== req.param('postImage')) {
-                        var image = post.postImage;
-                        azureBlob.delete('social', image.split('/').reverse()[0]);
+            SocialPosts.findOne({ select: ['postText', 'postImage'], where: { id: req.param('id') } }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
                     }
 
-                    SocialPosts.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
+                    if (!post) {
+                        return res.json(404, { status: 'error', message: 'No Post with such id existing' });
+                    } else {
+
+                        if (post.postImage && post.postImage !== req.param('postImage')) {
+                            var image = post.postImage;
+                            azureBlob.delete('social', image.split('/').reverse()[0]);
                         }
 
-                        return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                        SocialPosts.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -608,30 +650,37 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No Post id provided!' });
         } else {
-            SocialPosts.findOne({ select: ['postText', 'postImage'], where: { id: req.param('id') } }).exec(function(err, post) {
-                if (err) {
+            SocialPosts.findOne({ select: ['postText', 'postImage'], where: { id: req.param('id') } }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!post) {
+                        return res.json(404, { status: 'error', message: 'No Post with such id existing' });
+                    } else {
+                        SocialPosts.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            if (post.postImage) {
+                                var image = post.postImage;
+                                azureBlob.delete('social', image.split('/').reverse()[0]);
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!post) {
-                    return res.json(404, { status: 'error', message: 'No Post with such id existing' });
-                } else {
-                    SocialPosts.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        if (post.postImage) {
-                            var image = post.postImage;
-                            azureBlob.delete('social', image.split('/').reverse()[0]);
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Post with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -671,27 +720,43 @@ module.exports = {
         }
 
         if (req.param('id')) {
-            SocialPosts.findOne({ id: req.param('id') }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).exec(function(err, post) {
-                if (err) {
+            SocialPosts.findOne({ id: req.param('id') }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!post) {
+                        return res.json(204, { status: 'error', err: 'No Post with such id existing' })
+                    } else {
+                        return res.json(200, post);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!post) {
-                    return res.json(204, { status: 'error', err: 'No Post with such id existing' })
-                } else {
-                    return res.json(200, post);
-                }
-            });
         } else {
-            SocialPosts.find().populate('comments', { sort: 'createdAt DESC' }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, posts) {
-                if (err) {
+
+            SocialPosts.find().populate('comments', { sort: 'createdAt DESC' }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(posts) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, posts);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, posts);
-            });
+                });
         }
     },
 
@@ -738,14 +803,21 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            SocialPosts.find({ postText: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).paginate({ page: page, limit: limit }).exec(function(err, posts) {
-                if (err) {
+            SocialPosts.find({ postText: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).paginate({ page: page, limit: limit }).then(function(posts) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, { page: page, limit: limit, result: posts });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, { page: page, limit: limit, result: posts });
-            });
+                });
         }
     },
 
@@ -779,43 +851,50 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No Post id provided!' });
         } else {
-            SocialPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).exec(function(err, post) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!post) {
-                    return res.json(404, { status: 'error', err: 'No Post with such id existing' });
-                } else {
-
-                    var likes = post.likes ? post.likes : [];
-
-                    var stat = false;
-
-                    for (var i = 0; i < likes.length; i++) {
-                        var name = likes[i];
-                        if (name == req.param('liker')) {
-                            stat = true;
-                            break;
-                        }
+            SocialPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
                     }
 
-                    if (stat == false) {
-                        return res.json(403, { status: 'error', err: 'Post not previously liked' });
+                    if (!post) {
+                        return res.json(404, { status: 'error', err: 'No Post with such id existing' });
                     } else {
-                        for (var i = post.likes.length; i--;) {
-                            if (post.likes[i] === req.param('liker')) {
-                                post.likes.splice(i, 1);
+
+                        var likes = post.likes ? post.likes : [];
+
+                        var stat = false;
+
+                        for (var i = 0; i < likes.length; i++) {
+                            var name = likes[i];
+                            if (name == req.param('liker')) {
+                                stat = true;
+                                break;
                             }
                         }
 
-                        SocialPosts.update({ id: req.param('id') }, { likes: post.likes }).exec(function(err, post) {
-                            return res.json(200, { status: 'success', message: 'Post unliked' });
-                        });
+                        if (stat == false) {
+                            return res.json(403, { status: 'error', err: 'Post not previously liked' });
+                        } else {
+                            for (var i = post.likes.length; i--;) {
+                                if (post.likes[i] === req.param('liker')) {
+                                    post.likes.splice(i, 1);
+                                }
+                            }
+
+                            SocialPosts.update({ id: req.param('id') }, { likes: post.likes }).exec(function(err, post) {
+                                return res.json(200, { status: 'success', message: 'Post unliked' });
+                            });
+                        }
                     }
-                }
-            });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -849,39 +928,46 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Post id provided!' });
         } else {
-            SocialPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).exec(function(err, post) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
+            SocialPosts.findOne({ select: ['postText', 'likes'], where: { id: req.param('id') } }).then(function(post) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
 
-                if (!post) {
-                    return res.json(404, { status: 'error', message: 'No Post with such id existing' });
-                } else {
+                    if (!post) {
+                        return res.json(404, { status: 'error', message: 'No Post with such id existing' });
+                    } else {
 
-                    var likes = post.likes ? post.likes : [];
+                        var likes = post.likes ? post.likes : [];
 
-                    var stat = true;
+                        var stat = true;
 
-                    for (var i = 0; i < likes.length; i++) {
-                        var name = likes[i];
-                        if (name == req.param('liker')) {
-                            stat = false;
-                            break;
+                        for (var i = 0; i < likes.length; i++) {
+                            var name = likes[i];
+                            if (name == req.param('liker')) {
+                                stat = false;
+                                break;
+                            }
+                        }
+
+                        if (stat == false) {
+                            return res.json(403, { status: 'error', err: 'Post already liked' });
+                        } else {
+                            likes.push(req.param('liker'));
+
+                            SocialPosts.update({ id: req.param('id') }, { likes: likes }).exec(function(err, post) {
+                                return res.json(200, { status: 'success', message: 'Post liked' });
+                            });
                         }
                     }
-
-                    if (stat == false) {
-                        return res.json(403, { status: 'error', err: 'Post already liked' });
-                    } else {
-                        likes.push(req.param('liker'));
-
-                        SocialPosts.update({ id: req.param('id') }, { likes: likes }).exec(function(err, post) {
-                            return res.json(200, { status: 'success', message: 'Post liked' });
-                        });
-                    }
-                }
-            });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -913,14 +999,21 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Requestee id provided!' });
         }
 
-        SocialConnections.find({ requestee: req.param('requestee') }).sort('createdAt DESC').exec(function(err, requests) {
-            if (err) {
+        SocialConnections.find({ requestee: req.param('requestee') }).sort('createdAt DESC').then(function(requests) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, requests);
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            return res.json(200, requests);
-        });
+            });
     },
 
     /**
@@ -980,25 +1073,32 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Comment provided!' });
         }
 
-        User.findOne({ select: ['companyName', 'membershipId'], where: { id: req.param('owner') } }).exec(function(err, user) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            req.body.companyName = user.companyName;
-
-            SocialComments.create(req.body).exec(function(err, comment) {
+        User.findOne({ select: ['companyName', 'membershipId'], where: { id: req.param('owner') } }).then(function(user) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                if (comment) {
-                    res.json(200, comment);
-                }
+                req.body.companyName = user.companyName;
+
+                SocialComments.create(req.body).exec(function(err, comment) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (comment) {
+                        res.json(200, comment);
+                    }
+                });
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
             });
-        });
     },
 
     /**
@@ -1031,25 +1131,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Comment id provided!' });
         } else {
-            SocialComments.findOne({ select: 'comment', where: { id: req.param('id') } }).exec(function(err, comment) {
-                if (err) {
+            SocialComments.findOne({ select: 'comment', where: { id: req.param('id') } }).then(function(comment) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
+                    } else {
+                        SocialComments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!comment) {
-                    return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
-                } else {
-                    SocialComments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -1082,25 +1189,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Comment id provided!' });
         } else {
-            SocialComments.findOne({ select: 'comment', where: { id: req.param('id') } }).exec(function(err, comment) {
-                if (err) {
+            SocialComments.findOne({ select: 'comment', where: { id: req.param('id') } }).then(function(comment) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
+                    } else {
+                        SocialComments.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!comment) {
-                    return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
-                } else {
-                    SocialComments.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -1130,27 +1244,41 @@ module.exports = {
      */
     getComment: function(req, res) {
         if (req.param('id')) {
-            SocialComments.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, comment) {
-                if (err) {
+            SocialComments.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(comment) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(204, { status: 'error', err: 'No Comment with such id existing' })
+                    } else {
+                        return res.json(200, comment);
+                    }
+                }).catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!comment) {
-                    return res.json(204, { status: 'error', err: 'No Comment with such id existing' })
-                } else {
-                    return res.json(200, comment);
-                }
-            });
         } else {
-            SocialComments.find().sort('createdAt DESC').exec(function(err, posts) {
-                if (err) {
+
+            SocialComments.find().sort('createdAt DESC').then(function(posts) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, posts);
+                }).catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, posts);
-            });
+                });
         }
     },
 
@@ -1194,7 +1322,7 @@ module.exports = {
                 .limit(limit)
                 .skip(offset)
                 .sort('createdAt DESC')
-                .exec(function(err, user) {
+                .then(function(user) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -1230,6 +1358,13 @@ module.exports = {
                         }
                     }
 
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 });
         }
     },
@@ -1276,14 +1411,21 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: 'error', err: 'No search term provided!' });
         } else {
-            SocialComments.find({ comment: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, comments) {
-                if (err) {
+            SocialComments.find({ comment: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(comments) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, { page: page, limit: limit, result: comments });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, { page: page, limit: limit, result: comments });
-            });
+                });
         }
     },
 
@@ -1300,24 +1442,31 @@ module.exports = {
 
         var socialCounts = {};
 
-        SocialPosts.count().exec(function(err, posts) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            socialCounts.posts = posts;
-
-            SocialComments.count().exec(function(err, comments) {
+        SocialPosts.count().then(function(posts) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                socialCounts.comments = comments;
+                socialCounts.posts = posts;
 
-                return res.json(200, socialCounts);
+                SocialComments.count().exec(function(err, comments) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    socialCounts.comments = comments;
+
+                    return res.json(200, socialCounts);
+                });
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
             });
-        });
     },
 };

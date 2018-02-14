@@ -71,7 +71,7 @@
  *     }
  */
 
- /**
+/**
  * @apiDefine SearchTermNotProvidedError
  *
  * @apiError SearchTermNotProvided No search term provided.
@@ -124,18 +124,25 @@ module.exports = {
             return res.json(401, { status: "error", err: 'No uploader id provided!' });
         }
 
-        KnowledgebaseDocuments.create(req.body).exec(function(err, doc) {
-            if (err) {
-                return res.json(err.status, { err: err });
-            }
+        KnowledgebaseDocuments.create(req.body).then(function(doc) {
+                if (err) {
+                    return res.json(err.status, { err: err });
+                }
 
-            if (doc) {
-                res.json(200, {
-                    status: 'success',
-                    id: doc.id,
-                });
-            }
-        });
+                if (doc) {
+                    res.json(200, {
+                        status: 'success',
+                        id: doc.id,
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+            });
     },
 
     /**
@@ -169,7 +176,7 @@ module.exports = {
      *     }
      */
     uploadDocument: function(req, res) {
-        
+
         if (req.method != 'POST') return res.notFound();
 
         var container = 'knowledgebase';
@@ -206,14 +213,21 @@ module.exports = {
      * @apiGroup KnowledgeBase
      */
     getCount: function(req, res) {
-        KnowledgebaseDocuments.count().exec(function(err, docCount) {
-            if (err) {
+        KnowledgebaseDocuments.count().then(function(docCount) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, docCount.toString());
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            return res.json(200, docCount.toString());
-        });
+            });
     },
 
 
@@ -246,30 +260,37 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Document id provided!' });
         } else {
-            KnowledgebaseDocuments.findOne({ select: ['title', 'docUrl'], where: { id: req.param('id') } }).exec(function(err, doc) {
-                if (err) {
+            KnowledgebaseDocuments.findOne({ select: ['title', 'docUrl'], where: { id: req.param('id') } }).then(function(doc) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!doc) {
+                        return res.json(404, { status: 'error', err: 'No Document with such id existing' })
+                    } else {
+                        KnowledgebaseDocuments.destroy({ id: req.param('id') }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            if (doc.docUrl) {
+                                var url = doc.docUrl;
+                                azureBlob.delete('knowledgebase', url.split('/').reverse()[0]);
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Document with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!doc) {
-                    return res.json(404, { status: 'error', err: 'No Document with such id existing' })
-                } else {
-                    KnowledgebaseDocuments.destroy({ id: req.param('id') }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        if (doc.docUrl) {
-                            var url = doc.docUrl;
-                            azureBlob.delete('knowledgebase', url.split('/').reverse()[0]);
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Document with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -307,31 +328,38 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Document id provided!' });
         } else {
-            KnowledgebaseDocuments.findOne({ select: ['title', 'docUrl'], where: { id: req.param('id') } }).exec(function(err, doc) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!doc) {
-                    return res.json(404, { status: 'error', err: 'No Document with such id existing' })
-                } else {
-
-                    if (doc.docUrl && doc.docUrl !== req.param('docUrl')) {
-                        var url = doc.docUrl;
-                        azureBlob.delete('knowledgebase', url.split('/').reverse()[0]);
+            KnowledgebaseDocuments.findOne({ select: ['title', 'docUrl'], where: { id: req.param('id') } }).then(function(doc) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
                     }
 
-                    KnowledgebaseDocuments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
+                    if (!doc) {
+                        return res.json(404, { status: 'error', err: 'No Document with such id existing' })
+                    } else {
+
+                        if (doc.docUrl && doc.docUrl !== req.param('docUrl')) {
+                            var url = doc.docUrl;
+                            azureBlob.delete('knowledgebase', url.split('/').reverse()[0]);
                         }
 
-                        return res.json(200, { status: 'success', message: 'Document with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                        KnowledgebaseDocuments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Document with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -361,27 +389,43 @@ module.exports = {
      */
     getDoc: function(req, res) {
         if (req.param('id')) {
-            KnowledgebaseDocuments.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, doc) {
-                if (err) {
+            KnowledgebaseDocuments.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(doc) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!doc) {
+                        return res.json(404, { status: 'error', err: 'No Document with such id existing' })
+                    } else {
+                        return res.json(200, doc);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!doc) {
-                    return res.json(404, { status: 'error', err: 'No Document with such id existing' })
-                } else {
-                    return res.json(200, doc);
-                }
-            });
         } else {
-            KnowledgebaseDocuments.find().sort('createdAt DESC').exec(function(err, doc) {
-                if (err) {
+
+            KnowledgebaseDocuments.find().sort('createdAt DESC').then(function(doc) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, doc);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, doc);
-            });
+                });
         }
     },
 
@@ -428,14 +472,21 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            KnowledgebaseDocuments.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, documents) {
-                if (err) {
+            KnowledgebaseDocuments.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(documents) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, { page: page, limit: limit, result: documents });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, { page: page, limit: limit, result: documents });
-            });
+                });
         }
     },
 
@@ -462,19 +513,26 @@ module.exports = {
      *     }
      */
     createCategory: function(req, res) {
-        KnowledgebaseCategory.create(req.body).exec(function(err, category) {
-            if (err) {
+        KnowledgebaseCategory.create(req.body).then(function(category) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (category) {
+                    res.json(200, {
+                        status: "success",
+                        id: category.id,
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-
-            if (category) {
-                res.json(200, {
-                    status: "success",
-                    id: category.id,
-                });
-            }
-        });
+            });
     },
 
 
@@ -507,25 +565,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Category id provided!' });
         } else {
-            KnowledgebaseCategory.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, doc) {
-                if (err) {
+            KnowledgebaseCategory.findOne({ select: 'title', where: { id: req.param('id') } }).then(function(doc) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!doc) {
+                        return res.json(404, { status: 'error', err: 'No Category with such id existing' });
+                    } else {
+                        KnowledgebaseCategory.destroy({ id: req.param('id') }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Category with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!doc) {
-                    return res.json(404, { status: 'error', err: 'No Category with such id existing' });
-                } else {
-                    KnowledgebaseCategory.destroy({ id: req.param('id') }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Category with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -558,25 +623,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Category id provided!' });
         } else {
-            KnowledgebaseCategory.findOne({ select: 'title', where: { id: req.param('id') } }).exec(function(err, doc) {
-                if (err) {
+            KnowledgebaseCategory.findOne({ select: 'title', where: { id: req.param('id') } }).then(function(doc) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!doc) {
+                        return res.json(404, { status: 'error', err: 'No Category with such id existing' });
+                    } else {
+                        KnowledgebaseCategory.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Category with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!doc) {
-                    return res.json(404, { status: 'error', err: 'No Category with such id existing' });
-                } else {
-                    KnowledgebaseCategory.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Category with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -605,27 +677,43 @@ module.exports = {
      */
     getCategory: function(req, res) {
         if (req.param('id')) {
-            KnowledgebaseCategory.findOne({ id: req.param('id') }).exec(function(err, doc) {
-                if (err) {
+            KnowledgebaseCategory.findOne({ id: req.param('id') }).then(function(doc) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!doc) {
+                        return res.json(404, { status: 'error', err: 'No Category with such id existing' });
+                    } else {
+                        return res.json(200, doc);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!doc) {
-                    return res.json(404, { status: 'error', err: 'No Category with such id existing' });
-                } else {
-                    return res.json(200, doc);
-                }
-            });
         } else {
-            KnowledgebaseCategory.find().exec(function(err, doc) {
-                if (err) {
+
+            KnowledgebaseCategory.find().then(function(doc) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, doc);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, doc);
-            });
+                });
         }
     }
 

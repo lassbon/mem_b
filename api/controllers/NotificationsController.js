@@ -68,20 +68,27 @@ module.exports = {
      */
     create: function(req, res) {
 
-        Notifications.create(req.body).exec(function(err, notification) {
-            if (err) {
+        Notifications.create(req.body).then(function(notification) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { status: 'error', err: err });
+                }
+
+                if (notification) {
+
+                    res.json(200, {
+                        status: 'success',
+                        id: notification.id
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { status: 'error', err: err });
-            }
-
-            if (notification) {
-
-                res.json(200, {
-                    status: 'success',
-                    id: notification.id
-                });
-            }
-        });
+                return res.json(err.status, { err: err });
+            });
     },
 
 
@@ -114,25 +121,32 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Notification id provided!' });
         } else {
-            Notifications.findOne({ select: 'message', where: { id: req.param('id') } }).exec(function(err, notification) {
-                if (err) {
+            Notifications.findOne({ select: 'message', where: { id: req.param('id') } }).then(function(notification) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!notification) {
+                        return res.json(404, { status: 'error', err: 'No Notification with such id existing' })
+                    } else {
+                        Notifications.destroy({ id: req.param('id') }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Notification with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!notification) {
-                    return res.json(404, { status: 'error', err: 'No Notification with such id existing' })
-                } else {
-                    Notifications.destroy({ id: req.param('id') }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        return res.json(200, { status: 'success', message: 'Notification with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -162,27 +176,43 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Notifications.findOne({ id: req.param('id') }).sort('createdAt DESC').exec(function(err, notification) {
-                if (err) {
+            Notifications.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(notification) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!notification) {
+                        return res.json(404, { status: 'error', err: 'No Notifications with such id existing' })
+                    } else {
+                        return res.json(200, notification);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!notification) {
-                    return res.json(404, { status: 'error', err: 'No Notifications with such id existing' })
-                } else {
-                    return res.json(200, notification);
-                }
-            });
         } else {
-            Notifications.find().sort('createdAt DESC').exec(function(err, notification) {
-                if (err) {
+
+            Notifications.find().sort('createdAt DESC').then(function(notification) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, notification);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, notification);
-            });
+                });
         }
     }
 };

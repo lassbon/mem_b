@@ -84,24 +84,31 @@ module.exports = {
      */
     create: function(req, res) {
 
-        Projects.create(req.body).exec(function(err, project) {
-            if (err) {
+        Projects.create(req.body).then(function(project) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+                // If project is created successfuly we return project id and title
+                if (project) {
+
+                    var who = jwToken.who(req.headers.authorization);
+                    audit.log('project', who + ' created ' + project.title);
+
+                    // NOTE: payload is { id: project.id}
+                    res.json(200, {
+                        status: 'success',
+                        id: project.title
+                    });
+                }
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-            // If project is created successfuly we return project id and title
-            if (project) {
-
-                var who = jwToken.who(req.headers.authorization);
-                audit.log('project', who + ' created ' + project.title);
-
-                // NOTE: payload is { id: project.id}
-                res.json(200, {
-                    status: 'success',
-                    id: project.title
-                });
-            }
-        });
+            });
     },
 
     /**
@@ -191,33 +198,40 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Project id provided!' });
         } else {
-            Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, project) {
-                if (err) {
+            Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(project) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!project) {
+                        return res.json(404, { status: 'error', err: 'No Project with such id existing' })
+                    } else {
+                        Projects.update({ id: req.param('id') }, { status: 'completed' }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            // if (project.banner) {
+                            //     var url = project.banner;
+                            //     azureBlob.delete('project', url.split('/').reverse()[0]);
+                            // }
+
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('project', who + ' deleted ' + project.title);
+
+                            return res.json(200, { status: 'success', message: 'Project with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!project) {
-                    return res.json(404, { status: 'error', err: 'No Project with such id existing' })
-                } else {
-                    Projects.update({ id: req.param('id') }, { status: 'completed' }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        // if (project.banner) {
-                        //     var url = project.banner;
-                        //     azureBlob.delete('project', url.split('/').reverse()[0]);
-                        // }
-
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('project', who + ' deleted ' + project.title);
-
-                        return res.json(200, { status: 'success', message: 'Project with id ' + req.param('id') + ' has been deleted' });
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -256,34 +270,41 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Project id provided!' });
         } else {
-            Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).exec(function(err, project) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!project) {
-                    return res.json(404, { status: 'error', err: 'No Project with such id existing' })
-                } else {
-
-                    if (project.banner && project.banner !== req.param('banner')) {
-                        var url = project.banner;
-                        azureBlob.delete('project', url.split('/').reverse()[0]);
+            Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(project) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
                     }
 
-                    Projects.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
+                    if (!project) {
+                        return res.json(404, { status: 'error', err: 'No Project with such id existing' })
+                    } else {
+
+                        if (project.banner && project.banner !== req.param('banner')) {
+                            var url = project.banner;
+                            azureBlob.delete('project', url.split('/').reverse()[0]);
                         }
 
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('project', who + ' edited ' + project.title);
+                        Projects.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
 
-                        return res.json(200, { status: 'success', message: 'Project with id ' + req.param('id') + ' has been updated' });
-                    });
-                }
-            });
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('project', who + ' edited ' + project.title);
+
+                            return res.json(200, { status: 'success', message: 'Project with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -330,14 +351,21 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            Projects.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).exec(function(err, projects) {
-                if (err) {
+            Projects.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(projects) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, { page: page, limit: limit, result: projects });
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, { page: page, limit: limit, result: projects });
-            });
+                });
         }
     },
 
@@ -366,27 +394,43 @@ module.exports = {
      */
     getCompleted: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, project) {
-                if (err) {
+            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(project) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!project) {
+                        return res.json(404, { status: 'error', message: 'No Project with such id existing' })
+                    } else {
+                        return res.json(200, project);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!project) {
-                    return res.json(404, { status: 'error', message: 'No Project with such id existing' })
-                } else {
-                    return res.json(200, project);
-                }
-            });
         } else {
-            Projects.find({ status: 'completed' }).sort('createdAt DESC').exec(function(err, project) {
-                if (err) {
+
+            Projects.find({ status: 'completed' }).sort('createdAt DESC').then(function(project) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, project);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, project);
-            });
+                });
         }
     },
 
@@ -415,53 +459,85 @@ module.exports = {
      */
     getOngoing: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').exec(function(err, project) {
-                if (err) {
+            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(project) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!project) {
+                        return res.json(404, { status: 'error', message: 'No Project with such id existing' })
+                    } else {
+                        return res.json(200, project);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!project) {
-                    return res.json(404, { status: 'error', message: 'No Project with such id existing' })
-                } else {
-                    return res.json(200, project);
-                }
-            });
         } else {
-            Projects.find({ status: 'ongoing' }).sort('createdAt DESC').exec(function(err, project) {
-                if (err) {
+
+            Projects.find({ status: 'ongoing' }).sort('createdAt DESC').then(function(project) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, project);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, project);
-            });
+                });
         }
     },
 
     getProjects: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id') }).exec(function(err, project) {
-                if (err) {
+            Projects.findOne({ id: req.param('id') }).then(function(project) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!project) {
+                        return res.json(404, { status: 'error', message: 'No Project with such id existing' })
+                    } else {
+                        return res.json(200, project);
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
+                });
 
-                if (!project) {
-                    return res.json(404, { status: 'error', message: 'No Project with such id existing' })
-                } else {
-                    return res.json(200, project);
-                }
-            });
         } else {
-            Projects.find().sort('createdAt DESC').exec(function(err, projects) {
-                if (err) {
+
+            Projects.find().sort('createdAt DESC').then(function(projects) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, projects);
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, projects);
-            });
+                });
         }
     }
 };

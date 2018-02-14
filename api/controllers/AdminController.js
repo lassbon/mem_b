@@ -114,24 +114,30 @@ module.exports = {
         delete req.body.confirmPassword;
         req.body.role = 'Admin';
 
-        Admin.create(req.body).exec(function(err, admin) {
-            if (err) {
+        User.findOne({ email: email }).then(function(admin) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+                // If user created successfuly we return user and token as response
+                if (admin) {
+
+                    audit.log('admin', admin.username + ' created.');
+
+                    // NOTE: payload is { id: user.id}
+                    res.json(200, {
+                        status: "success",
+                        id: admin.id,
+                        role: admin.role
+                    });
+                }
+            }).catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
-            }
-            // If user created successfuly we return user and token as response
-            if (admin) {
-                
-                audit.log('admin', admin.username + ' created.' );
-
-                // NOTE: payload is { id: user.id}
-                res.json(200, {
-                    status: "success",
-                    id: admin.id,
-                    role: admin.role
-                });
-            }
-        });
+            });
     },
 
 
@@ -164,28 +170,35 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No admin id provided!' });
         } else {
-            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).exec(function(err, admin) {
-                if (err) {
+            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(admin) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!admin) {
+                        return res.json(404, { status: 'error', err: 'No Admin with such id existing' })
+                    } else {
+                        Admin.destroy({ id: req.param('id') }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('admin', who + ' deleted ' + admin.username);
+
+                            return res.json(200, { status: 'success', message: 'Admin with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!admin) {
-                    return res.json(404, { status: 'error', err: 'No Admin with such id existing' })
-                } else {
-                    Admin.destroy({ id: req.param('id') }).exec(function(err) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('admin', who + ' deleted '+ admin.username );
-
-                        return res.json(200, { status: 'success', message: 'Admin with id ' + req.param('id') + ' has been deleted'});
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -224,28 +237,35 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No admin id provided!' });
         } else {
-            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).exec(function(err, admin) {
-                if (err) {
+            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(admin) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!admin) {
+                        return res.json(404, { status: 'error', err: 'No Admin with such id existing' })
+                    } else {
+                        Admin.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            var who = jwToken.who(req.headers.authorization);
+                            audit.log('admin', who + ' updated ' + admin.username);
+
+                            return res.json(200, { status: 'success', message: 'Admin with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!admin) {
-                    return res.json(404, { status: 'error', err: 'No Admin with such id existing' })
-                } else {
-                    Admin.update({ id: req.param('id') }, req.body).exec(function(err, data) {
-                        if (err) {
-                            sails.log.error(err);
-                            return res.json(err.status, { err: err });
-                        }
-
-                        var who = jwToken.who(req.headers.authorization);
-                        audit.log('admin', who + ' updated '+ admin.username );
-
-                        return res.json(200, { status: 'success', message: 'Admin with id ' + req.param('id') + ' has been updated'});
-                    });
-                }
-            });
+                });
         }
     },
 
@@ -275,34 +295,48 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Admin.findOne({ id: req.param('id') }).exec(function(err, admin) {
-                if (err) {
+            Admin.findOne({ id: req.param('id') }).then(function(admin) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!admin) {
+                        return res.json(404, { status: 'error', err: 'No Admin with such id existing' });
+                    } else {
+
+                        delete admin.password;
+                        return res.json(200, admin);
+                    }
+                }).catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
-                }
-
-                if (!admin) {
-                    return res.json(404, { status: 'error', err: 'No Admin with such id existing' });
-                } else {
-
-                    delete admin.password;
-                    return res.json(200, admin);
-                }
-            });
-        } else {
-            var role = 'Admin';
-            Admin.find({ role: role }).exec(function(err, admins) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                admins.forEach(function(admin) {
-                    delete admin.password;
                 });
 
-                return res.json(200, admins);
-            });
+        } else {
+
+            var role = 'Admin';
+            Admin.find({ role: role }).then(function(admins) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    admins.forEach(function(admin) {
+                        delete admin.password;
+                    });
+
+                    return res.json(200, admins);
+                }).catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -336,35 +370,42 @@ module.exports = {
         if (!req.param('email')) {
             return res.json(401, { status: 'error', err: 'No admin email provided!' });
         } else {
-            Admin.findOne({ select: ['email', 'password'], where: { email: req.param('email') } }).exec(function(err, admin) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                }
-
-                if (!admin) {
-                    return res.json(404, { status: 'error', err: 'No Admin with such email existing' })
-                } else {
-                    var resetUrl = req.param('url') + '?token=' + jwToken.resetPassword({ email: req.param('email'), password: admin.password, time: Date.now() });
-                    var emailData = {
-                        'email': process.env.SITE_EMAIL,
-                        'from': process.env.SITE_NAME,
-                        'subject': 'Your ' + process.env.SITE_NAME + ' Password Reset',
-                        'body': 'Hello! <br><br> Click the link below to change your password: <br><br> <a href="' + resetUrl + '" >Change Password</a> <br><br>',
-                        'to': req.param('email')
+            Admin.findOne({ select: ['email', 'password'], where: { email: req.param('email') } }).then(function(admin) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
                     }
 
-                    azureEmail.send(emailData, function(resp) {
-                        if (resp === 'success') {
-                            return res.json(200, { status: 'success', message: 'Click on the link sent to your email to change your password.' });
+                    if (!admin) {
+                        return res.json(404, { status: 'error', err: 'No Admin with such email existing' })
+                    } else {
+                        var resetUrl = req.param('url') + '?token=' + jwToken.resetPassword({ email: req.param('email'), password: admin.password, time: Date.now() });
+                        var emailData = {
+                            'email': process.env.SITE_EMAIL,
+                            'from': process.env.SITE_NAME,
+                            'subject': 'Your ' + process.env.SITE_NAME + ' Password Reset',
+                            'body': 'Hello! <br><br> Click the link below to change your password: <br><br> <a href="' + resetUrl + '" >Change Password</a> <br><br>',
+                            'to': req.param('email')
                         }
 
-                        if (resp === 'error') {
-                            return res.json(401, { status: 'error', err: 'There was an error while sending your password reset email.' });
-                        }
-                    });
-                }
-            });
+                        azureEmail.send(emailData, function(resp) {
+                            if (resp === 'success') {
+                                return res.json(200, { status: 'success', message: 'Click on the link sent to your email to change your password.' });
+                            }
+
+                            if (resp === 'error') {
+                                return res.json(401, { status: 'error', err: 'There was an error while sending your password reset email.' });
+                            }
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    throw new Error(err.message);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                });
         }
     },
 
@@ -408,14 +449,21 @@ module.exports = {
                     return res.json(401, { status: "error", err: 'Password doesn\'t match, What a shame!' });
                 }
 
-                Admin.update({ email: token.email }, { password: req.param('password') }).exec(function(err, data) {
-                    if (err) {
+                Admin.update({ email: token.email }, { password: req.param('password') }).then(function(data) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
+
+                        return res.json(200, { status: 'success', message: 'Password successfully changed.' });
+                    })
+                    .catch(function(err) {
+                        throw new Error(err.message);
+                    })
+                    .catch(function(err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
-                    }
-
-                    return res.json(200, { status: 'success', message: 'Password successfully changed.' });
-                });
+                    });
             });
         }
     }
