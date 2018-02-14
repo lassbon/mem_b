@@ -17,9 +17,11 @@ module.exports = {
    * environment (see config/connections.js and config/models.js )           *
    ***************************************************************************/
 
-  // models: {
-  //   connection: 'someMysqlServer'
-  // },
+  models: {
+     connection: 'someMongodbServer'
+  },
+
+  hookTimeout: 60000,
 
   /***************************************************************************
    * Set the port in the production environment to 80                        *

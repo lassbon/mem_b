@@ -58,20 +58,21 @@ module.exports.connections = {
    ***************************************************************************/
   // someMongodbServer: {
   //   adapter: 'sails-mongo',
-  //   host: 'localhost',
-  //   port: 27017,
-  //   // user: 'username', //optional
-  //   // password: 'password', //optional
-  //   database: 'ACCIMembership' //optional
+  //   host: 'accidb.documents.azure.com',
+  //   port: 10255,
+  //   user: 'accidb',
+  //   password: 'n8yS5hiYwfjf9NcOcs6FPCeRWlZ0T4qDS2cLFBnmyYq6xjG7GW2ZqgSvl1iTDvEk7kJRaT8W4HT8sWrkPvqXmQ==',
+  //   database: 'acci'
+  // },
+
+  // someMongodbServer: {
+  //   adapter: 'sails-mongo',
+  //   url: 'mongodb://accidb:n8yS5hiYwfjf9NcOcs6FPCeRWlZ0T4qDS2cLFBnmyYq6xjG7GW2ZqgSvl1iTDvEk7kJRaT8W4HT8sWrkPvqXmQ==@accidb.documents.azure.com:10255/?ssl=true&replicaSet=globaldb'
   // },
 
   someMongodbServer: {
     adapter: 'sails-mongo',
     url: 'mongodb://acci:acci@ds159187.mlab.com:59187/acci',
-    // port: 59187,
-    // user: 'acci', //optional
-    // password: 'acci', //optional
-    // database: 'acci_api' //optional
   },
 
   /***************************************************************************

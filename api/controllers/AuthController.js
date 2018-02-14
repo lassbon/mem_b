@@ -31,7 +31,7 @@
  *     }
  */
 
- /**
+/**
  * @apiDefine PasswordAndUsernameRequiredError
  *
  * @apiError PasswordAndUsernameRequired Username and password required.
@@ -104,38 +104,44 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'email and password required' });
         }
 
-        User.findOne({ email: email }, function(err, user) {
-            if (!user) {
-                return res.json(401, { status: 'error', err: 'invalid email or password' });
-            }
-
-
-
-            User.comparePassword(password, user, function(err, valid) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(403, { status: 'error', err: 'forbidden' });
-                }
-
-                if (!valid) {
+        User.findOne({ email: email }).then(function(user) {
+                if (!user) {
+                    sails.log.error('invalid email or password');
                     return res.json(401, { status: 'error', err: 'invalid email or password' });
-                } else {
-                    res.json({
-                        user: {
-                            companyName: user.companyName,
-                            email: user.email,
-                            id: user.id,
-                            role: user.role
-                        },
-                        token: jwToken.issue({
-                            email: user.email,
-                            id: user.id,
-                            role: user.role
-                        })
-                    });
                 }
+
+                User.comparePassword(password, user, function(err, valid) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(403, { status: 'error', err: 'forbidden' });
+                    }
+
+                    if (!valid) {
+                        return res.json(401, { status: 'error', err: 'invalid email or password' });
+                    } else {
+                        res.json({
+                            user: {
+                                companyName: user.companyName,
+                                email: user.email,
+                                id: user.id,
+                                role: user.role
+                            },
+                            token: jwToken.issue({
+                                email: user.email,
+                                id: user.id,
+                                role: user.role
+                            })
+                        });
+                    }
+                });
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
             });
-        });
     },
 
     /**
