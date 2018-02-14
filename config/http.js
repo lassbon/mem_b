@@ -1,3 +1,6 @@
+var Raven = require('raven');
+Raven.config(process.env.SENTRY).install();
+
 /**
  * HTTP Server Settings
  * (sails.config.http)
@@ -23,6 +26,10 @@ module.exports.http = {
 
     middleware: {
 
+        // Raven's handlers has to be added as a keys to http.middleware config object
+        requestHandler: Raven.requestHandler(),
+        errorHandler: Raven.errorHandler(),
+
         /***************************************************************************
          *                                                                          *
          * The order in which middleware should be run for HTTP request. (the Sails *
@@ -30,23 +37,25 @@ module.exports.http = {
          *                                                                          *
          ***************************************************************************/
 
-        // order: [
-        //   'startRequestTimer',
-        //   'cookieParser',
-        //   'session',
-        //   'myRequestLogger',
-        //   'bodyParser',
-        //   'handleBodyParserError',
-        //   'compress',
-        //   'methodOverride',
-        //   'poweredBy',
-        //   '$custom',
-        //   'router',
-        //   'www',
-        //   'favicon',
-        //   '404',
-        //   '500'
-        // ],
+        order: [
+          'requestHandler',
+          'startRequestTimer',
+          'cookieParser',
+          'session',
+          'myRequestLogger',
+          'bodyParser',
+          'handleBodyParserError',
+          'compress',
+          'methodOverride',
+          'poweredBy',
+          '$custom',
+          'router',
+          'errorHandler',
+          'www',
+          'favicon',
+          '404',
+          '500'
+        ],
 
         /****************************************************************************
          *                                                                           *

@@ -180,38 +180,43 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'membershipId and password required' });
         }
 
-        User.findOne({ membershipId: membershipId }, function(err, user) {
-            if (!user) {
-                return res.json(401, { status: 'error', err: 'invalid membershipId or password' });
-            }
-
-
-
-            User.comparePassword(password, user, function(err, valid) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(403, { status: 'error', err: 'forbidden' });
-                }
-
-                if (!valid) {
+        User.findOne({ email: email }).then(function(user) {
+                if (!user) {
                     return res.json(401, { status: 'error', err: 'invalid membershipId or password' });
-                } else {
-                    res.json({
-                        user: {
-                            companyName: user.companyName,
-                            membershipId: user.membershipId,
-                            id: user.id,
-                            role: user.role
-                        },
-                        token: jwToken.issue({
-                            membershipId: user.membershipId,
-                            id: user.id,
-                            role: user.role
-                        })
-                    });
                 }
+
+                User.comparePassword(password, user, function(err, valid) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(403, { status: 'error', err: 'forbidden' });
+                    }
+
+                    if (!valid) {
+                        return res.json(401, { status: 'error', err: 'invalid membershipId or password' });
+                    } else {
+                        res.json({
+                            user: {
+                                companyName: user.companyName,
+                                membershipId: user.membershipId,
+                                id: user.id,
+                                role: user.role
+                            },
+                            token: jwToken.issue({
+                                membershipId: user.membershipId,
+                                id: user.id,
+                                role: user.role
+                            })
+                        });
+                    }
+                });
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
             });
-        });
     },
 
     /**
@@ -250,40 +255,47 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'username and password required' });
         }
 
-        Admin.findOne({ username: username }, function(err, admin) {
-            if (!admin) {
-                return res.json(401, { status: 'error', err: 'invalid username or password' });
-            }
-
-
-
-            Admin.comparePassword(password, admin, function(err, valid) {
-                if (err) {
-                    sails.log.error(err);
-                    return res.json(403, { status: 'error', err: 'forbidden' });
-                }
-
-                if (!valid) {
+        Admin.findOne({ username: username }).then(function(admin) {
+                if (!admin) {
                     return res.json(401, { status: 'error', err: 'invalid username or password' });
-                } else {
-                    res.json({
-                        admin: {
-                            username: admin.username,
-                            email: admin.email,
-                            id: admin.id,
-                            role: admin.role,
-                            permission: admin.permission
-                        },
-                        token: jwToken.issue({
-                            username: admin.username,
-                            email: admin.email,
-                            id: admin.id,
-                            role: admin.role,
-                            permission: admin.permission
-                        })
-                    });
                 }
+
+
+
+                Admin.comparePassword(password, admin, function(err, valid) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(403, { status: 'error', err: 'forbidden' });
+                    }
+
+                    if (!valid) {
+                        return res.json(401, { status: 'error', err: 'invalid username or password' });
+                    } else {
+                        res.json({
+                            admin: {
+                                username: admin.username,
+                                email: admin.email,
+                                id: admin.id,
+                                role: admin.role,
+                                permission: admin.permission
+                            },
+                            token: jwToken.issue({
+                                username: admin.username,
+                                email: admin.email,
+                                id: admin.id,
+                                role: admin.role,
+                                permission: admin.permission
+                            })
+                        });
+                    }
+                });
+            })
+            .catch(function(err) {
+                throw new Error(err.message);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
             });
-        });
     }
 };
