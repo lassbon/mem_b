@@ -114,7 +114,7 @@ module.exports = {
         delete req.body.confirmPassword;
         req.body.role = 'Admin';
 
-        User.findOne({ email: email }).then(function(user, err) {
+        User.findOne({ email: email }).then(function(admin, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -168,7 +168,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No admin id provided!' });
         } else {
-            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(user, err) {
+            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(admin, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -232,7 +232,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No admin id provided!' });
         } else {
-            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(user, err) {
+            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(admin, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -287,7 +287,7 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Admin.findOne({ id: req.param('id') }).then(function(user, err) {
+            Admin.findOne({ id: req.param('id') }).then(function(admin, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -358,7 +358,7 @@ module.exports = {
         if (!req.param('email')) {
             return res.json(401, { status: 'error', err: 'No admin email provided!' });
         } else {
-            Admin.findOne({ select: ['email', 'password'], where: { email: req.param('email') } }).then(function(user, err) {
+            Admin.findOne({ select: ['email', 'password'], where: { email: req.param('email') } }).then(function(admin, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
