@@ -187,5 +187,6 @@ module.exports = {
         // });
 
         alert.verifier('og prime');
+        console.log(utility.membershipId());
     },
 }

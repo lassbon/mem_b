@@ -78,7 +78,7 @@ module.exports = {
             // create and associate membership id to the new user
             var membershipId = utility.membershipId();
 
-            User.update({ id: req.param('id') }, { approved: true, membershipStatus: 'active', membershipId: membershipId }).exec(function(err, data) {
+            User.update({ id: req.param('id') }, { regState: 6, approved: true, membershipStatus: 'active', membershipId: membershipId }).exec(function(err, data) {
               if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
