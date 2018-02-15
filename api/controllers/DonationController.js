@@ -151,7 +151,7 @@ module.exports = {
      */
     createDonation: function(req, res) {
 
-        Donation.create(req.body).then(function(donation) {
+        Donation.create(req.body).then(function(donation, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -170,11 +170,8 @@ module.exports = {
                 }
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 
@@ -264,7 +261,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Donation id provided!' });
         } else {
-            Donation.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(donation) {
+            Donation.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(donation, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -292,11 +289,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -335,7 +329,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Donation id provided!' });
         } else {
-            Donation.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(donation) {
+            Donation.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(donation, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -364,11 +358,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -416,7 +407,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            Donation.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(donations) {
+            Donation.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(donations, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -425,11 +416,8 @@ module.exports = {
                     return res.json(200, { page: page, limit: limit, result: donations });
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -459,7 +447,7 @@ module.exports = {
      */
     getCompleted: function(req, res) {
         if (req.param('id')) {
-            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(donation) {
+            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(donation, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -472,16 +460,13 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
-            Donation.find({ status: 'completed' }).sort('createdAt DESC').then(function(donation) {
+            Donation.find({ status: 'completed' }).sort('createdAt DESC').then(function(donation, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -490,11 +475,8 @@ module.exports = {
                     return res.json(200, donation);
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -524,7 +506,7 @@ module.exports = {
      */
     getOngoing: function(req, res) {
         if (req.param('id')) {
-            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(donation) {
+            Donation.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(donation, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -537,16 +519,13 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
-            Donation.find({ status: 'ongoing' }).sort('createdAt DESC').then(function(donation) {
+            Donation.find({ status: 'ongoing' }).sort('createdAt DESC').then(function(donation, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -555,11 +534,8 @@ module.exports = {
                     return res.json(200, donation);
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -592,7 +568,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No user id provided!' });
         }
 
-        DonationPayments.find({ donator: req.param('id') }).sort('createdAt DESC').then(function(donations) {
+        DonationPayments.find({ donator: req.param('id') }).sort('createdAt DESC').then(function(donations, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -601,18 +577,15 @@ module.exports = {
                 return res.json(200, donations);
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 
     getDonations: function(req, res) {
 
         if (req.param('id')) {
-            Donation.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(donation) {
+            Donation.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(donation, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -625,16 +598,13 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
-            Donation.find().sort('createdAt DESC').then(function(donations) {
+            Donation.find().sort('createdAt DESC').then(function(donations, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -643,11 +613,8 @@ module.exports = {
                     return res.json(200, donations);
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     }

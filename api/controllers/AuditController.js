@@ -63,7 +63,7 @@ module.exports = {
         if (field && req.param('term')) {
 
             Audit.find({ field: req.param('term') }).limit(limit)
-                .skip(offset).then(function(audits) {
+                .skip(offset).then(function(audits, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -83,17 +83,14 @@ module.exports = {
                     });
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
             Audit.find().limit(limit)
-                .skip(offset).sort('createdAt DESC').then(function(audits) {
+                .skip(offset).sort('createdAt DESC').then(function(audits, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -113,11 +110,8 @@ module.exports = {
                     });
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -132,7 +126,7 @@ module.exports = {
      * @apiGroup Audit
      */
     getExcel: function(req, res) {
-        Audit.find().sort('createdAt DESC').then(function(audits) {
+        Audit.find().sort('createdAt DESC').then(function(audits, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -151,11 +145,8 @@ module.exports = {
                 });
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 };

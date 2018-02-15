@@ -206,9 +206,6 @@ module.exports = {
                 }
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(500, { err: err });
             });
@@ -236,7 +233,7 @@ module.exports = {
      *     }
      */
     validateReferee: function(req, res) {
-        User.findOne({ select: ['membershipFee', 'membershipStatus', 'membershipDue'], where: { membershipDue: 'paid', membershipFee: 'paid', membershipStatus: 'active', email: req.body.email } }).then(function(referee) {
+        User.findOne({ select: ['membershipFee', 'membershipStatus', 'membershipDue'], where: { membershipDue: 'paid', membershipFee: 'paid', membershipStatus: 'active', email: req.body.email } }).then(function(referee, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(status, { status: 'error', err: err });
@@ -247,9 +244,6 @@ module.exports = {
                 } else {
                     return res.json(200, { status: 'success', message: 'The referee is valid' });
                 }
-            })
-            .catch(function(err) {
-                throw new Error(err.message);
             })
             .catch(function(err) {
                 sails.log.error(err);
@@ -318,9 +312,6 @@ module.exports = {
                         }
                     });
                 }
-            })
-            .catch(function(err) {
-                throw new Error(err.message);
             })
             .catch(function(err) {
                 sails.log.error(err);
@@ -443,9 +434,6 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(500, { err: err });
                 });
@@ -562,9 +550,6 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(500, { err: err });
                 });
@@ -633,19 +618,23 @@ module.exports = {
     },
 
     getOldMember: function(req, res) {
-        User.findOne({ membershipId: req.param('membershipId'), oldMember: true }).sort('createdAt DESC').exec(function(user, err) {
-            if (err) {
+        User.findOne({ membershipId: req.param('membershipId'), oldMember: true }).sort('createdAt DESC').then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                }
+
+                if (!user) {
+                    return res.json(404, { status: 'error', err: 'No User with such id existing...' })
+                } else {
+                    delete user.password;
+                    return res.json(200, user);
+                }
+            })
+            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(500, { err: err });
-            }
-
-            if (!user) {
-                return res.json(404, { status: 'error', err: 'No User with such id existing...' })
-            } else {
-                delete user.password;
-                return res.json(200, user);
-            }
-        });
+            });
 
     },
 
@@ -692,16 +681,13 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            User.find({ companyName: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(users) {
+            User.find({ companyName: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(users, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(500, { err: err });
                     }
 
                     return res.json(200, { page: page, limit: limit, result: users });
-                })
-                .catch(function(err) {
-                    throw new Error(err.message);
                 })
                 .catch(function(err) {
                     sails.log.error(err);
@@ -752,9 +738,6 @@ module.exports = {
                 }
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(500, { err: err });
             });
@@ -802,9 +785,6 @@ module.exports = {
                 }
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
                 return res.json(500, { err: err });
             });
@@ -820,16 +800,13 @@ module.exports = {
      * @apiGroup User
      */
     getCount: function(req, res) {
-        User.count().then(function(userCount) {
+        User.count().then(function(userCount, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(500, { err: err });
                 }
 
                 return res.json(200, userCount.toString());
-            })
-            .catch(function(err) {
-                throw new Error(err.message);
             })
             .catch(function(err) {
                 sails.log.error(err);
@@ -897,9 +874,6 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
                     return res.json(500, { err: err });
                 });
@@ -946,7 +920,7 @@ module.exports = {
                     return res.json(401, { status: "error", err: 'Password doesn\'t match, What a shame!' });
                 }
 
-                User.update({ email: token.email }, { password: req.param('password') }).then(function(data) {
+                User.update({ email: token.email }, { password: req.param('password') }).then(function(data, err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(500, { err: err });
@@ -978,9 +952,6 @@ module.exports = {
                         });
 
                         return res.json(200, { status: 'success', message: 'Password successfully changed.' });
-                    })
-                    .catch(function(err) {
-                        throw new Error(err.message);
                     })
                     .catch(function(err) {
                         sails.log.error(err);

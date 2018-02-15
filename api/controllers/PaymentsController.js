@@ -64,8 +64,7 @@ module.exports = {
 
         if (field && req.param('term')) {
 
-            Payment.find({ field: req.param('term') }).limit(limit)
-                .skip(offset).exec(function(err, payments) {
+            Payment.find({ field: req.param('term') }).limit(limit).skip(offset).then(function(payments, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -83,11 +82,15 @@ module.exports = {
 
                         return res.json(200, paymentData);
                     });
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
                 });
+
         } else {
 
-            Payment.find().limit(limit)
-                .skip(offset).exec(function(err, payments) {
+            Payment.find().limit(limit).skip(offset).then(function(payments, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -105,6 +108,10 @@ module.exports = {
 
                         return res.json(200, paymentData);
                     });
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -119,24 +126,28 @@ module.exports = {
      * @apiGroup Payments
      */
     getExcel: function(req, res) {
-        Payment.find().exec(function(err, payments) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            var xls = json2xls(payments);
-
-            fs.writeFileSync('assets/tmp/payments2.xlsx', xls, 'binary');
-
-            res.download('assets/tmp/payments2.xlsx', function(err) {
+        Payment.find().then(function(payments, err) {
                 if (err) {
-                    return res.serverError(err)
-                } else {
-                    return res.ok();
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 }
+
+                var xls = json2xls(payments);
+
+                fs.writeFileSync('assets/tmp/payments2.xlsx', xls, 'binary');
+
+                res.download('assets/tmp/payments2.xlsx', function(err) {
+                    if (err) {
+                        return res.serverError(err)
+                    } else {
+                        return res.ok();
+                    }
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
-        });
     },
 
     /**
@@ -149,24 +160,28 @@ module.exports = {
      * @apiGroup Payments
      */
     getDonationExcel: function(req, res) {
-        DonationPayments.find().exec(function(err, payments) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            var xls = json2xls(payments);
-
-            fs.writeFileSync('assets/tmp/donationPayments.xlsx', xls, 'binary');
-
-            res.download('assets/tmp/donationPayments.xlsx', function(err) {
+        DonationPayments.find().then(function(payments, err) {
                 if (err) {
-                    return res.serverError(err)
-                } else {
-                    return res.ok();
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 }
+
+                var xls = json2xls(payments);
+
+                fs.writeFileSync('assets/tmp/donationPayments.xlsx', xls, 'binary');
+
+                res.download('assets/tmp/donationPayments.xlsx', function(err) {
+                    if (err) {
+                        return res.serverError(err)
+                    } else {
+                        return res.ok();
+                    }
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
-        });
     },
 
     /**
@@ -179,24 +194,28 @@ module.exports = {
      * @apiGroup Payments
      */
     getEventExcel: function(req, res) {
-        EventsPayments.find().exec(function(err, payments) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            var xls = json2xls(payments);
-
-            fs.writeFileSync('assets/tmp/eventPayments.xlsx', xls, 'binary');
-
-            res.download('assets/tmp/eventPayments.xlsx', function(err) {
+        EventsPayments.find().then(function(payments, err) {
                 if (err) {
-                    return res.serverError(err)
-                } else {
-                    return res.ok();
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 }
+
+                var xls = json2xls(payments);
+
+                fs.writeFileSync('assets/tmp/eventPayments.xlsx', xls, 'binary');
+
+                res.download('assets/tmp/eventPayments.xlsx', function(err) {
+                    if (err) {
+                        return res.serverError(err)
+                    } else {
+                        return res.ok();
+                    }
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
-        });
     },
 
     /**
@@ -209,24 +228,28 @@ module.exports = {
      * @apiGroup Payments
      */
     getTrainingExcel: function(req, res) {
-        TrainingPayments.find().exec(function(err, payments) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            var xls = json2xls(payments);
-
-            fs.writeFileSync('assets/tmp/trainingPayments.xlsx', xls, 'binary');
-
-            res.download('assets/tmp/trainingPayments.xlsx', function(err) {
+        TrainingPayments.find().then(function(payments, err) {
                 if (err) {
-                    return res.serverError(err)
-                } else {
-                    return res.ok();
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 }
+
+                var xls = json2xls(payments);
+
+                fs.writeFileSync('assets/tmp/trainingPayments.xlsx', xls, 'binary');
+
+                res.download('assets/tmp/trainingPayments.xlsx', function(err) {
+                    if (err) {
+                        return res.serverError(err)
+                    } else {
+                        return res.ok();
+                    }
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
-        });
     },
 
     /**
@@ -239,24 +262,28 @@ module.exports = {
      * @apiGroup Payments
      */
     getRegistrationExcel: function(req, res) {
-        RegistrationPayments.find().exec(function(err, payments) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            var xls = json2xls(payments);
-
-            fs.writeFileSync('assets/tmp/registrationPayments.xlsx', xls, 'binary');
-
-            res.download('assets/tmp/registrationPayments.xlsx', function(err) {
+        RegistrationPayments.find().then(function(payments, err) {
                 if (err) {
-                    return res.serverError(err)
-                } else {
-                    return res.ok();
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 }
+
+                var xls = json2xls(payments);
+
+                fs.writeFileSync('assets/tmp/registrationPayments.xlsx', xls, 'binary');
+
+                res.download('assets/tmp/registrationPayments.xlsx', function(err) {
+                    if (err) {
+                        return res.serverError(err)
+                    } else {
+                        return res.ok();
+                    }
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
-        });
     },
 
     /**
@@ -269,24 +296,28 @@ module.exports = {
      * @apiGroup Payments
      */
     getMembershipExcel: function(req, res) {
-        MembershipPayments.find().exec(function(err, payments) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            var xls = json2xls(payments);
-
-            fs.writeFileSync('assets/tmp/membershipPayments.xlsx', xls, 'binary');
-
-            res.download('assets/tmp/membershipPayments.xlsx', function(err) {
+        MembershipPayments.find().then(function(payments, err) {
                 if (err) {
-                    return res.serverError(err)
-                } else {
-                    return res.ok();
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 }
+
+                var xls = json2xls(payments);
+
+                fs.writeFileSync('assets/tmp/membershipPayments.xlsx', xls, 'binary');
+
+                res.download('assets/tmp/membershipPayments.xlsx', function(err) {
+                    if (err) {
+                        return res.serverError(err)
+                    } else {
+                        return res.ok();
+                    }
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
-        });
     },
 
     /**
@@ -299,24 +330,28 @@ module.exports = {
      * @apiGroup Payments
      */
     getDueExcel: function(req, res) {
-        DuePayments.find().exec(function(err, payments) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            var xls = json2xls(payments);
-
-            fs.writeFileSync('assets/tmp/DuePayments.xlsx', xls, 'binary');
-
-            res.download('assets/tmp/duePayments.xlsx', function(err) {
+        DuePayments.find().then(function(payments, err) {
                 if (err) {
-                    return res.serverError(err)
-                } else {
-                    return res.ok();
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
                 }
+
+                var xls = json2xls(payments);
+
+                fs.writeFileSync('assets/tmp/DuePayments.xlsx', xls, 'binary');
+
+                res.download('assets/tmp/duePayments.xlsx', function(err) {
+                    if (err) {
+                        return res.serverError(err)
+                    } else {
+                        return res.ok();
+                    }
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
-        });
     },
 
     /**
@@ -332,82 +367,86 @@ module.exports = {
 
         var totals = {};
 
-        DonationPayments.find().exec(function(err, donations) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-            }
-
-            var donationTotal = 0;
-            donations.forEach(function(donation) {
-                donationTotal += donation.amount;
-            });
-
-            totals.donation = donationTotal;
-            totals.donationCount = donations.length;
-
-            TrainingPayments.find().exec(function(err, trainings) {
+        DonationPayments.find().then(function(donations, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
-                var trainingTotal = 0;
-                trainings.forEach(function(training) {
-                    trainingTotal += training.amount;
+                var donationTotal = 0;
+                donations.forEach(function(donation) {
+                    donationTotal += donation.amount;
                 });
 
-                totals.training = trainingTotal;
-                totals.trainingCount = trainings.length;
+                totals.donation = donationTotal;
+                totals.donationCount = donations.length;
 
-                RegistrationPayments.find().exec(function(err, registrations) {
+                TrainingPayments.find().exec(function(err, trainings) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
                     }
 
-                    var registrationTotal = 0;
-                    registrations.forEach(function(registration) {
-                        registrationTotal += registration.amount;
+                    var trainingTotal = 0;
+                    trainings.forEach(function(training) {
+                        trainingTotal += training.amount;
                     });
 
-                    totals.registration = registrationTotal;
-                    totals.registrationCount = registrations.length;
+                    totals.training = trainingTotal;
+                    totals.trainingCount = trainings.length;
 
-                    MembershipPayments.find().exec(function(err, memberships) {
+                    RegistrationPayments.find().exec(function(err, registrations) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
-                        var membershipTotal = 0;
-                        memberships.forEach(function(membership) {
-                            membershipTotal += membership.amount;
+                        var registrationTotal = 0;
+                        registrations.forEach(function(registration) {
+                            registrationTotal += registration.amount;
                         });
 
-                        totals.membership = membershipTotal;
-                        totals.membershipCount = memberships.length;
+                        totals.registration = registrationTotal;
+                        totals.registrationCount = registrations.length;
 
-                        EventsPayments.find().exec(function(err, events) {
+                        MembershipPayments.find().exec(function(err, memberships) {
                             if (err) {
                                 sails.log.error(err);
                                 return res.json(err.status, { err: err });
                             }
 
-                            var eventTotal = 0;
-                            events.forEach(function(event) {
-                                eventTotal += event.amount;
+                            var membershipTotal = 0;
+                            memberships.forEach(function(membership) {
+                                membershipTotal += membership.amount;
                             });
 
-                            totals.event = eventTotal;
-                            totals.eventCount = events.length;
+                            totals.membership = membershipTotal;
+                            totals.membershipCount = memberships.length;
+
+                            EventsPayments.find().exec(function(err, events) {
+                                if (err) {
+                                    sails.log.error(err);
+                                    return res.json(err.status, { err: err });
+                                }
+
+                                var eventTotal = 0;
+                                events.forEach(function(event) {
+                                    eventTotal += event.amount;
+                                });
+
+                                totals.event = eventTotal;
+                                totals.eventCount = events.length;
+                            });
                         });
                     });
-                });
 
-                return res.json(200, totals);
+                    return res.json(200, totals);
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
-        });
     },
 
     /**
@@ -433,8 +472,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        DonationPayments.find().limit(limit)
-            .skip(offset).exec(function(err, donations) {
+        DonationPayments.find().limit(limit).skip(offset).then(function(donations, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -458,6 +496,10 @@ module.exports = {
 
                     return res.json(200, paymentData);
                 });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
     },
 
@@ -484,8 +526,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        EventsPayments.find().limit(limit)
-            .skip(offset).exec(function(err, events) {
+        EventsPayments.find().limit(limit).skip(offset).then(function(events, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -509,6 +550,10 @@ module.exports = {
 
                     return res.json(200, paymentData);
                 });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
     },
 
@@ -535,8 +580,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        TrainingPayments.find().limit(limit)
-            .skip(offset).exec(function(err, trainings) {
+        TrainingPayments.find().limit(limit).skip(offset).then(function(trainings, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -560,6 +604,10 @@ module.exports = {
 
                     return res.json(200, paymentData);
                 });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
     },
 
@@ -586,8 +634,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        RegistrationPayments.find().limit(limit)
-            .skip(offset).exec(function(err, registrations) {
+        RegistrationPayments.find().limit(limit).skip(offset).then(function(registrations, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -611,6 +658,10 @@ module.exports = {
 
                     return res.json(200, paymentData);
                 });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
     },
 
@@ -637,8 +688,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        MembershipPayments.find().limit(limit)
-            .skip(offset).exec(function(err, memberships) {
+        MembershipPayments.find().limit(limit).skip(offset).then(function(memberships, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -662,6 +712,10 @@ module.exports = {
 
                     return res.json(200, paymentData);
                 });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
     },
 
@@ -688,8 +742,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        DuePayments.find().limit(limit)
-            .skip(offset).exec(function(err, dues) {
+        DuePayments.find().limit(limit).skip(offset).then(function(dues, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -713,6 +766,10 @@ module.exports = {
 
                     return res.json(200, paymentData);
                 });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
     },
 };

@@ -71,7 +71,7 @@ module.exports = {
      */
     create: function(req, res) {
 
-        Levels.create(req.body).then(function(level) {
+        Levels.create(req.body).then(function(level, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { status: 'error', err: err });
@@ -104,11 +104,8 @@ module.exports = {
                 }
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 
@@ -142,7 +139,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Level id provided!' });
         } else {
-            Levels.findOne({ select: 'name', where: { id: req.param('id') } }).then(function(level) {
+            Levels.findOne({ select: 'name', where: { id: req.param('id') } }).then(function(level, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -162,11 +159,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -204,7 +198,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Level id provided!' });
         } else {
-            Levels.findOne({ select: 'name', where: { id: req.param('id') } }).then(function(level) {
+            Levels.findOne({ select: 'name', where: { id: req.param('id') } }).then(function(level, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -244,11 +238,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -279,7 +270,7 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Levels.findOne({ id: req.param('id') }).then(function(level) {
+            Levels.findOne({ id: req.param('id') }).then(function(level, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -292,16 +283,13 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
-            Levels.find().sort('fee DESC').then(function(level) {
+            Levels.find().sort('fee DESC').then(function(level, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -310,11 +298,8 @@ module.exports = {
                     return res.json(200, level);
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     }

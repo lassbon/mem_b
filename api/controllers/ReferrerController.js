@@ -69,7 +69,7 @@ module.exports = {
       return res.json(401, { status: 'error', err: 'No referee id provided!' });
     }
 
-    User.findOne({ id: req.param('id') }).then(function(user) {
+    User.findOne({ id: req.param('id') }).then(function(user, err) {
         if (err) {
           sails.log.error(err);
           return res.json(err.status, { err: err });
@@ -145,11 +145,8 @@ module.exports = {
         });
       })
       .catch(function(err) {
-        throw new Error(err.message);
-      })
-      .catch(function(err) {
         sails.log.error(err);
-        return res.json(err.status, { err: err });
+        return res.json(500, { err: err });
       });
   },
 
@@ -189,7 +186,7 @@ module.exports = {
       return res.json(401, { status: 'error', err: 'No referee id provided!' });
     }
 
-    User.findOne({ id: req.param('id') }).then(function(user) {
+    User.findOne({ id: req.param('id') }).then(function(user, err) {
         if (err) {
           sails.log.error(err);
           return res.json(err.status, { err: err });
@@ -239,11 +236,8 @@ module.exports = {
         });
       })
       .catch(function(err) {
-        throw new Error(err.message);
-      })
-      .catch(function(err) {
         sails.log.error(err);
-        return res.json(err.status, { err: err });
+        return res.json(500, { err: err });
       });
   },
 
@@ -273,46 +267,40 @@ module.exports = {
    */
   get: function(req, res) {
     if (req.param('id')) {
-      User.findOne().where({ id: req.param('id'), or: [{ referred1: false }, { referred2: false }] }).then(function(user) {
-        if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
-        }
+      User.findOne().where({ id: req.param('id'), or: [{ referred1: false }, { referred2: false }] }).then(function(user, err) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
 
-        if (!user) {
-          return res.json(404, { status: 'error', message: 'No User with such id existing' });
-        } else {
-          delete user.password; // delete the password from the returned user object
-          return res.json(200, user);
-        }
-      })
-      .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                });
+          if (!user) {
+            return res.json(404, { status: 'error', message: 'No User with such id existing' });
+          } else {
+            delete user.password; // delete the password from the returned user object
+            return res.json(200, user);
+          }
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(500, { err: err });
+        });
 
     } else {
 
-      User.find().where({ role: 'User', or: [{ referred1: false }, { referred2: false }] }).then(function(user) {
-        if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
-        }
+      User.find().where({ role: 'User', or: [{ referred1: false }, { referred2: false }] }).then(function(user, err) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
 
-        // delete the password from the returned user objects
-        var userData = user.map(function(item) { return delete item.password; });
-        return res.json(200, userData);
-      })
-      .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
-                });
+          // delete the password from the returned user objects
+          var userData = user.map(function(item) { return delete item.password; });
+          return res.json(200, userData);
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(500, { err: err });
+        });
     }
   }
 };

@@ -67,7 +67,7 @@ module.exports = {
      */
     createAdvert: function(req, res) {
 
-        Advert.create(req.body).then(function(advert) {
+        Advert.create(req.body).then(function(user, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -86,11 +86,8 @@ module.exports = {
                 }
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 
@@ -179,7 +176,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Advert id provided!' });
         } else {
-            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(advert) {
+            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(user, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -207,11 +204,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -249,7 +243,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Advert id provided!' });
         } else {
-            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(advert) {
+            Advert.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(user, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -278,11 +272,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -313,7 +304,7 @@ module.exports = {
      */
     getAdvert: function(req, res) {
         if (req.param('id')) {
-            Advert.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(advert) {
+            Advert.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(user, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -326,16 +317,13 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
             
-            Advert.find().sort('createdAt DESC').then(function(advert) {
+            Advert.find().sort('createdAt DESC').then(function(user, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -344,11 +332,8 @@ module.exports = {
                     return res.json(200, advert);
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     }

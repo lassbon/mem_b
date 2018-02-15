@@ -114,7 +114,7 @@ module.exports = {
         delete req.body.confirmPassword;
         req.body.role = 'Admin';
 
-        User.findOne({ email: email }).then(function(admin) {
+        User.findOne({ email: email }).then(function(user, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -131,12 +131,10 @@ module.exports = {
                         role: admin.role
                     });
                 }
-            }).catch(function(err) {
-                throw new Error(err.message);
             })
             .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 
@@ -170,7 +168,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No admin id provided!' });
         } else {
-            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(admin) {
+            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(user, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -193,11 +191,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -237,7 +232,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No admin id provided!' });
         } else {
-            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(admin) {
+            Admin.findOne({ select: 'username', where: { id: req.param('id') } }).then(function(user, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -260,11 +255,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -295,7 +287,7 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Admin.findOne({ id: req.param('id') }).then(function(admin) {
+            Admin.findOne({ id: req.param('id') }).then(function(user, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -308,34 +300,30 @@ module.exports = {
                         delete admin.password;
                         return res.json(200, admin);
                     }
-                }).catch(function(err) {
-                    throw new Error(err.message);
                 })
                 .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
             var role = 'Admin';
-            Admin.find({ role: role }).then(function(admins) {
+            Admin.find({ role: role }).then(function(admins, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
                     }
 
-                    admins.forEach(function(admin) {
+                    admins.forEach(function(user, err) {
                         delete admin.password;
                     });
 
                     return res.json(200, admins);
-                }).catch(function(err) {
-                    throw new Error(err.message);
                 })
                 .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -370,7 +358,7 @@ module.exports = {
         if (!req.param('email')) {
             return res.json(401, { status: 'error', err: 'No admin email provided!' });
         } else {
-            Admin.findOne({ select: ['email', 'password'], where: { email: req.param('email') } }).then(function(admin) {
+            Admin.findOne({ select: ['email', 'password'], where: { email: req.param('email') } }).then(function(user, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -400,11 +388,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -449,7 +434,7 @@ module.exports = {
                     return res.json(401, { status: "error", err: 'Password doesn\'t match, What a shame!' });
                 }
 
-                Admin.update({ email: token.email }, { password: req.param('password') }).then(function(data) {
+                Admin.update({ email: token.email }, { password: req.param('password') }).then(function(data, err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
@@ -458,11 +443,8 @@ module.exports = {
                         return res.json(200, { status: 'success', message: 'Password successfully changed.' });
                     })
                     .catch(function(err) {
-                        throw new Error(err.message);
-                    })
-                    .catch(function(err) {
                         sails.log.error(err);
-                        return res.json(err.status, { err: err });
+                        return res.json(500, { err: err });
                     });
             });
         }

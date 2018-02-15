@@ -68,7 +68,7 @@ module.exports = {
      */
     create: function(req, res) {
 
-        Notifications.create(req.body).then(function(notification) {
+        Notifications.create(req.body).then(function(notification, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { status: 'error', err: err });
@@ -83,11 +83,8 @@ module.exports = {
                 }
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 
@@ -121,7 +118,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Notification id provided!' });
         } else {
-            Notifications.findOne({ select: 'message', where: { id: req.param('id') } }).then(function(notification) {
+            Notifications.findOne({ select: 'message', where: { id: req.param('id') } }).then(function(notification, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -141,11 +138,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -176,7 +170,7 @@ module.exports = {
      */
     get: function(req, res) {
         if (req.param('id')) {
-            Notifications.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(notification) {
+            Notifications.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(notification, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -189,16 +183,13 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
-            Notifications.find().sort('createdAt DESC').then(function(notification) {
+            Notifications.find().sort('createdAt DESC').then(function(notification, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -207,11 +198,8 @@ module.exports = {
                     return res.json(200, notification);
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     }

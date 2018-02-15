@@ -65,7 +65,7 @@ module.exports = {
       return res.json(401, { status: 'error', err: 'No User id provided!' });
     }
 
-    User.findOne({ id: req.param('id') }).then(function(user) {
+    User.findOne({ id: req.param('id') }).then(function(user, err) {
         if (err) {
           sails.log.error(err);
           return res.json(err.status, { err: err });
@@ -115,11 +115,8 @@ module.exports = {
         }
       })
       .catch(function(err) {
-        throw new Error(err.message);
-      })
-      .catch(function(err) {
         sails.log.error(err);
-        return res.json(err.status, { err: err });
+        return res.json(500, { err: err });
       });
   },
 
@@ -159,7 +156,7 @@ module.exports = {
       return res.json(401, { status: 'error', err: 'No rejection reason provided!' });
     }
 
-    User.findOne({ id: req.param('id') }).then(function(user) {
+    User.findOne({ id: req.param('id') }).then(function(user, err) {
         if (err) {
           sails.log.error(err);
           return res.json(err.status, { err: err });
@@ -207,11 +204,8 @@ module.exports = {
         }
       })
       .catch(function(err) {
-        throw new Error(err.message);
-      })
-      .catch(function(err) {
         sails.log.error(err);
-        return res.json(err.status, { err: err });
+        return res.json(500, { err: err });
       });
   },
 
@@ -242,7 +236,7 @@ module.exports = {
    */
   get: function(req, res) {
     if (req.param('id')) {
-      User.findOne({ id: req.param('id'), verified: false }).sort('createdAt DESC').then(function(user) {
+      User.findOne({ id: req.param('id'), verified: false }).sort('createdAt DESC').then(function(user, err) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
@@ -256,16 +250,13 @@ module.exports = {
           }
         })
         .catch(function(err) {
-          throw new Error(err.message);
-        })
-        .catch(function(err) {
           sails.log.error(err);
-          return res.json(err.status, { err: err });
+          return res.json(500, { err: err });
         });
 
     } else {
 
-      User.find({ verified: false, referred1: true, referred2: true }).sort('createdAt DESC').then(function(users) {
+      User.find({ verified: false, referred1: true, referred2: true }).sort('createdAt DESC').then(function(users, err) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
@@ -279,11 +270,8 @@ module.exports = {
           return res.json(200, users);
         })
         .catch(function(err) {
-          throw new Error(err.message);
-        })
-        .catch(function(err) {
           sails.log.error(err);
-          return res.json(err.status, { err: err });
+          return res.json(500, { err: err });
         });
     }
   }

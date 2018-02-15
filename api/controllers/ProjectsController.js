@@ -84,7 +84,7 @@ module.exports = {
      */
     create: function(req, res) {
 
-        Projects.create(req.body).then(function(project) {
+        Projects.create(req.body).then(function(project, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -103,11 +103,8 @@ module.exports = {
                 }
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 
@@ -198,7 +195,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Project id provided!' });
         } else {
-            Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(project) {
+            Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -226,11 +223,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -270,7 +264,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Project id provided!' });
         } else {
-            Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(project) {
+            Projects.findOne({ select: ['title', 'banner'], where: { id: req.param('id') } }).then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -299,11 +293,8 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -351,7 +342,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            Projects.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(projects) {
+            Projects.find({ title: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(projects, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -360,11 +351,8 @@ module.exports = {
                     return res.json(200, { page: page, limit: limit, result: projects });
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -394,7 +382,7 @@ module.exports = {
      */
     getCompleted: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(project) {
+            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -407,16 +395,13 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
-            Projects.find({ status: 'completed' }).sort('createdAt DESC').then(function(project) {
+            Projects.find({ status: 'completed' }).sort('createdAt DESC').then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -425,11 +410,8 @@ module.exports = {
                     return res.json(200, project);
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
@@ -459,7 +441,7 @@ module.exports = {
      */
     getOngoing: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(project) {
+            Projects.findOne({ id: req.param('id'), status: 'ongoing' }).sort('createdAt DESC').then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -472,16 +454,13 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
-            Projects.find({ status: 'ongoing' }).sort('createdAt DESC').then(function(project) {
+            Projects.find({ status: 'ongoing' }).sort('createdAt DESC').then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -490,18 +469,15 @@ module.exports = {
                     return res.json(200, project);
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     },
 
     getProjects: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id') }).then(function(project) {
+            Projects.findOne({ id: req.param('id') }).then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -514,16 +490,13 @@ module.exports = {
                     }
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
 
         } else {
 
-            Projects.find().sort('createdAt DESC').then(function(projects) {
+            Projects.find().sort('createdAt DESC').then(function(projects, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -532,11 +505,8 @@ module.exports = {
                     return res.json(200, projects);
                 })
                 .catch(function(err) {
-                    throw new Error(err.message);
-                })
-                .catch(function(err) {
                     sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    return res.json(500, { err: err });
                 });
         }
     }

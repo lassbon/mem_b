@@ -63,7 +63,7 @@ module.exports = {
     if (!req.param('id')) {
       return res.json(401, { status: 'error', err: 'No User id provided!' });
     } else {
-      User.findOne({ id: req.param('id') }).then(function(user) {
+      User.findOne({ id: req.param('id') }).then(function(user, err) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
@@ -120,12 +120,10 @@ module.exports = {
             });
           }
         })
-        .catch(function(err) {
-          throw new Error(err.message);
-        })
+        
         .catch(function(err) {
           sails.log.error(err);
-          return res.json(err.status, { err: err });
+          return res.json(500, { err: err });
         });
     }
   },
@@ -167,7 +165,7 @@ module.exports = {
       return res.json(401, { status: 'error', err: 'No rejection reason provided!' });
     }
 
-    User.findOne({ id: req.param('id') }).then(function(user) {
+    User.findOne({ id: req.param('id') }).then(function(user, err) {
         if (err) {
           sails.log.error(err);
           return res.json(err.status, { err: err });
@@ -215,11 +213,8 @@ module.exports = {
         }
       })
       .catch(function(err) {
-        throw new Error(err.message);
-      })
-      .catch(function(err) {
         sails.log.error(err);
-        return res.json(err.status, { err: err });
+        return res.json(500, { err: err });
       });
   },
 
@@ -249,7 +244,7 @@ module.exports = {
    */
   get: function(req, res) {
     if (req.param('id')) {
-      User.findOne({ id: req.param('id'), approved: false }).sort('createdAt DESC').then(function(user) {
+      User.findOne({ id: req.param('id'), approved: false }).sort('createdAt DESC').then(function(user, err) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
@@ -263,14 +258,11 @@ module.exports = {
           }
         })
         .catch(function(err) {
-          throw new Error(err.message);
-        })
-        .catch(function(err) {
           sails.log.error(err);
-          return res.json(err.status, { err: err });
+          return res.json(500, { err: err });
         });
     } else {
-      User.find({ approved: false, verified: true }).sort('createdAt DESC').then(function(users) {
+      User.find({ approved: false, verified: true }).sort('createdAt DESC').then(function(users, err) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
@@ -282,9 +274,6 @@ module.exports = {
           });
 
           return res.json(200, users);
-        })
-        .catch(function(err) {
-          throw new Error(err.message);
         })
         .catch(function(err) {
           sails.log.error(err);

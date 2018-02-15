@@ -51,7 +51,7 @@ module.exports = {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
-		DonationPayments.find({ donator: req.param('id') }).sort('createdAt DESC').then(function(donations) {
+		DonationPayments.find({ donator: req.param('id') }).sort('createdAt DESC').then(function(donations, err) {
 				if (err) {
 					sails.log.error(err);
 					return res.json(err.status, { err: err });
@@ -77,11 +77,8 @@ module.exports = {
 				});
 			})
 			.catch(function(err) {
-				throw new Error(err.message);
-			})
-			.catch(function(err) {
 				sails.log.error(err);
-				return res.json(err.status, { err: err });
+				return res.json(500, { err: err });
 			});
 	},
 
@@ -104,7 +101,7 @@ module.exports = {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
-		EventsPayments.find({ payer: req.param('id') }).sort('createdAt DESC').then(function(events) {
+		EventsPayments.find({ payer: req.param('id') }).sort('createdAt DESC').then(function(events, err) {
 				if (err) {
 					sails.log.error(err);
 					return res.json(err.status, { err: err });
@@ -130,11 +127,8 @@ module.exports = {
 				});
 			})
 			.catch(function(err) {
-				throw new Error(err.message);
-			})
-			.catch(function(err) {
 				sails.log.error(err);
-				return res.json(err.status, { err: err });
+				return res.json(500, { err: err });
 			});
 	},
 
@@ -157,7 +151,7 @@ module.exports = {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
-		TrainingPayments.find({ payer: req.param('id') }).sort('createdAt DESC').then(function(trainings) {
+		TrainingPayments.find({ payer: req.param('id') }).sort('createdAt DESC').then(function(trainings, err) {
 				if (err) {
 					sails.log.error(err);
 					return res.json(err.status, { err: err });
@@ -183,11 +177,8 @@ module.exports = {
 				});
 			})
 			.catch(function(err) {
-				throw new Error(err.message);
-			})
-			.catch(function(err) {
 				sails.log.error(err);
-				return res.json(err.status, { err: err });
+				return res.json(500, { err: err });
 			});
 	},
 
@@ -210,7 +201,7 @@ module.exports = {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
-		MembershipPayments.find({ payer: req.param('id') }).sort('createdAt DESC').then(function(memberships) {
+		MembershipPayments.find({ payer: req.param('id') }).sort('createdAt DESC').then(function(memberships, err) {
 				if (err) {
 					sails.log.error(err);
 					return res.json(err.status, { err: err });
@@ -236,11 +227,8 @@ module.exports = {
 				});
 			})
 			.catch(function(err) {
-				throw new Error(err.message);
-			})
-			.catch(function(err) {
 				sails.log.error(err);
-				return res.json(err.status, { err: err });
+				return res.json(500, { err: err });
 			});
 	},
 
@@ -263,7 +251,7 @@ module.exports = {
 			return res.json(401, { status: 'error', err: 'No user id provided!' });
 		}
 
-		DuePayments.find({ payer: req.param('id') }).sort('createdAt DESC').then(function(dues) {
+		DuePayments.find({ payer: req.param('id') }).sort('createdAt DESC').then(function(dues, err) {
 				if (err) {
 					sails.log.error(err);
 					return res.json(err.status, { err: err });
@@ -289,11 +277,8 @@ module.exports = {
 				});
 			})
 			.catch(function(err) {
-				throw new Error(err.message);
-			})
-			.catch(function(err) {
 				sails.log.error(err);
-				return res.json(err.status, { err: err });
+				return res.json(500, { err: err });
 			});
 	}
 }

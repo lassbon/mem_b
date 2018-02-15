@@ -104,7 +104,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'email and password required' });
         }
 
-        User.findOne({ email: email }).then(function(user) {
+        User.findOne({ email: email }).then(function(user, err) {
                 if (!user) {
                     sails.log.error('invalid email or password');
                     return res.json(401, { status: 'error', err: 'invalid email or password' });
@@ -136,11 +136,8 @@ module.exports = {
                 });
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 
@@ -180,7 +177,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'membershipId and password required' });
         }
 
-        User.findOne({ email: email }).then(function(user) {
+        User.findOne({ email: email }).then(function(user, err) {
                 if (!user) {
                     return res.json(401, { status: 'error', err: 'invalid membershipId or password' });
                 }
@@ -211,11 +208,8 @@ module.exports = {
                 });
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     },
 
@@ -255,7 +249,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'username and password required' });
         }
 
-        Admin.findOne({ username: username }).then(function(admin) {
+        Admin.findOne({ username: username }).then(function(admin, err) {
                 if (!admin) {
                     return res.json(401, { status: 'error', err: 'invalid username or password' });
                 }
@@ -291,11 +285,8 @@ module.exports = {
                 });
             })
             .catch(function(err) {
-                throw new Error(err.message);
-            })
-            .catch(function(err) {
                 sails.log.error(err);
-                return res.json(err.status, { err: err });
+                return res.json(500, { err: err });
             });
     }
 };
