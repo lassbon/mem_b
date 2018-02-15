@@ -168,10 +168,10 @@ module.exports = {
                 if (user) {
                     return res.json(404, { status: 'error', err: 'An account with that email already exists.' })
                 } else {
-                    User.create(req.body).exec(function(user, err) {
+                    User.create(req.body).then(function(user, err) {
                         if (err) {
                             sails.log.error(err);
-                            return res.json(500, { err: err });
+                            return res.json(503, { err: err });
                         }
 
                         // If user created successfuly we return user and token as response

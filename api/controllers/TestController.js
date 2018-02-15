@@ -102,23 +102,27 @@ module.exports = {
                         oldMember.tradeGroup = record[11];
                     }
 
-                    User.findOne({ membershipId: oldMember.membershipId }).exec(function(err, user) {
-                        if (err) {
+                    User.findOne({ membershipId: oldMember.membershipId }).then(function(user, err) {
+                            if (err) {
+                                sails.log.error(err);
+                                //return res.json(err.status, { err: err });
+                            }
+
+                            if (!user) {
+                                console.log(oldMember);
+
+                                User.create(oldMember).exec(function(err, member) {
+                                    if (err) {
+                                        sails.log.error(err);
+                                        //return res.json(err.status, { err: err });
+                                    }
+                                });
+                            }
+                        })
+                        .catch(function(err) {
                             sails.log.error(err);
-                            //return res.json(err.status, { err: err });
-                        }
-
-                        if (!user) {
-                            console.log(oldMember);
-
-                            User.create(oldMember).exec(function(err, member) {
-                                if (err) {
-                                    sails.log.error(err);
-                                    //return res.json(err.status, { err: err });
-                                }
-                            });
-                        }
-                    });
+                            return res.json(500, { err: err });
+                        });
                 }
             }
 
@@ -127,43 +131,47 @@ module.exports = {
     },
 
     alertOldMembers: function(req, res) {
-        User.find({ select: ['membershipId', 'email', 'companyName'], where: { oldMember: true } }).exec(function(err, users) {
-            if (err) {
-                sails.log.error(err);
-                return res.json(404, { status: 'error', err: err });
-            }
-
-            users.forEach(function(user) {
-                var emailData = {
-                    'email': process.env.SITE_EMAIL,
-                    'from': process.env.SITE_NAME,
-                    'subject': 'Your ' + process.env.SITE_NAME + ' membership onboarding.',
-
-                    'body': 'Hello ' + user.companyName + '!<br><br>' +
-                        'Welcome to ' + process.env.SITE_NAME + ' Membership platform.<br><br>' +
-                        'You can now easily access your membership account with ease and get all information on on-going, completed and past events/projects.<br><br>' +
-                        'You can also track your financial reports and pay your annual dues on the go.<br><br>' +
-                        'Kindly click on the "Onboard" button to be redirected to the onboarding form.<br><br>' +
-                        '<a href=" ' + process.env.ONBOARD_LINK + base64.encode(user.membershipId) + ' " style="color: green;">Onboard</a>.<br><br>' +
-                        'Your generic password is <strong>"password"</strong>.<br><br>' +
-                        '<strong>Kindly change your password once logged on.</strong><br><br>' +
-                        'Thank you for your time.<br><br>' +
-                        process.env.SITE_NAME,
-
-                    'to': user.email
+        User.find({ select: ['membershipId', 'email', 'companyName'], where: { oldMember: true } }).then(function(users, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(404, { status: 'error', err: err });
                 }
 
-                azureEmail.send(emailData, function(resp) {
-                    if (resp === 'success') {
-                        sails.log.info(resp);
+                users.forEach(function(user) {
+                    var emailData = {
+                        'email': process.env.SITE_EMAIL,
+                        'from': process.env.SITE_NAME,
+                        'subject': 'Your ' + process.env.SITE_NAME + ' membership onboarding.',
+
+                        'body': 'Hello ' + user.companyName + '!<br><br>' +
+                            'Welcome to ' + process.env.SITE_NAME + ' Membership platform.<br><br>' +
+                            'You can now easily access your membership account with ease and get all information on on-going, completed and past events/projects.<br><br>' +
+                            'You can also track your financial reports and pay your annual dues on the go.<br><br>' +
+                            'Kindly click on the "Onboard" button to be redirected to the onboarding form.<br><br>' +
+                            '<a href=" ' + process.env.ONBOARD_LINK + base64.encode(user.membershipId) + ' " style="color: green;">Onboard</a>.<br><br>' +
+                            'Your generic password is <strong>"password"</strong>.<br><br>' +
+                            '<strong>Kindly change your password once logged on.</strong><br><br>' +
+                            'Thank you for your time.<br><br>' +
+                            process.env.SITE_NAME,
+
+                        'to': user.email
                     }
 
-                    if (resp === 'error') {
-                        sails.log.error(resp);
-                    }
+                    azureEmail.send(emailData, function(resp) {
+                        if (resp === 'success') {
+                            sails.log.info(resp);
+                        }
+
+                        if (resp === 'error') {
+                            sails.log.error(resp);
+                        }
+                    });
                 });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
             });
-        });
     },
 
     testPage: function(req, res) {
