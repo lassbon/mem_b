@@ -69,7 +69,7 @@ module.exports = {
             return res.json(err.status, { err: err });
           }
 
-          sails.log.info(id: req.param('id') + ' is about to be approved by an approver.');
+          sails.log.info(req.param('id') + ' is about to be approved by an approver.');
 
           if (!user) {
             return res.json(404, { status: 'error', err: 'No User with such id existing' });
@@ -84,7 +84,7 @@ module.exports = {
                 return res.json(err.status, { err: err });
               }
 
-              sails.log.info(id: req.param('id') + ' has been approved by an approver.');
+              sails.log.info(req.param('id') + ' has been approved by an approver.');
 
               var approvalMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been approved.';
 
@@ -175,7 +175,7 @@ module.exports = {
           return res.json(err.status, { err: err });
         }
 
-        sails.log.info(id: req.param('id') + ' is about to be rejected by an approver.');
+        sails.log.info(req.param('id') + ' is about to be rejected by an approver.');
 
         if (!user) {
           return res.json(404, { status: 'error', err: 'No User with such id existing' });
@@ -186,7 +186,7 @@ module.exports = {
               return res.json(err.status, { err: err });
             }
 
-            sails.log.info(id: req.param('id') + ' has been rejected by an approver.');
+            sails.log.info(req.param('id') + ' has been rejected by an approver.');
 
             var rejectionMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been rejected.';
 
