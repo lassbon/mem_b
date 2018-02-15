@@ -308,14 +308,13 @@ module.exports = {
 
         } else {
 
-            var role = 'Admin';
-            Admin.find({ role: role }).then(function(admins, err) {
+            Admin.find().then(function(admins, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
                     }
 
-                    admins.forEach(function(user, err) {
+                    admins.forEach(function(admin, err) {
                         delete admin.password;
                     });
 

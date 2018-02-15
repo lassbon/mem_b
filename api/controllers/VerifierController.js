@@ -71,6 +71,8 @@ module.exports = {
           return res.json(err.status, { err: err });
         }
 
+        sails.log.info(id: req.param('id') + ' is about to be verified.');
+
         if (!user) {
           return res.json(404, { status: 'error', err: 'No User with such id existing' });
         } else {
@@ -79,6 +81,8 @@ module.exports = {
               sails.log.error(err);
               return res.json(err.status, { err: err });
             }
+
+            sails.log.info(id: req.param('id') + ' has been verified.');
 
             alert.approver(user.companyName);
 
@@ -162,6 +166,8 @@ module.exports = {
           return res.json(err.status, { err: err });
         }
 
+        sails.log.info(id: req.param('id') + ' is about to be rejected by a verifier.');
+
         if (!user) {
           return res.json(404, { status: 'error', err: 'No User with such id existing' });
         } else {
@@ -170,6 +176,8 @@ module.exports = {
               sails.log.error(err);
               return res.json(err.status, { err: err });
             }
+
+            sails.log.info(id: req.param('id') + ' has been rejected by a verifier.');
 
             var rejectionMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been rejected.';
 

@@ -38,6 +38,8 @@ module.exports.verifier = function(companyName) {
 					sails.log.error(resp);
 				}
 			});
+
+			sails.log.info('Verifier' +verifier.id + ' has been alerted.');
 		});
 	});
 };
@@ -75,6 +77,8 @@ module.exports.approver = function(companyName) {
 					sails.log.error(resp);
 				}
 			});
+
+			sails.log.info('Approver' + approver.id + ' has been alerted.');
 		});
 	});
 };
@@ -116,6 +120,8 @@ module.exports.referee = function(companyName, userId, email) {
 					sails.log.error(resp);
 				}
 			});
+
+			sails.log.info('Referee' + referee.id + ' has been alerted.');
 		}
 	});
 };

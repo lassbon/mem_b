@@ -81,6 +81,8 @@ module.exports = {
             return res.json(err.status, { err: err });
           }
 
+          sails.log.info(id: req.param('id') + ' is about to be confirmed by a referee.');
+
           if (!user) {
             return res.json(404, { status: 'error', message: 'No User with such id existing' });
           } else {
@@ -92,6 +94,8 @@ module.exports = {
                   sails.log.error(err);
                   return res.json(err.status, { err: err });
                 }
+
+                sails.log.info(id: req.param('id') + ' has been confirmed by the first referee.');
               });
             } else if (user.referee2 == referee.email) {
 
@@ -100,6 +104,8 @@ module.exports = {
                   sails.log.error(err);
                   return res.json(err.status, { err: err });
                 }
+
+                sails.log.info(id: req.param('id') + ' has been confirmed by the second referee.');
               });
             } else {
               return res.json(404, { status: 'error', message: 'No referee with such id existing' });
@@ -114,9 +120,11 @@ module.exports = {
                 if (err) {
                   sails.log.error(err);
                 }
-                console.log('Successfully updated');
-                console.log(user);
+                
                 // alert the verifier about a new user to be verified
+
+                sails.log.info('Verifiers about to be alerted.');
+
                 alert.verifier(user.companyName);
               });
 
@@ -192,6 +200,8 @@ module.exports = {
           return res.json(err.status, { err: err });
         }
 
+        sails.log.info(id: req.param('id') + ' is about to be rejected by a referee.');
+
         User.findOne({ select: ['email', 'membershipId'], where: { id: req.param('refereeId') } }).exec(function(err, referee) {
           if (err) {
             sails.log.error(err);
@@ -210,6 +220,8 @@ module.exports = {
                   return res.json(err.status, { err: err });
                 }
 
+                sails.log.info(id: req.param('id') + ' has been rejected by the first referee.');
+
                 alert.rejected(res, user.companyName, user.email, referee.email, 1)
               });
             } else if (user.referee2 == referee.email) {
@@ -220,18 +232,13 @@ module.exports = {
                   return res.json(err.status, { err: err });
                 }
 
+                sails.log.info(id: req.param('id') + ' has been rejected by the second referee.');
+
                 alert.rejected(res, user.companyName, user.email, referee.email, 2);
               });
             } else {
               return res.json(404, { status: 'error', message: 'No referee with such id existing' });
             }
-
-            // Send notification to the user alerting him/her on the state of affairs
-            // Notifications.create({ id: req.param('id'), message: rejectionMessage }).exec(function(err, info) {
-            //   if (err) {
-            //     sails.log.error(err);
-            //   }
-            // });
           }
         });
       })
