@@ -59,8 +59,8 @@ module.exports.approver = function(companyName) {
 				'subject': 'Your member approval.',
 
 				'body': 'Hello ' + approver.username + '!<br><br>' +
-					'A prospective member ' + companyName + ' needs to be verified .<br><br>' +
-					'Kindly click on the "Approver" button to be redirected to the verification page on the admin portal.<br><br>' +
+					'A prospective member ' + companyName + ' needs to be approved .<br><br>' +
+					'Kindly click on the "Approver" button to be redirected to the approval page on the admin portal.<br><br>' +
 					'<a href=" ' + process.env.APPROVER_ADMIN + ' " style="color: green;">Approver</a>.<br><br>' +
 					'Thank you for your time.<br><br>' +
 					process.env.SITE_NAME,
