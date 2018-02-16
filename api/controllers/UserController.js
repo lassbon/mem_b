@@ -293,13 +293,19 @@ module.exports = {
                         alert.referee(user.companyName, user.id, user.referee2);
                     }
 
+	
                     // Send email to the user alerting him/her to the state of affairs
                     var emailData = {
                         'email': process.env.SITE_EMAIL,
                         'from': process.env.SITE_NAME,
                         'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-                        'body': 'Hello ' + user.companyName + '! <br><br> Your registration process has begun. <br><br> Kindly execise patience as your apointed referees confirm your application. <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-                        'to': user.email
+                        'body': 'Hello ' + user.companyName + '! <br><br> ' +
+						'Thank you for your interest in ACCI!  Emails have been sent to your chosen financial members for confirmation.'+
+						'Your registration process has begun. <br><br>'+
+						' Kindly execise patience as your apointed referees confirm your application. <br><br>'+
+						'We will keep you updated! If you have any enquires please send us an email on <u>Membership@accinigeria.com</u> <br><br><br />'+
+						'Thanks! <br />ACCI Membership Team',
+                         'to': user.email
                     }
 
                     azureEmail.send(emailData, function(resp) {
@@ -858,8 +864,21 @@ module.exports = {
                             'email': process.env.SITE_EMAIL,
                             'from': process.env.SITE_NAME,
                             'subject': 'Your ' + process.env.SITE_NAME + ' Password Reset',
-                            'body': 'Hello ' + user.companyName + '! <br><br> Click the link below to change your password: <br><br> <a href="' + resetUrl + '" >Change Password</a> <br><br>',
-                            'to': req.param('email')
+                            'body': 'Hello ' + user.companyName + '! <br><br> '+
+							 'We received a request to reset the password on your account. To reset your password please follow the link below: <br />'+
+							 '<a href="' + resetUrl + '" >Change Password</a><br />' +
+							 'If you did not initiate this password reset request, you can ignore this email. You can also report it to us by contacting our team at <u>membership@accinigeria.com</u>'+
+							 'If you suspect someone may have unauthorized access to your account, kindly report to <u> membership@accinigeria.com</u>'+
+							 '<br />If you need help or have any questions, please visit info@accinigeria.com <br /><br />Thanks! '+
+							 'ACCI Membership Team <br />'
+
+							 'to': req.param('email')
+							
+
+
+
+
+							
                         }
 
                         azureEmail.send(emailData, function(resp) {
@@ -939,6 +958,8 @@ module.exports = {
                                     'You have successfully changed your password. <br><br>' +
                                     'Thank you. <br><br>' +
                                     process.env.SITE_NAME,
+									
+
 
                                 'to': user.email
                             }

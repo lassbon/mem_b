@@ -101,14 +101,16 @@ module.exports = {
                 'from': process.env.SITE_NAME,
                 'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
                 'body': 'Hello ' + user.companyName + '! <br><br> ' +
-                  'We are pleased to inform you that your request has been confirmed. <br><br> ' +
+                  'We are very pleased to inform you that your membership application has been reviewed and approved! <br><br> ' +
+				  'You are just a step away from being a member, we are very excited to have you as one of us!'+
                   'Kindly click <a href="' + process.env.MEMBERSHIP_LINK + '"> HERE</a> to proceed with your registration<br> ' +
                   'and make the necessary payments. <br><br>' +
-                  'Thank you. <br><br>' +
-                  process.env.SITE_NAME,
-
-                'to': user.email
+                  'If you have any enquires please send us an email on <u>Membership@accinigeria.com</u><br /> '+
+				  'Thanks!<br >'+
+				  'ACCI Membership Team. <br><br>',
+                  'to': user.email
               }
+			  
 
               azureEmail.send(emailData, function(resp) {
                 if (resp === 'success') {
@@ -188,7 +190,16 @@ module.exports = {
 
             sails.log.info(req.param('id') + ' has been rejected by an approver.');
 
-            var rejectionMessage = 'Your ' + process.env.SITE_NAME + ' membership application has been rejected.';
+            var rejectionMessage = 'YOUR ' + process.env.SITE_NAME + ' MEMBERSHIP APPLICATION HAS BEEN REJECTED.<br />';
+								   'We are sorry as it looks like your one or two of your chosen financial members has'+
+								   'declined your request for confirmation.<br />'+
+								   'We also do advise you to call your chosen Financial Member first,'+
+								   'so s/he gets to know that you will be needing them for confirmation in order to continue '+
+								   'the registration process.<br />'+
+								   'If you have any enquires please send us an email on Membership@accinigeria.com or call <br /><br />'+
+								   'Thanks!<br />' +
+								   'ACCI Membership Team';
+
 
             // Send notification to the user alerting him/her on the state of affairs
             Notifications.create({ id: req.param('id'), message: rejectionMessage }).exec(function(err, info) {
@@ -202,9 +213,10 @@ module.exports = {
               'email': process.env.SITE_EMAIL,
               'from': process.env.SITE_NAME,
               'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-              'body': 'Hello ' + user.companyName + '! <br><br> ' + rejectionMessage + ' <br><br> ' + req.param('reason') + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-              'to': user.email
+              'body': 'Hello ' + user.companyName + '! <br><br> ' + rejectionMessage ,
+			  'to': user.email
             }
+			// //+ ' <br><br> ' + req.param('reason') + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
 
             azureEmail.send(emailData, function(resp) {
               if (resp === 'success') {
