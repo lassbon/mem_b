@@ -112,41 +112,44 @@ module.exports = {
             }
 
             // check if user has been fully confirmed
-            if (user.referred1 == true && user.referred2 == true) {
-
-              //var regState = 6;
-              console.log('Updating user details to 6');
-              User.update({ email: user.email }, { regState: 6 }).exec(function(err, data) {
-                if (err) {
-                  sails.log.error(err);
-                }
-                
-                // alert the verifier about a new user to be verified
-
-                sails.log.info('Verifiers about to be alerted.');
-
-                alert.verifier(user.companyName);
-              });
-
-              var emailData = {
-                'email': process.env.SITE_EMAIL,
-                'from': process.env.SITE_NAME,
-                'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-                'body': 'Hello ' + user.companyName + '! <br><br> ' +
-                  'You have been confirmed by all your financial members. <br><br>' +
-                  'Please hold on while we verify and approve your company. An email will be sent to you to proceed with your registration. <br><br>' +
-                  'Thank you. <br><br>' +
-                  process.env.SITE_NAME,
-
-                'to': user.email
+            User.findOne({ select: ['email', 'membershipId'], where: { id: req.param('refereeId'), referred1: true, referred2: true } }).exec(function(err, reffered) {
+              if (err) {
+                sails.log.error(err);
               }
 
-              azureEmail.send(emailData, function(resp) {
-                if (resp === 'error') {
-                  sails.log.error(resp);
+              if (reffered) {
+                User.update({ email: user.email }, { regState: 6 }).exec(function(err, data) {
+                  if (err) {
+                    sails.log.error(err);
+                  }
+
+                  // alert the verifier about a new user to be verified
+
+                  sails.log.info('Verifiers about to be alerted.');
+
+                  alert.verifier(user.companyName);
+                });
+
+                var emailData = {
+                  'email': process.env.SITE_EMAIL,
+                  'from': process.env.SITE_NAME,
+                  'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+                  'body': 'Hello ' + user.companyName + '! <br><br> ' +
+                    'You have been confirmed by all your financial members. <br><br>' +
+                    'Please hold on while we verify and approve your company. An email will be sent to you to proceed with your registration. <br><br>' +
+                    'Thank you. <br><br>' +
+                    process.env.SITE_NAME,
+
+                  'to': user.email
                 }
-              });
-            }
+
+                azureEmail.send(emailData, function(resp) {
+                  if (resp === 'error') {
+                    sails.log.error(resp);
+                  }
+                });
+              }
+            });
 
             return res.json(200, { status: 'success', message: 'Success' });
           }
