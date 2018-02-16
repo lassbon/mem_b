@@ -8,15 +8,17 @@
 // Delete blob from a container
 module.exports.membershipId = function() {
 
-	User.count().exec(function(err, usercount) {
-		if (err) {
-			sails.log.error(err);
-		}
+	// User.count().exec(function(err, usercount) {
+	// 	if (err) {
+	// 		sails.log.error(err);
+	// 	}
 
-		var num = usercount + 1;
+	// 	var num = usercount + 1;
 
-		return 'ABUCCI/MEM/' + num;
-	});
+	// 	return 'ABUCCI/MEM/' + num;
+	// });
+
+	return 'ABUCCI/MEM/000000';
 
 	// User.findOne({select: ['membershipId']}).sort('membershipId DESC').exec(function(err, member){
 	// 	if (err) {

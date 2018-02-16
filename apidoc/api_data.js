@@ -1420,6 +1420,94 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "/api/v1/auth/oldmember",
+    "title": "Login an old member",
+    "name": "Login",
+    "description": "<p>This is where a old member is logged in, and a token generated and returned.</p>",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "membershipId",
+            "description": "<p>Membership Id of the old member.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password of the old member.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Details of the logged in old member.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Access token for accessing all parts of the plartform.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"user\": {},\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9rb2xpbGVtdWVsM\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/AuthController.js",
+    "groupTitle": "Auth",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordOrEmailInvalid",
+            "description": "<p>Email or password invalid.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PasswordAndEmailRequired",
+            "description": "<p>Email and password required.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email or password invalid.'\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'Email and password required.'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
     "url": "/api/v1/donation",
     "title": "Create a new donation",
     "name": "CreateDonation",
@@ -2091,6 +2179,13 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": true,
+            "field": "organizer",
+            "description": "<p>Organizer of the event.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
             "field": "fee",
             "description": "<p>Fee for the event.</p>"
           }
@@ -2552,6 +2647,13 @@ define({ "api": [
             "optional": true,
             "field": "venue",
             "description": "<p>Venue of the event.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "organizer",
+            "description": "<p>Organizer of the event.</p>"
           },
           {
             "group": "Parameter",
@@ -4843,6 +4945,90 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "/api/v1/projects/post",
+    "title": "Create a new level",
+    "name": "CreateLevel",
+    "description": "<p>This is where a new level is created.</p>",
+    "group": "Levels",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the membership level.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "fee",
+            "description": "<p>Fee for the memebership level.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "due",
+            "description": "<p>Yearly due for the memebership level.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Full description of the membership level.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "levels",
+            "description": "<p>Level name and id returned from the API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9c16b54d91c38847825\",\n  \"....\": \"......................\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "LevelsInfoNotComplete",
+            "description": "<p>Post info not complete.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { name | fee | due | description } provided!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/LevelsController.js",
+    "groupTitle": "Levels"
+  },
+  {
+    "type": "post",
     "url": "/api/v1/levels",
     "title": "Create a new level",
     "name": "CreateLevel",
@@ -4942,90 +5128,6 @@ define({ "api": [
         }
       ]
     }
-  },
-  {
-    "type": "post",
-    "url": "/api/v1/projects/post",
-    "title": "Create a new level",
-    "name": "CreateLevel",
-    "description": "<p>This is where a new level is created.</p>",
-    "group": "Levels",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "name",
-            "description": "<p>Name of the membership level.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "fee",
-            "description": "<p>Fee for the memebership level.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "due",
-            "description": "<p>Yearly due for the memebership level.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "description",
-            "description": "<p>Full description of the membership level.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "levels",
-            "description": "<p>Level name and id returned from the API.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response: ",
-          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9c16b54d91c38847825\",\n  \"....\": \"......................\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "LevelsInfoNotComplete",
-            "description": "<p>Post info not complete.</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 401 Not Found\n{\n  \"status\": \"error\",\n  \"err\": \"No { name | fee | due | description } provided!\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "api/controllers/LevelsController.js",
-    "groupTitle": "Levels"
   },
   {
     "type": "delete",
@@ -5638,10 +5740,10 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/payments/dues",
-    "title": "Get yearly due payments",
+    "url": "/api/v1/payments/memberships",
+    "title": "Get registration payments",
     "name": "Memberships",
-    "description": "<p>This is where yearly due payment records are obtained.</p>",
+    "description": "<p>This is where registration payment records are obtained.</p>",
     "group": "Payments",
     "version": "0.0.0",
     "filename": "api/controllers/PaymentsController.js",
@@ -5692,10 +5794,10 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/payments/memberships",
-    "title": "Get registration payments",
+    "url": "/api/v1/payments/dues",
+    "title": "Get yearly due payments",
     "name": "Memberships",
-    "description": "<p>This is where registration payment records are obtained.</p>",
+    "description": "<p>This is where yearly due payment records are obtained.</p>",
     "group": "Payments",
     "version": "0.0.0",
     "filename": "api/controllers/PaymentsController.js",
@@ -7261,6 +7363,69 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/api/v1/social/post/:id",
+    "title": "Get post(s)",
+    "name": "GetPost",
+    "description": "<p>This is where a social post(s) is retrieved</p>",
+    "group": "Social",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "id",
+            "description": "<p>Post ID.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "post",
+            "description": "<p>Postresponse from API.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": \"59dce9d56b54d91c38847825\",\n  \"postImage\": \"http://w............\"\n   .................................\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "api/controllers/SocialController.js",
+    "groupTitle": "Social",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PostNotFound",
+            "description": "<p>The id of the Post was not found.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": 'No Post with such id existing'\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/api/v1/social/requests/:requestee",
     "title": "Get friend requests(s)",
     "name": "GetPost",
@@ -7324,10 +7489,10 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/social/post/:id",
+    "url": "/api/v1/social/requests/:id",
     "title": "Get post(s)",
-    "name": "GetPost",
-    "description": "<p>This is where a social post(s) is retrieved</p>",
+    "name": "GetRequests",
+    "description": "<p>This is where a social request(s) is retrieved</p>",
     "group": "Social",
     "parameter": {
       "fields": {
@@ -9694,7 +9859,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/api/v1/searchuser/:id/:page/:limit",
+    "url": "/api/v1/searchuser/:searchTerm/:page/:limit",
     "title": "Search for document(s)",
     "name": "SearchUser",
     "description": "<p>This is where users are searched.</p>",
