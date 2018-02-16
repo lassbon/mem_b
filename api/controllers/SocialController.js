@@ -507,7 +507,7 @@ module.exports = {
      * 
      * @apiUse PostNotFoundError
      */
-    getRequets: function(req, res) {
+    getRequests: function(req, res) {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No user id provided!' });
         } 
