@@ -870,15 +870,9 @@ module.exports = {
 							 'If you did not initiate this password reset request, you can ignore this email. You can also report it to us by contacting our team at <u>membership@accinigeria.com</u>'+
 							 'If you suspect someone may have unauthorized access to your account, kindly report to <u> membership@accinigeria.com</u>'+
 							 '<br />If you need help or have any questions, please visit info@accinigeria.com <br /><br />Thanks! '+
-							 'ACCI Membership Team <br />'
+							 'ACCI Membership Team <br />',
 
 							 'to': req.param('email')
-							
-
-
-
-
-							
                         }
 
                         azureEmail.send(emailData, function(resp) {
