@@ -642,7 +642,7 @@ module.exports = {
      * `UserController.searchUser()`
      *
      * ----------------------------------------------------------------------------------
-     * @api {get} /api/v1/searchuser/:id/:page/:limit Search for document(s)
+     * @api {get} /api/v1/searchuser/:searchTerm/:page/:limit Search for document(s)
      * @apiName SearchUser
      * @apiDescription This is where users are searched.
      * @apiGroup User
@@ -681,7 +681,7 @@ module.exports = {
         if (!req.param('searchTerm')) {
             return res.json(401, { status: "error", err: 'No search term provided!' });
         } else {
-            User.find({ companyName: { 'contains': req.param('searchTerm') } }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(users, err) {
+            User.find({ companyName: { 'contains': req.param('searchTerm') }, membershipDue: 'paid', membershipFee: 'paid', membershipStatus: 'active' }).sort('createdAt DESC').paginate({ page: page, limit: limit }).then(function(users, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(500, { err: err });

@@ -485,6 +485,48 @@ module.exports = {
     },
 
     /**
+     * `SocialController.getRequets()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/social/requests/:id Get post(s)
+     * @apiName GetRequests
+     * @apiDescription This is where a social request(s) is retrieved
+     * @apiGroup Social
+     *
+     * @apiParam {Number} [id] Post ID.
+     *
+     * @apiSuccess {String} post Postresponse from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       "postImage": "http://w............"
+     *        .................................
+     *     }
+     * 
+     * @apiUse PostNotFoundError
+     */
+    getRequets: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: "error", err: 'No user id provided!' });
+        } 
+
+        SocialConnections.find({id: req.param('id')}).sort('createdAt DESC').then(function(requests, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                return res.json(200, requests);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
+    },
+
+    /**
      * `SocialController.uploadImage()`
      * 
      * ----------------------------------------------------------------------------------

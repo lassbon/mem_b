@@ -87,7 +87,7 @@ module.exports.routes = {
     'POST /api/v1/alertreferee': 'UserController.alertReferee',
     'POST /api/v1/validatereferee': 'UserController.validateReferee',
 
-    'GET /api/v1/searchuser/:id/:page/:limit': 'UserController.searchUser',
+    'GET /api/v1/searchuser/:searchTerm/:page/:limit': 'UserController.searchUser',
 
     'POST /api/v1/oldmember': 'UserController.getOldMember',
 
@@ -235,6 +235,7 @@ module.exports.routes = {
      * Social routes
      */
     'GET /api/v1/socialcount': 'SocialController.getCount',
+    'GET /api/v1/social/requests/:id': 'SocialController.getRequests',
 
     'POST /api/v1/social/request': 'SocialController.request',
     'POST /api/v1/social/accept': 'SocialController.accept',

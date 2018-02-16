@@ -67,7 +67,7 @@ module.exports.connections = {
 
   // someMongodbServer: {
   //   adapter: 'sails-mongo',
-  //   url: 'mongodb://accidb:n8yS5hiYwfjf9NcOcs6FPCeRWlZ0T4qDS2cLFBnmyYq6xjG7GW2ZqgSvl1iTDvEk7kJRaT8W4HT8sWrkPvqXmQ==@accidb.documents.azure.com:10255/?ssl=true&replicaSet=globaldb'
+  //   url: process.env.AZURE_MONGO
   // },
 
   someMongodbServer: {
