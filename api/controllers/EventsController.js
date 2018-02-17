@@ -354,6 +354,150 @@ module.exports = {
     },
 
     /**
+     * `EventController.likeEvent()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/event/like Like an event
+     * @apiName LikeEvent
+     * @apiDescription This is where an event is liked
+     * @apiGroup Event
+     *
+     * @apiParam {String} id Event ID.
+     * @apiParam {String} liker User id of the event liker.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "Event liked"
+     *     }
+     *
+     * @apiUse EventIdNotProvidedError
+     * 
+     * @apiUse EventNotFoundError
+     */
+    likeEvent: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Event id provided!' });
+        } else {
+            Events.findOne({ select: ['title', 'description'], where: { id: req.param('id') } }).then(function(event, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!event) {
+                        return res.json(404, { status: 'error', message: 'No Event with such id existing' });
+                    } else {
+
+                        var likes = event.likes ? event.likes : [];
+
+                        var stat = true;
+
+                        for (var i = 0; i < likes.length; i++) {
+                            var name = likes[i];
+                            if (name == req.param('liker')) {
+                                stat = false;
+                                break;
+                            }
+                        }
+
+                        if (stat == false) {
+                            return res.json(403, { status: 'error', err: 'Event already liked' });
+                        } else {
+                            likes.push(req.param('liker'));
+
+                            Events.update({ id: req.param('id') }, { likes: likes }).exec(function(err, event) {
+                                return res.json(200, { status: 'success', message: 'Event liked' });
+                            });
+                        }
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
+
+    /**
+     * `EventController.unlikePost()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/events/unlike Unlike an event
+     * @apiName UnlikeEvent
+     * @apiDescription This is where an event is unliked
+     * @apiGroup Event
+     *
+     * @apiParam {String} id Event ID.
+     * @apiParam {String} liker User id of the post liker.
+     *
+     * @apiSuccess {String} status Status of the response from API.
+     * @apiSuccess {String} message  Success message response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "message": "Event unliked"
+     *     }
+     *
+     * @apiUse EventIdNotProvidedError
+     * 
+     * @apiUse EventNotFoundError
+     */
+    unlikeEvent: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: "error", err: 'No Event id provided!' });
+        } else {
+            Events.findOne({ select: ['title', 'description'], where: { id: req.param('id') } }).then(function(event, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!event) {
+                        return res.json(404, { status: 'error', err: 'No Event with such id existing' });
+                    } else {
+
+                        var likes = event.likes ? event.likes : [];
+
+                        var stat = false;
+
+                        for (var i = 0; i < likes.length; i++) {
+                            var name = likes[i];
+                            if (name == req.param('liker')) {
+                                stat = true;
+                                break;
+                            }
+                        }
+
+                        if (stat == false) {
+                            return res.json(403, { status: 'error', err: 'Event not previously liked' });
+                        } else {
+                            for (var i = event.likes.length; i--;) {
+                                if (event.likes[i] === req.param('liker')) {
+                                    event.likes.splice(i, 1);
+                                }
+                            }
+
+                            Events.update({ id: req.param('id') }, { likes: event.likes }).exec(function(err, event) {
+                                return res.json(200, { status: 'success', message: 'Post unliked' });
+                            });
+                        }
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
+
+    /**
      * `EventsController.searchEvents()`
      * 
      * ----------------------------------------------------------------------------------
@@ -604,5 +748,186 @@ module.exports = {
                     return res.json(500, { err: err });
                 });
         }
-    }
+    },
+
+    /**
+     * `EventController.createComment()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/events/comment Create a new comment
+     * @apiName CreateComment
+     * @apiDescription This is where a comment on post is created
+     * @apiGroup Event
+     *
+     * @apiParam {String} comment The comment to be made on an event.
+     * @apiParam {Number} owner User id of the commentor.
+     * @apiParam {Number} event Event id of the event to be commented on.
+     */
+    createComment: function(req, res) {
+        if (!req.param('post')) {
+            return res.json(401, { status: 'error', err: 'No Event id provided!' });
+        }
+
+        if (!req.param('owner')) {
+            return res.json(401, { status: 'error', err: 'No Owner id provided!' });
+        }
+
+        if (!req.param('comment')) {
+            return res.json(401, { status: 'error', err: 'No Comment provided!' });
+        }
+
+        User.findOne({ select: ['companyName', 'membershipId'], where: { id: req.param('owner') } }).then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                req.body.companyName = user.companyName;
+
+                EventComments.create(req.body).exec(function(err, comment) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (comment) {
+                        res.json(200, comment);
+                    }
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
+    },
+
+    /**
+     * `EventController.updateComment()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {put} /api/v1/events/comment Update a comment
+     * @apiName UpdateComment
+     * @apiDescription This is where a comment on event is updated.
+     * @apiGroup Event
+     *
+     * @apiParam {Number} id Comment ID.
+     * @apiParam {String} comment The comment to be made on a post.
+     */
+    updateComment: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Comment id provided!' });
+        } else {
+            EventComments.findOne({ select: 'comment', where: { id: req.param('id') } }).then(function(comment, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
+                    } else {
+                        EventComments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
+
+    /**
+     * `EventController.deleteComment()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {delete} /api/v1/events/comment/:id Delete a comment
+     * @apiName DeleteComment
+     * @apiDescription This is where a comment on post is deleted.
+     * @apiGroup Event
+     *
+     * @apiParam {Number} id Comment ID.
+     */
+    deleteComment: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Comment id provided!' });
+        } else {
+            EventComments.findOne({ select: 'comment', where: { id: req.param('id') } }).then(function(comment, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
+                    } else {
+                        EventComments.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
+
+    /**
+     * `EventController.getComment()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/events/comment/:id Get comment(s)
+     * @apiName GetComment
+     * @apiDescription This is where a comment on an event is retrieved.
+     * @apiGroup Event
+     *
+     * @apiParam {Number} id Comment ID.
+     */
+    getComment: function(req, res) {
+        if (req.param('id')) {
+            EventComments.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(comment, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(204, { status: 'error', err: 'No Comment with such id existing' })
+                    } else {
+                        return res.json(200, comment);
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+
+        } else {
+
+            EventComments.find().sort('createdAt DESC').then(function(posts, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, posts);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
 };

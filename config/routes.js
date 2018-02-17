@@ -150,6 +150,9 @@ module.exports.routes = {
     'GET /api/v1/getevents': 'EventsController.getEvents',
     'GET /api/v1/getevents/:id': 'EventsController.getEvents',
 
+    'POST /api/v1/events/like': 'EventsController.likeEvent',
+    'POST /api/v1/events/unlike': 'EventsController.unlikeEvent',
+
     /**
      * Advert routes
      */

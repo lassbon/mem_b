@@ -518,17 +518,18 @@ module.exports = {
                     return res.json(err.status, { err: err });
                 }
 
-                requests.forEach(function(request) {
-                    User.findOne({ id: requests.requester }).then(function(user, err) {
+                //requests.forEach(function(request) {
+                for(var x in requests){
+                    User.findOne({ id: request[x].requester }).then(function(user, err) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
                         delete user.password;
-                        requests.requester = user;
+                        requests[x].requester = user;
                     });
-                });
+                };
 
                 return res.json(200, requests);
             })

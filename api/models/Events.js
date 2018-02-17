@@ -10,7 +10,7 @@ module.exports = {
 
     attributes: {
 
-        title: {
+        title: { 
             type: 'string',
             required: true,
             unique: true
@@ -31,6 +31,13 @@ module.exports = {
         },
         organizer: {
             type: 'string'
+        },
+        likes: {
+            type: 'array',
+        },
+        comments: {
+            collection: 'eventComments',
+            via: 'event'
         },
         fee: {
             type: 'integer',
