@@ -929,5 +929,5 @@ module.exports = {
                     return res.json(500, { err: err });
                 });
         }
-    },
+    }
 };

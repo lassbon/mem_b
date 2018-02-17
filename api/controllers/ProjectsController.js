@@ -509,5 +509,302 @@ module.exports = {
                     return res.json(500, { err: err });
                 });
         }
-    }
+    },
+
+    /**
+     * `ProjectsController.createComment()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/projects/comment Create a new comment
+     * @apiName CreateComment
+     * @apiDescription This is where a comment on project is created
+     * @apiGroup Project
+     *
+     * @apiParam {String} comment The comment to be made on an project.
+     * @apiParam {Number} owner User id of the commentor.
+     * @apiParam {Number} project Project id of the project to be commented on.
+     */
+    createComment: function(req, res) {
+        if (!req.param('post')) {
+            return res.json(401, { status: 'error', err: 'No Project id provided!' });
+        }
+
+        if (!req.param('owner')) {
+            return res.json(401, { status: 'error', err: 'No Owner id provided!' });
+        }
+
+        if (!req.param('comment')) {
+            return res.json(401, { status: 'error', err: 'No Comment provided!' });
+        }
+
+        User.findOne({ select: ['companyName', 'membershipId'], where: { id: req.param('owner') } }).then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                req.body.companyName = user.companyName;
+
+                ProjectComments.create(req.body).exec(function(err, comment) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (comment) {
+                        res.json(200, comment);
+                    }
+                });
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
+    },
+
+    /**
+     * `ProjectsController.updateComment()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {put} /api/v1/projects/comment Update a comment
+     * @apiName UpdateComment
+     * @apiDescription This is where a comment on project is updated.
+     * @apiGroup Project
+     *
+     * @apiParam {Number} id Comment ID.
+     * @apiParam {String} comment The comment to be made on a post.
+     */
+    updateComment: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Comment id provided!' });
+        } else {
+            ProjectComments.findOne({ select: 'comment', where: { id: req.param('id') } }).then(function(comment, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
+                    } else {
+                        ProjectComments.update({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been updated' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
+
+    /**
+     * `ProjectsController.deleteComment()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {delete} /api/v1/projects/comment/:id Delete a comment
+     * @apiName DeleteComment
+     * @apiDescription This is where a comment on project is deleted.
+     * @apiGroup Project
+     *
+     * @apiParam {Number} id Comment ID.
+     */
+    deleteComment: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No Comment id provided!' });
+        } else {
+            ProjectComments.findOne({ select: 'comment', where: { id: req.param('id') } }).then(function(comment, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(404, { status: 'error', err: 'No Comment with such id existing' });
+                    } else {
+                        ProjectComments.destroy({ id: req.param('id') }, req.body).exec(function(err, data) {
+                            if (err) {
+                                sails.log.error(err);
+                                return res.json(err.status, { err: err });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Comment with id ' + req.param('id') + ' has been deleted' });
+                        });
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
+
+    /**
+     * `ProjectsController.getComment()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/projects/comment/:id Get comment(s)
+     * @apiName GetComment
+     * @apiDescription This is where a comment on a project is retrieved.
+     * @apiGroup Project
+     *
+     * @apiParam {Number} id Comment ID.
+     */
+    getComment: function(req, res) {
+        if (req.param('id')) {
+            ProjectComments.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(comment, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!comment) {
+                        return res.json(204, { status: 'error', err: 'No Comment with such id existing' })
+                    } else {
+                        return res.json(200, comment);
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+
+        } else {
+
+            ProjectComments.find().sort('createdAt DESC').then(function(posts, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    return res.json(200, posts);
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
+
+    /**
+     * `ProjectsController.likeEvent()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/event/like Like an event
+     * @apiName LikeEvent
+     * @apiDescription This is where an event is liked
+     * @apiGroup Project
+     *
+     * @apiParam {String} id Project ID.
+     * @apiParam {String} liker User id of the project liker.
+     */
+    likeEvent: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No project id provided!' });
+        } else {
+            Projects.findOne({ select: ['title', 'description'], where: { id: req.param('id') } }).then(function(project, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!project) {
+                        return res.json(404, { status: 'error', message: 'No project with such id existing' });
+                    } else {
+
+                        var likes = project.likes ? project.likes : [];
+
+                        var stat = true;
+
+                        for (var i = 0; i < likes.length; i++) {
+                            var name = likes[i];
+                            if (name == req.param('liker')) {
+                                stat = false;
+                                break;
+                            }
+                        }
+
+                        if (stat == false) {
+                            return res.json(403, { status: 'error', err: 'Project already liked' });
+                        } else {
+                            likes.push(req.param('liker'));
+
+                            Projects.update({ id: req.param('id') }, { likes: likes }).exec(function(err, event) {
+                                return res.json(200, { status: 'success', message: 'Project liked' });
+                            });
+                        }
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
+
+    /**
+     * `ProjectsController.unlikePost()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/events/unlike Unlike an event
+     * @apiName UnlikeEvent
+     * @apiDescription This is where an event is unliked
+     * @apiGroup Project
+     *
+     * @apiParam {String} id Project ID.
+     * @apiParam {String} liker User id of the post liker.
+     */
+    unlikeEvent: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: "error", err: 'No project id provided!' });
+        } else {
+            Projects.findOne({ select: ['title', 'description'], where: { id: req.param('id') } }).then(function(project, err) {
+                    if (err) {
+                        sails.log.error(err);
+                        return res.json(err.status, { err: err });
+                    }
+
+                    if (!project) {
+                        return res.json(404, { status: 'error', err: 'No project with such id existing' });
+                    } else {
+
+                        var likes = project.likes ? project.likes : [];
+
+                        var stat = false;
+
+                        for (var i = 0; i < likes.length; i++) {
+                            var name = likes[i];
+                            if (name == req.param('liker')) {
+                                stat = true;
+                                break;
+                            }
+                        }
+
+                        if (stat == false) {
+                            return res.json(403, { status: 'error', err: 'Project not previously liked' });
+                        } else {
+                            for (var i = project.likes.length; i--;) {
+                                if (project.likes[i] === req.param('liker')) {
+                                    project.likes.splice(i, 1);
+                                }
+                            }
+
+                            Projects.update({ id: req.param('id') }, { likes: project.likes }).exec(function(err, project) {
+                                return res.json(200, { status: 'success', message: 'Post unliked' });
+                            });
+                        }
+                    }
+                })
+                .catch(function(err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                });
+        }
+    },
 };

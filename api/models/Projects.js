@@ -24,6 +24,13 @@ module.exports = {
             type: 'text',
             required: true
         },
+        likes: {
+            type: 'array',
+        },
+        comments: {
+            collection: 'projectComments',
+            via: 'project'
+        },
         date: {
             type: 'string'
         },
