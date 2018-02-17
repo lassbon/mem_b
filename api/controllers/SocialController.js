@@ -510,13 +510,25 @@ module.exports = {
     getRequests: function(req, res) {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No user id provided!' });
-        } 
+        }
 
-        SocialConnections.find({requestee: req.param('id')}).sort('createdAt DESC').then(function(requests, err) {
+        SocialConnections.find({ requestee: req.param('id') }).sort('createdAt DESC').then(function(requests, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
+
+                requests.forEach(function(request) {
+                    User.findOne({ id: requests.requester }).then(function(user, err) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
+
+                        delete user.password;
+                        requests.requester = user;
+                    });
+                });
 
                 return res.json(200, requests);
             })
