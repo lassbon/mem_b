@@ -512,7 +512,7 @@ module.exports = {
             return res.json(401, { status: "error", err: 'No user id provided!' });
         } 
 
-        SocialConnections.find({id: req.param('id')}).sort('createdAt DESC').then(function(requests, err) {
+        SocialConnections.find({requestee: req.param('id')}).sort('createdAt DESC').then(function(requests, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
