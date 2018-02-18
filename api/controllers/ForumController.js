@@ -579,7 +579,7 @@ module.exports = {
     },
 
     /**
-     * `SocialController.likePost()`
+     * `ForumController.likePost()`
      * 
      * ----------------------------------------------------------------------------------
      * @api {post} /api/v1/forum/post/like Like a post

@@ -92,6 +92,12 @@ module.exports.policies = {
         'getOngoing': ['isUser', 'isAuthenticated'],
         'searchProjects': ['isUser', 'isAuthenticated'],
         'getProjects': ['isUser', 'isAuthenticated'],
+        'likeEvent': ['isUser', 'isAuthenticated'],
+        'unlikeEvent': ['isUser', 'isAuthenticated'],
+        'createComment': ['isUser', 'isAuthenticated'],
+        'deleteComment': ['isUser', 'isAuthenticated'],
+        'updateComment': ['isUser', 'isAuthenticated'],
+        'getComment': ['isUser', 'isAuthenticated'],
     },
 
     'TrainingController': {
@@ -110,6 +116,12 @@ module.exports.policies = {
         'myEvents': ['isUser', 'isAuthenticated'],
         'searchEvents': ['isUser', 'isAuthenticated'],
         'getEvents': ['isUser', 'isAuthenticated'],
+        'likeEvent': ['isUser', 'isAuthenticated'],
+        'unlikeEvent': ['isUser', 'isAuthenticated'],
+        'createComment': ['isUser', 'isAuthenticated'],
+        'deleteComment': ['isUser', 'isAuthenticated'],
+        'updateComment': ['isUser', 'isAuthenticated'],
+        'getComment': ['isUser', 'isAuthenticated'],
     },
 
     'DonationController': {

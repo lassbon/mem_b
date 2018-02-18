@@ -518,23 +518,49 @@ module.exports = {
                     return res.json(err.status, { err: err });
                 }
 
-                //requests.forEach(function(request) {
-                for(var x in requests){
-                    User.findOne({ id: request[x].requester }).then(function(user, err) {
+                console.log(requests);
+
+                for (let i = 0; i < requestes.length; i++) {
+                    User.findOne({ id: requests[i].requester }).exec(function(err, user) {
                         if (err) {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
 
                         delete user.password;
-                        requests[x].requester = user;
+                        requests[i].requester = user;
                     });
-                };
+                }
+
+                // for(var x in requests){
+                //     User.findOne({ id: requests[x].requester }).exec(function(err, user) {
+                //         if (err) {
+                //             sails.log.error(err);
+                //             return res.json(err.status, { err: err });
+                //         }
+
+                //         delete user.password;
+                //         requests[x].requester = user;
+                //     });
+                // };
+
+                // requests.forEach(function(request){
+                //     User.findOne({ id: request.requester }).exec(function(err, user) {
+                //         if (err) {
+                //             sails.log.error(err);
+                //             return res.json(err.status, { err: err });
+                //         }
+
+                //         delete user.password;
+                //         requests.requester = user;
+                //     });
+                // });
 
                 return res.json(200, requests);
             })
             .catch(function(err) {
                 sails.log.error(err);
+                console.log(err);
                 return res.json(500, { err: err });
             });
     },
