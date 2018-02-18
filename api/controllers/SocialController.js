@@ -518,35 +518,7 @@ module.exports = {
                     return res.json(err.status, { err: err });
                 }
 
-                // console.log(requests);
-
-                // for (let i = 0; i < requestes.length; i++) {
-                //     User.findOne({ id: requests[i].requester }).exec(function(err, user) {
-                //         if (err) {
-                //             sails.log.error(err);
-                //             return res.json(err.status, { err: err });
-                //         }
-
-                //         delete user.password;
-                //         requests[i].requester = user;
-                //     });
-                // }
-
-                // return res.json(200, requests);
-
-                Promise.all(requests.map(function(request) {
-                    return User.findOne({ id: request.requester }).then(function(user, err) {
-                        if (err) {
-                            sails.log.error(err);
-                        }
-
-                        delete user.password;
-                        request.requester = user
-                        return request
-                    })
-                })).then(function(requests) {
-                    return res.json(200, requests)
-                })
+                return res.json(200, requests)
             })
             .catch(function(err) {
                 sails.log.error(err);
