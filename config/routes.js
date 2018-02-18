@@ -310,6 +310,9 @@ module.exports.routes = {
     'GET /api/v1/forum/post/:id': 'ForumController.getPost',
     'GET /api/v1/forum/post': 'ForumController.getPost',
 
+    'POST /api/v1/forum/post/like': 'forumController.likePost',
+    'POST /api/v1/forum/post/unlike': 'ForumController.unlikePost',
+
     // Forum comment routes
     'POST /api/v1/forum/comment': 'ForumController.createComment',
     'DELETE /api/v1/forum/comment/:id': 'ForumController.deleteComment',
