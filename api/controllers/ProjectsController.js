@@ -525,7 +525,7 @@ module.exports = {
      * @apiParam {Number} project Project id of the project to be commented on.
      */
     createComment: function(req, res) {
-        if (!req.param('post')) {
+        if (!req.param('project')) {
             return res.json(401, { status: 'error', err: 'No Project id provided!' });
         }
 

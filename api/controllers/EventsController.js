@@ -764,7 +764,7 @@ module.exports = {
      * @apiParam {Number} event Event id of the event to be commented on.
      */
     createComment: function(req, res) {
-        if (!req.param('post')) {
+        if (!req.param('event')) {
             return res.json(401, { status: 'error', err: 'No Event id provided!' });
         }
 
