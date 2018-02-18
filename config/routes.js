@@ -162,11 +162,11 @@ module.exports.routes = {
     'POST /api/v1/events/like': 'EventsController.likeEvent',
     'POST /api/v1/events/unlike': 'EventsController.unlikeEvent',
 
-    'POST /api/v1/projects/comment': 'EventsController.createComment',
-    'DELETE /api/v1/projects/comment/:id': 'EventsController.deleteComment',
-    'PUT /api/v1/projects/comment/:id': 'EventsController.updateComment',
-    'GET /api/v1/projects/comment/:id': 'EventsController.getComment',
-    'GET /api/v1/projects/comment': 'EventsController.getComment',
+    'POST /api/v1/events/comment': 'EventsController.createComment',
+    'DELETE /api/v1/events/comment/:id': 'EventsController.deleteComment',
+    'PUT /api/v1/events/comment/:id': 'EventsController.updateComment',
+    'GET /api/v1/events/comment/:id': 'EventsController.getComment',
+    'GET /api/v1/events/comment': 'EventsController.getComment',
 
     /**
      * Advert routes
