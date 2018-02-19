@@ -120,7 +120,7 @@ module.exports = {
               if (!reffered) {
                 sails.log.info('New user not fully comfirmed.');
               } else {
-                User.update({ email: user.email }, { regState: 6 }).exec(function(err, data) {
+                User.update({ email: user.id }, { regState: 6 }).exec(function(err, data) {
                   if (err) {
                     sails.log.error(err);
                   }
