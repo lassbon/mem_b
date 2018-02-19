@@ -80,7 +80,7 @@ module.exports = {
             if (err) {
               sails.log.error(err);
               return res.json(err.status, { err: err });
-            }
+            } 
 
             sails.log.info(req.param('id') + ' has been verified.');
 

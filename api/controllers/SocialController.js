@@ -166,32 +166,43 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'No Requestee id provided!' });
         }
 
-        SocialConnections.create(req.body).then(function(friendRequest, err) {
+        SocialConnections.findOne(req.body).then(function(request, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
                 }
 
+                if (request) {
+                    return res.json(409, { status: 'error', err: 'Friend request already sent.' });
+                } else {
+                    SocialConnections.create(req.body).exe(function(err, friendRequest) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { err: err });
+                        }
 
-                User.findOne({ id: req.param('requester') }).exec(function(err, user) {
-                    if (err) {
-                        sails.log.error(err);
-                        return res.json(err.status, { err: err });
-                    }
 
-                    if (!user) {
-                        return res.json(404, { status: 'error', err: 'No User with such id existing' });
-                    } else {
-
-                        Notifications.create({ id: req.param('requestee'), message: user.companyName + ' sent you a friend request' }).exec(function(err, info) {
+                        User.findOne({ id: req.param('requester') }).exec(function(err, user) {
                             if (err) {
                                 sails.log.error(err);
+                                return res.json(err.status, { err: err });
                             }
-                        });
-                    }
 
-                    return res.json(200, { status: 'success', message: 'Friend request sent' });
-                });
+                            if (!user) {
+                                return res.json(404, { status: 'error', err: 'No User with such id existing' });
+                            } else {
+
+                                Notifications.create({ id: req.param('requestee'), message: user.companyName + ' sent you a friend request' }).exec(function(err, info) {
+                                    if (err) {
+                                        sails.log.error(err);
+                                    }
+                                });
+                            }
+
+                            return res.json(200, { status: 'success', message: 'Friend request sent' });
+                        });
+                    });
+                }
             })
             .catch(function(err) {
                 sails.log.error(err);
@@ -380,6 +391,12 @@ module.exports = {
                             sails.log.error(err);
                             return res.json(err.status, { err: err });
                         }
+
+                        SocialConnections.destroy({ requester: req.param('requester'), requestee: req.param('requestee') }).exec(function(err) {
+                            if (err) {
+                                sails.log.error(err);
+                            }
+                        });
 
                         User.findOne({ id: req.param('requester') }).exec(function(err, requester) {
                             if (err) {
