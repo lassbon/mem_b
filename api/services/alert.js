@@ -17,12 +17,13 @@ module.exports.verifier = function(companyName) {
 			var emailData = {
 				'email': process.env.SITE_EMAIL,
 				'from': process.env.SITE_NAME,
-				'subject': 'Your member verification.',
+				'subject': 'Action required for ACCI membership registration search for ' + companyName + '.',
 
 				'body': 'Hello ' + verifier.username + '!<br><br>' +
 					companyName + ' needs you to check their company status.<br><br>' +
 					'Kindly go through the documents on the admin panel to check.<br><br>' +
 					'Click <a href=" ' + process.env.VERIFIER_ADMIN + ' " style="color: green;">Here</a>.<br><br> to proceed.' +
+					'If you have any questions, please contact the admin.<br><br>' +
 					'Thank you.<br><br>' +
 					process.env.SITE_NAME,
 
@@ -56,12 +57,13 @@ module.exports.approver = function(companyName) {
 			var emailData = {
 				'email': process.env.SITE_EMAIL,
 				'from': process.env.SITE_NAME,
-				'subject': 'Your member approval.',
+				'subject': 'Action required for ACCI membership registration search for ' + companyName + '.',
 
 				'body': 'Hello ' + approver.username + '!<br><br>' +
 					companyName + ' needs you to approve their company status.<br><br>' +
 					'Kindly go through the documents on the admin panel to approve.<br><br>' +
 					'Please click <a href=" ' + process.env.APPROVER_ADMIN + ' " style="color: green;">HERE</a> to proceed.<br><br>' +
+					'If you have any questions, please contact the admin.<br><br>' +
 					'Thank you.<br><br>' +
 					process.env.SITE_NAME,
 
