@@ -477,7 +477,7 @@ module.exports = {
 
     getProjects: function(req, res) {
         if (req.param('id')) {
-            Projects.findOne({ id: req.param('id') }).then(function(project, err) {
+            Projects.findOne({ id: req.param('id') }).populate('comments', { sort: 'createdAt DESC' }).then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -496,7 +496,7 @@ module.exports = {
 
         } else {
 
-            Projects.find().sort('createdAt DESC').then(function(projects, err) {
+            Projects.find().sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).then(function(projects, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });

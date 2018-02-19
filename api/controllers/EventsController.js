@@ -718,7 +718,7 @@ module.exports = {
     getEvents: function(req, res) {
 
         if (req.param('id')) {
-            Events.findOne({ id: req.param('id') }).sort('createdAt DESC').then(function(event, err) {
+            Events.findOne({ id: req.param('id') }).populate('comments', { sort: 'createdAt DESC' }).sort('createdAt DESC').then(function(event, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -735,7 +735,7 @@ module.exports = {
                     return res.json(500, { err: err });
                 });
         } else {
-            Events.find().sort('createdAt DESC').then(function(event, err) {
+            Events.find().sort('createdAt DESC').populate('comments', { sort: 'createdAt DESC' }).then(function(event, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
