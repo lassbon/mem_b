@@ -383,7 +383,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No Event id provided!' });
         } else {
-            Events.findOne({ select: ['title', 'description'], where: { id: req.param('id') } }).then(function(event, err) {
+            Events.findOne({ select: ['title', 'description', 'likes'], where: { id: req.param('id') } }).then(function(event, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -453,7 +453,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No Event id provided!' });
         } else {
-            Events.findOne({ select: ['title', 'description'], where: { id: req.param('id') } }).then(function(event, err) {
+            Events.findOne({ select: ['title', 'description', 'likes'], where: { id: req.param('id') } }).then(function(event, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });

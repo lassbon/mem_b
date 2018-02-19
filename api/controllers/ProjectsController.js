@@ -708,7 +708,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: 'error', err: 'No project id provided!' });
         } else {
-            Projects.findOne({ select: ['title', 'description'], where: { id: req.param('id') } }).then(function(project, err) {
+            Projects.findOne({ select: ['title', 'description', 'likes'], where: { id: req.param('id') } }).then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -764,7 +764,7 @@ module.exports = {
         if (!req.param('id')) {
             return res.json(401, { status: "error", err: 'No project id provided!' });
         } else {
-            Projects.findOne({ select: ['title', 'description'], where: { id: req.param('id') } }).then(function(project, err) {
+            Projects.findOne({ select: ['title', 'description', 'likes'], where: { id: req.param('id') } }).then(function(project, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
