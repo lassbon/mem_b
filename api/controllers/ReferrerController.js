@@ -112,7 +112,7 @@ module.exports = {
             }
 
             // check if user has been fully confirmed
-            User.findOne({ select: ['email', 'membershipId'], where: { id: req.param('refereeId'), referred1: true, referred2: true } }).exec(function(err, reffered) {
+            User.findOne({ select: ['email', 'membershipId'], where: { id: user.id, referred1: true, referred2: true } }).exec(function(err, reffered) {
               if (err) {
                 sails.log.error(err);
               }
@@ -126,13 +126,13 @@ module.exports = {
                   }
 
                   // alert the verifier about a new user to be verified
-                  // sails.log.info('Verifiers about to be alerted.');
-                  // alert.verifier(user.companyName);
+                  sails.log.info('Verifiers about to be alerted.');
+                  alert.verifier(user.companyName);
                 });
 
                 // alert the verifier about a new user to be verified
-                sails.log.info('Verifiers about to be alerted.');
-                alert.verifier(user.companyName);
+                // sails.log.info('Verifiers about to be alerted.');
+                // alert.verifier(user.companyName);
 
                 var emailData = {
                   'email': process.env.SITE_EMAIL,
