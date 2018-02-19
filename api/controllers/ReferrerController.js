@@ -18,7 +18,7 @@
  *     }
  */
 
-/** 
+/**
  * @apiDefine UserIdNotProvidedError
  *
  * @apiError UserIdNotProvided No User id provided.
@@ -36,7 +36,7 @@ module.exports = {
 
   /**
    * `ReferrerController.confirm()`
-   * 
+   *
    * ----------------------------------------------------------------------------------
    * @api {post} /api/v1/referrer Approve a user
    * @apiName Approve
@@ -57,7 +57,7 @@ module.exports = {
    *     }
    *
    * @apiUse UserIdNotProvidedError
-   * 
+   *
    * @apiUse UserNotFoundError
    */
   confirm: function(req, res) {
@@ -120,7 +120,7 @@ module.exports = {
               if (!reffered) {
                 sails.log.info('New user not fully comfirmed.');
               } else {
-                User.update({ email: user.id }, { regState: 6 }).exec(function(err, data) {
+                User.update({ id: user.id }, { regState: 6 }).exec(function(err, data) {
                   if (err) {
                     sails.log.error(err);
                   }
@@ -168,7 +168,7 @@ module.exports = {
 
   /**
    * `ReferrerController.reject()`
-   * 
+   *
    * ----------------------------------------------------------------------------------
    * @api {delete} /api/v1/referrer Reject a user
    * @apiName Reject
@@ -189,7 +189,7 @@ module.exports = {
    *     }
    *
    * @apiUse UserIdNotProvidedError
-   * 
+   *
    * @apiUse UserNotFoundError
    */
   reject: function(req, res) {
@@ -258,7 +258,7 @@ module.exports = {
 
   /**
    * `ReferrerController.get()`
-   * 
+   *
    * ----------------------------------------------------------------------------------
    * @api {get} /api/v1/social/reerrer/:id Get unapproved user(s)
    * @apiName Get
@@ -276,7 +276,7 @@ module.exports = {
    *       ".........": "...................."
    *        .................................
    *     }
-   * 
+   *
    * @apiUse UserNotFoundError
    */
   get: function(req, res) {
