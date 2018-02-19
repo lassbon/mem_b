@@ -114,7 +114,7 @@ module.exports = {
         delete req.body.confirmPassword;
         req.body.role = 'Admin';
 
-        User.create(req.body).then(function(admin, err) {
+        Admin.create(req.body).then(function(admin, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
