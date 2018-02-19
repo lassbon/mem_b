@@ -22,7 +22,7 @@ module.exports.verifier = function(companyName) {
 				'body': 'Hello ' + verifier.username + '!<br><br>' +
 					companyName + ' needs you to check their company status.<br><br>' +
 					'Kindly go through the documents on the admin panel to check.<br><br>' +
-					'Click <a href=" ' + process.env.VERIFIER_ADMIN + ' " style="color: green;">Here</a>.<br><br> to proceed.' +
+					'Please click <a href=" ' + process.env.VERIFIER_ADMIN + ' " style="color: green;">Here</a> to proceed.<br><br>' +
 					'If you have any questions, please contact the admin.<br><br>' +
 					'Thank you.<br><br>' +
 					process.env.SITE_NAME,

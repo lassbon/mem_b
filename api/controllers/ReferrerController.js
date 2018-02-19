@@ -75,6 +75,10 @@ module.exports = {
           return res.json(err.status, { err: err });
         }
 
+        if (!user) {
+          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+        }
+
         User.findOne({ select: ['email', 'membershipId'], where: { id: req.param('refereeId') } }).exec(function(err, referee) {
           if (err) {
             sails.log.error(err);
@@ -83,76 +87,50 @@ module.exports = {
 
           sails.log.info(req.param('id') + ' is about to be confirmed by a referee.');
 
-          if (!user) {
-            return res.json(404, { status: 'error', message: 'No User with such id existing' });
-          } else {
+          if (user.referee1 === referee.email) {
 
-            if (user.referee1 == referee.email) {
+            console.log('yes')
 
-              User.update({ id: req.param('id') }, { referred1: true }).exec(function(err, data) {
-                if (err) {
-                  sails.log.error(err);
-                  return res.json(err.status, { err: err });
-                }
+            user.referred1 = true;
 
-                sails.log.info(req.param('id') + ' has been confirmed by the first referee.');
-              });
-            } else if (user.referee2 == referee.email) {
-
-              User.update({ id: req.param('id') }, { referred2: true }).exec(function(err, data) {
-                if (err) {
-                  sails.log.error(err);
-                  return res.json(err.status, { err: err });
-                }
-
-                sails.log.info(req.param('id') + ' has been confirmed by the second referee.');
-              });
-            } else {
-              return res.json(404, { status: 'error', message: 'No referee with such id existing' });
-            }
-
-            // check if user has been fully confirmed
-            User.findOne({ select: ['email', 'membershipId'], where: { id: user.id, referred1: true, referred2: true } }).exec(function(err, reffered) {
+            User.update({ id: req.param('id') }, { referred1: true }).exec(function(err, data) {
               if (err) {
                 sails.log.error(err);
+                return res.json(err.status, { err: err });
               }
 
-              if (!reffered) {
-                sails.log.info('New user not fully comfirmed.');
-              } else {
-                User.update({ id: user.id }, { regState: 6 }).exec(function(err, data) {
-                  if (err) {
-                    sails.log.error(err);
-                  }
-
-                  // alert the verifier about a new user to be verified
-                  sails.log.info('Verifiers about to be alerted.');
-                  alert.verifier(user.companyName);
-                });
-
-                var emailData = {
-                  'email': process.env.SITE_EMAIL,
-                  'from': process.env.SITE_NAME,
-                  'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-                  'body': 'Hello ' + user.companyName + '! <br><br> ' +
-                    'You have been confirmed by all your financial members. <br><br>' +
-                    'Please hold on while we verify and approve your company. An email will be sent to you to proceed with your registration. <br><br>' +
-                    'Thank you. <br><br>' +
-                    process.env.SITE_NAME,
-
-                  'to': user.email
-                }
-
-                azureEmail.send(emailData, function(resp) {
-                  if (resp === 'error') {
-                    sails.log.error(resp);
-                  }
-                });
-              }
+              sails.log.info(req.param('id') + ' has been confirmed by the first referee.');
             });
 
-            return res.json(200, { status: 'success', message: 'Success' });
+            if (user.referred1 === true && user.referred2 === true) {
+              // alert the verifier about a new user to be verified
+              sails.log.info('Verifiers about to be alerted.');
+              alert.verifier(user.companyName);
+            }
           }
+
+          if (user.referee2 === referee.email) {
+
+            user.referred2 = true;
+
+            User.update({ id: req.param('id') }, { referred2: true }).exec(function(err, data) {
+              if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { err: err });
+              }
+
+              sails.log.info(req.param('id') + ' has been confirmed by the second referee.');
+            });
+
+            if (user.referred1 === true && user.referred2 === true) {
+              // alert the verifier about a new user to be verified
+              sails.log.info('Verifiers about to be alerted.');
+              alert.verifier(user.companyName);
+            }
+          }
+
+          return res.json(200, { status: 'success', message: 'Success' });
+
         });
       })
       .catch(function(err) {
