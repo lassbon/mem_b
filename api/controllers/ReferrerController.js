@@ -120,7 +120,7 @@ module.exports = {
               if (!reffered) {
                 sails.log.info('New user not fully comfirmed.');
               } else {
-                User.update({ email: user.id }, { regState: 6 }).exec(function(err, data) {
+                User.update({ id: user.id }, { regState: 6 }).exec(function(err, data) {
                   if (err) {
                     sails.log.error(err);
                   }
@@ -129,10 +129,6 @@ module.exports = {
                   sails.log.info('Verifiers about to be alerted.');
                   alert.verifier(user.companyName);
                 });
-
-                // alert the verifier about a new user to be verified
-                // sails.log.info('Verifiers about to be alerted.');
-                // alert.verifier(user.companyName);
 
                 var emailData = {
                   'email': process.env.SITE_EMAIL,
