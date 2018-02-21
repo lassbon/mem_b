@@ -90,7 +90,7 @@ module.exports = {
 
         } else {
 
-            Payment.find().limit(limit).skip(offset).then(function(payments, err) {
+            Payment.find().limit(limit).skip(offset).sort('createdAt DESC').then(function(payments, err) {
                     if (err) {
                         sails.log.error(err);
                         return res.json(err.status, { err: err });
@@ -126,7 +126,7 @@ module.exports = {
      * @apiGroup Payments
      */
     getExcel: function(req, res) {
-        Payment.find().then(function(payments, err) {
+        Payment.find().sort('createdAt DESC').then(function(payments, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -160,7 +160,7 @@ module.exports = {
      * @apiGroup Payments
      */
     getDonationExcel: function(req, res) {
-        DonationPayments.find().then(function(payments, err) {
+        DonationPayments.find().sort('createdAt DESC').then(function(payments, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -194,7 +194,7 @@ module.exports = {
      * @apiGroup Payments
      */
     getEventExcel: function(req, res) {
-        EventsPayments.find().then(function(payments, err) {
+        EventsPayments.find().sort('createdAt DESC').then(function(payments, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -228,7 +228,7 @@ module.exports = {
      * @apiGroup Payments
      */
     getTrainingExcel: function(req, res) {
-        TrainingPayments.find().then(function(payments, err) {
+        TrainingPayments.find().sort('createdAt DESC').then(function(payments, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -262,7 +262,7 @@ module.exports = {
      * @apiGroup Payments
      */
     getRegistrationExcel: function(req, res) {
-        RegistrationPayments.find().then(function(payments, err) {
+        RegistrationPayments.find().sort('createdAt DESC').then(function(payments, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -296,7 +296,7 @@ module.exports = {
      * @apiGroup Payments
      */
     getMembershipExcel: function(req, res) {
-        MembershipPayments.find().then(function(payments, err) {
+        MembershipPayments.find().sort('createdAt DESC').then(function(payments, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -330,7 +330,7 @@ module.exports = {
      * @apiGroup Payments
      */
     getDueExcel: function(req, res) {
-        DuePayments.find().then(function(payments, err) {
+        DuePayments.find().sort('createdAt DESC').then(function(payments, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -472,7 +472,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        DonationPayments.find().limit(limit).skip(offset).then(function(donations, err) {
+        DonationPayments.find().limit(limit).skip(offset).sort('createdAt DESC').then(function(donations, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -526,7 +526,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        EventsPayments.find().limit(limit).skip(offset).then(function(events, err) {
+        EventsPayments.find().limit(limit).skip(offset).sort('createdAt DESC').then(function(events, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -580,7 +580,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        TrainingPayments.find().limit(limit).skip(offset).then(function(trainings, err) {
+        TrainingPayments.find().limit(limit).skip(offset).sort('createdAt DESC').then(function(trainings, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -634,7 +634,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        RegistrationPayments.find().limit(limit).skip(offset).then(function(registrations, err) {
+        RegistrationPayments.find().limit(limit).sort('createdAt DESC').skip(offset).then(function(registrations, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -688,7 +688,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        MembershipPayments.find().limit(limit).skip(offset).then(function(memberships, err) {
+        MembershipPayments.find().limit(limit).sort('createdAt DESC').skip(offset).then(function(memberships, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
@@ -742,7 +742,7 @@ module.exports = {
             limit = req.param('limit');
         }
 
-        DuePayments.find().limit(limit).skip(offset).then(function(dues, err) {
+        DuePayments.find().limit(limit).skip(offset).sort('createdAt DESC').then(function(dues, err) {
                 if (err) {
                     sails.log.error(err);
                     return res.json(err.status, { err: err });
