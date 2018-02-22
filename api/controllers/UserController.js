@@ -382,6 +382,130 @@ module.exports = {
         });
     },
 
+    /**
+     * `UserController.addCompanyImage()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {post} /api/v1/user/companyimage Add images to company image collection
+     * @apiName AddCompanyImages
+     * @apiDescription This is where images are added to company image collection
+     * @apiGroup User
+     *
+     * @apiParam {String} id User Id.
+     * @apiParam {String} url Url to image resource.
+     */
+    addCompanyImage: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: 'error', err: 'No user id provided!' });
+        }
+
+        if (!req.param('url')) {
+            return res.json(401, { status: "error", err: 'No image url provided!' });
+        }
+        
+        User.findOne({ select: ['companyName', 'companyImages'], where: { id: req.param('id') } }).then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!user) {
+                    return res.json(404, { status: 'error', message: 'No user with such id existing' });
+                } else {
+
+                    var companyImages = user.companyImages ? user.companyImages : [];
+
+                    var stat = true;
+
+                    for (var i = 0; i < companyImages.length; i++) {
+                        var name = companyImages[i];
+                        if (name == req.param('url')) {
+                            stat = false;
+                            break;
+                        }
+                    }
+
+                    if (stat == false) {
+                        return res.json(409, { status: 'error', err: 'Image exists already' });
+                    } else {
+                        companyImages.push(req.param('url'));
+
+                        User.update({ id: req.param('id') }, { companyImages: companyImages }).exec(function(err, images) {
+                            return res.json(200, { status: 'success', message: 'Image added' });
+                        });
+                    }
+                }
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
+    },
+
+    /**
+     * `UserController.removeCompanyImage()`
+     * 
+     * ----------------------------------------------------------------------------------
+     * @api {delete} /api/v1/user/companyimage/:id/:url Remove images to company image collection
+     * @apiName RemoveCompanyImages
+     * @apiDescription This is where images are removed from company image collection
+     * @apiGroup User
+     *
+     * @apiParam {String} id User Id.
+     * @apiParam {String} url Url to image resource.
+     */
+    removeCompanyImage: function(req, res) {
+        if (!req.param('id')) {
+            return res.json(401, { status: "error", err: 'No user id provided!' });
+        }
+
+        if (!req.param('url')) {
+            return res.json(401, { status: "error", err: 'No image url provided!' });
+        }
+        
+        User.findOne({ select: ['companyName', 'companyImages'], where: { id: req.param('id') } }).then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                }
+
+                if (!user) {
+                    return res.json(404, { status: 'error', err: 'No user with such id existing' });
+                } else {
+
+                    var likes = user.likes ? user.likes : [];
+
+                    var stat = false;
+
+                    for (var i = 0; i < likes.length; i++) {
+                        var name = likes[i];
+                        if (name == req.param('url')) {
+                            stat = true;
+                            break;
+                        }
+                    }
+
+                    if (stat == false) {
+                        return res.json(403, { status: 'error', err: 'Image not already existing' });
+                    } else {
+                        for (var i = user.likes.length; i--;) {
+                            if (user.likes[i] === req.param('url')) {
+                                user.likes.splice(i, 1);
+                            }
+                        }
+
+                        User.update({ id: req.param('id') }, { likes: user.likes }).exec(function(err, user) {
+                            return res.json(200, { status: 'success', message: 'Image removed' });
+                        });
+                    }
+                }
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
+    },
+
 
     /**
      * `UserController.delete()`

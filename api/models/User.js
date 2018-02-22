@@ -109,6 +109,11 @@ module.exports = {
             //required: true
         },
         profileImage: {
+            type: 'string',
+            //type: 'string',
+        },
+        companyImages: {
+            type: 'array',
             //type: 'string',
         },
         role: {

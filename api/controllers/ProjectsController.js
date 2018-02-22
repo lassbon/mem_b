@@ -735,7 +735,7 @@ module.exports = {
                         } else {
                             likes.push(req.param('liker'));
 
-                            Projects.update({ id: req.param('id') }, { likes: likes }).exec(function(err, event) {
+                            Projects.update({ id: req.param('id') }, { likes: likes }).exec(function(err, project) {
                                 return res.json(200, { status: 'success', message: 'Project liked' });
                             });
                         }

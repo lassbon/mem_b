@@ -91,6 +91,9 @@ module.exports.routes = {
 
     'POST /api/v1/oldmember': 'UserController.getOldMember',
 
+    'POST /api/v1/user/companyimage': 'UserController.addCompanyImage',
+    'DELETE /api/v1/user/companyimage/:id/:url ': 'UserController.removeCompanyImage',
+
     /**
      * Projects routes
      */
