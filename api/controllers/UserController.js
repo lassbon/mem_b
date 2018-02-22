@@ -859,18 +859,20 @@ module.exports = {
                     if (!user) {
                         return res.json(404, { status: 'error', err: 'No User with such email existing' })
                     } else {
-                        var resetUrl = req.param('url') + '?token=' + jwToken.resetPassword({ email: req.param('email'), password: user.password, time: Date.now() });
+                        var resetUrl = process.env.RESET_PASSWORD + '?token=' + jwToken.resetPassword({ email: req.param('email'), password: user.password, time: Date.now() });
                         var emailData = {
                             'email': process.env.SITE_EMAIL,
                             'from': process.env.SITE_NAME,
                             'subject': 'Your ' + process.env.SITE_NAME + ' Password Reset',
+
                             'body': 'Hello ' + user.companyName + '! <br><br> '+
-							 'We received a request to reset the password on your account. To reset your password please follow the link below: <br />'+
-							 '<a href="' + resetUrl + '" >Change Password</a><br />' +
-							 'If you did not initiate this password reset request, you can ignore this email. You can also report it to us by contacting our team at <u>membership@accinigeria.com</u>'+
-							 'If you suspect someone may have unauthorized access to your account, kindly report to <u> membership@accinigeria.com</u>'+
-							 '<br />If you need help or have any questions, please visit info@accinigeria.com <br /><br />Thanks! '+
-							 'ACCI Membership Team <br />',
+							 'We received a request to reset the password on your account. To reset your password please follow the link below: <br><br>'+
+							 '<a href="' + resetUrl + '" style="color: green;">Change Password</a><br><br>' +
+							 'If you did not initiate this password reset request, you can ignore this email.<br><br>'+
+							 'If you suspect someone may have unauthorized access to your account, kindly report to membership@accinigeria.com<br><br>'+
+                             'If you need help or have any questions, please reach out to our team at membership@accinigeria.com<br><br>'+ 
+                             'Thank you! <br><br>'+
+							 process.env.SITE_NAME,
 
 							 'to': req.param('email')
                         }

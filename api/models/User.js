@@ -161,12 +161,20 @@ module.exports = {
         verifiedRejectionReason: {
             type: 'text',
         },
+        verifierRejection: {
+            type: 'boolean',
+            defaultsTo: false,
+        },
         approved: {
             type: 'boolean',
             defaultsTo: false
         },
         approvedRejectionReason: {
             type: 'text',
+        },
+        approverRejection: {
+            type: 'boolean',
+            defaultsTo: false,
         },
         rejected: {
             type: 'boolean',

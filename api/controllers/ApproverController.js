@@ -78,7 +78,7 @@ module.exports = {
             // create and associate membership id to the new user
             var membershipId = utility.membershipId();
 
-            User.update({ id: req.param('id') }, { regState: 6, approved: true, membershipStatus: 'active', membershipId: membershipId }).exec(function(err, data) {
+            User.update({ id: req.param('id') }, { approverRejection:false, regState: 6, approved: true, membershipStatus: 'active', membershipId: membershipId }).exec(function(err, data) {
               if (err) {
                 sails.log.error(err);
                 return res.json(err.status, { err: err });
@@ -100,14 +100,16 @@ module.exports = {
                 'email': process.env.SITE_EMAIL,
                 'from': process.env.SITE_NAME,
                 'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
+
                 'body': 'Hello ' + user.companyName + '! <br><br> ' +
-                  'We are very pleased to inform you that your membership application has been reviewed and approved! <br><br> ' +
-				  'You are just a step away from being a member, we are very excited to have you as one of us!'+
-                  'Kindly click <a href="' + process.env.MEMBERSHIP_LINK + '"> HERE</a> to proceed with your registration<br> ' +
+                  'We are very pleased to inform you that your membership application has been reviewed and approved. <br><br>' +
+				          'You are just a step away from being a member, we are very excited to have you as one of us.<br><br>'+
+                  'Kindly click <a href="' + process.env.MEMBERSHIP_LINK + '" style="color: green;"> HERE</a> to proceed with your registration<br><br> ' +
                   'and make the necessary payments. <br><br>' +
-                  'If you have any enquires please send us an email on <u>Membership@accinigeria.com</u><br /> '+
-				  'Thanks!<br >'+
-				  'ACCI Membership Team. <br><br>',
+                  'If you have any enquires please send us an email on membership@accinigeria.com<br><br> '+
+				          'Thank you!<br><br>'+
+                  process.env.SITE_NAME,
+                  
                   'to': user.email
               }
 			  
@@ -182,24 +184,13 @@ module.exports = {
         if (!user) {
           return res.json(404, { status: 'error', err: 'No User with such id existing' });
         } else {
-          User.update({ id: req.param('id') }, { approved: false, approvedRejectionReason: req.param('reason') }).exec(function(err, data) {
+          User.update({ id: req.param('id') }, { approverRejection:true, approved: false, approvedRejectionReason: req.param('reason') }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
               return res.json(err.status, { err: err });
             }
 
             sails.log.info(req.param('id') + ' has been rejected by an approver.');
-
-            var rejectionMessage = 'YOUR ' + process.env.SITE_NAME + ' MEMBERSHIP APPLICATION HAS BEEN REJECTED.<br />';
-								   'We are sorry as it looks like your one or two of your chosen financial members has'+
-								   'declined your request for confirmation.<br />'+
-								   'We also do advise you to call your chosen Financial Member first,'+
-								   'so s/he gets to know that you will be needing them for confirmation in order to continue '+
-								   'the registration process.<br />'+
-								   'If you have any enquires please send us an email on Membership@accinigeria.com or call <br /><br />'+
-								   'Thanks!<br />' +
-								   'ACCI Membership Team';
-
 
             // Send notification to the user alerting him/her on the state of affairs
             Notifications.create({ id: req.param('id'), message: rejectionMessage }).exec(function(err, info) {
@@ -212,11 +203,17 @@ module.exports = {
             var emailData = {
               'email': process.env.SITE_EMAIL,
               'from': process.env.SITE_NAME,
-              'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-              'body': 'Hello ' + user.companyName + '! <br><br> ' + rejectionMessage ,
-			  'to': user.email
+              'subject': 'YOUR ' + process.env.SITE_NAME + ' MEMBERSHIP APPLICATION HAS BEEN REJECTED.',
+
+              'body': 'Hello ' + user.companyName + '! <br><br> ' + 
+              'We are sorry to inform you that your application was rejected by the  approver for the following reason(s): <br><br>' +
+              req.param('reason') + '<br><br>' + 
+              'If you have any enquires please send us an email on membership@accinigeria.com<br><br> '+
+              'All the best, <br><br>' + 
+              process.env.SITE_NAME,
+
+			        'to': user.email
             }
-			// //+ ' <br><br> ' + req.param('reason') + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
 
             azureEmail.send(emailData, function(resp) {
               if (resp === 'success') {
@@ -282,7 +279,7 @@ module.exports = {
           return res.json(500, { err: err });
         });
     } else {
-      User.find({ approved: false, verified: true }).sort('createdAt DESC').then(function(users, err) {
+      User.find({ approverRejection:false, approved: false, verified: true }).sort('createdAt DESC').then(function(users, err) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });

@@ -34,7 +34,6 @@
 module.exports = {
 
 
-
   /**
    * `VerifierController.verify()`
    * 
@@ -76,7 +75,7 @@ module.exports = {
         if (!user) {
           return res.json(404, { status: 'error', err: 'No User with such id existing' });
         } else {
-          User.update({ id: req.param('id') }, { verified: true }).exec(function(err, data) {
+          User.update({ id: req.param('id') }, { verifierRejection:false, verified: true }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
               return res.json(err.status, { err: err });
@@ -171,7 +170,7 @@ module.exports = {
         if (!user) {
           return res.json(404, { status: 'error', err: 'No User with such id existing' });
         } else {
-          User.update({ id: req.param('id') }, { verified: false, verifiedRejectionReason: req.param('reason') }).exec(function(err, data) {
+          User.update({ id: req.param('id') }, { verifierRejection:true, verified: false, verifiedRejectionReason: req.param('reason') }).exec(function(err, data) {
             if (err) {
               sails.log.error(err);
               return res.json(err.status, { err: err });
@@ -192,9 +191,16 @@ module.exports = {
             var emailData = {
               'email': process.env.SITE_EMAIL,
               'from': process.env.SITE_NAME,
-              'subject': 'Your ' + process.env.SITE_NAME + ' membership registration status',
-              'body': 'Hello ' + user.companyName + '! <br><br> ' + rejectionMessage + ' <br><br> ' + req.param('reason') + ' <br><br> All the best, <br><br>' + process.env.SITE_NAME,
-              'to': user.email
+              'subject': 'YOUR ' + process.env.SITE_NAME + ' MEMBERSHIP APPLICATION HAS BEEN REJECTED.',
+
+              'body': 'Hello ' + user.companyName + '! <br><br> ' + 
+              'We are sorry to inform you that your application was rejected by the verifier for the following reason(s): <br><br>' +
+              req.param('reason') + '<br><br>' + 
+              'If you have any enquires please send us an email on membership@accinigeria.com<br><br> '+
+              'All the best, <br><br>' + 
+              process.env.SITE_NAME,
+
+			        'to': user.email
             }
 
             azureEmail.send(emailData, function(resp) {
@@ -264,7 +270,7 @@ module.exports = {
 
     } else {
 
-      User.find({ verified: false, referred1: true, referred2: true }).sort('createdAt DESC').then(function(users, err) {
+      User.find({ verifierRejection:false, verified: false, referred1: true, referred2: true }).sort('createdAt DESC').then(function(users, err) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
