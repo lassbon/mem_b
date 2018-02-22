@@ -535,7 +535,24 @@ module.exports = {
                     return res.json(err.status, { err: err });
                 }
 
-                return res.json(200, requests)
+                (async (requests) => {
+                    for(let request in requests){
+                        if (err) {
+                            sails.log.error(err);
+                        }
+
+                        await (() => {
+                            SocialPosts.findOne({ select: ['postText', 'postImage'], where: { id: request.id } }).exec(function(err, user) {
+                                request.requester = user;
+                                console.log(post);
+                            });
+                        })();
+                    }
+
+                    return res.json(200, requests);
+                })().catch(err => {
+                    console.error(err);
+                });
             })
             .catch(function(err) {
                 sails.log.error(err);

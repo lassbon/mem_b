@@ -136,6 +136,10 @@ module.exports = {
             type: 'string',
             defaultsTo: null
         },
+        dueDate: {
+            type: 'string',
+            defaultsTo: null
+        },
         recommendedLevel: {
             type: 'string',
         },

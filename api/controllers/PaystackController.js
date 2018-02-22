@@ -44,7 +44,10 @@ module.exports = {
                                 memberId = user.membershipId;
                             }
 
-                            User.update({ email: event.data.customer.email }, { membershipDue: 'paid', membershipLevel: event.data.plan.name }).exec(function(err, info) {
+                            var d = new Date();
+                            var dueDate = d.getDate + ' / ' + d.getMonth + ' / ' + d.getFullYear;
+
+                            User.update({ email: event.data.customer.email }, { membershipDue: 'paid', dueDate: dueDate }).exec(function(err, info) {
                                 if (err) {
                                     sails.log.error(err);
                                 }
@@ -230,6 +233,12 @@ module.exports = {
                                             sails.log.error(err);
                                         }
 
+                                        User.update({ id: user.id }, {membershipFee: 'paid'}).exec(function(err, data) {
+                                            if (err) {
+                                                sails.log.error(err);
+                                            }
+                                        });
+
                                         audit.log('membership', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
                                     });
                                 }
@@ -241,6 +250,12 @@ module.exports = {
                                         if (err) {
                                             sails.log.error(err);
                                         }
+
+                                        User.update({ id: user.id }, {registrationFee: 'paid'}).exec(function(err, data) {
+                                            if (err) {
+                                                sails.log.error(err);
+                                            }
+                                        });
 
                                         audit.log('registration', user.companyName + ' paid ' + data.amount + ' for ' + event.data.metadata.custom_fields[0].variable_name, );
                                     });
@@ -269,7 +284,7 @@ module.exports = {
                                 sails.log.error(err);
                             }
 
-                            audit.log('membership', user.companyName + ' memebership has been disabled');
+                            audit.log('membership', user.companyName + ' membership has been disabled');
 
                             return res.json(200);
                         })

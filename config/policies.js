@@ -43,6 +43,7 @@ module.exports.policies = {
         'changePassword': true,
         'delete': ['isAdministrator', 'isAdmin', 'isAuthenticated'],
         'getOldMember': ['isUser', 'isAuthenticated'],
+        '*': ['isUser', 'isAuthenticated'],
     },
 
     'UserPaymentsController': {
