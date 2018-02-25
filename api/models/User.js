@@ -132,6 +132,10 @@ module.exports = {
             type: 'string',
             defaultsTo: 'unpaid'
         },
+        dueSubscriptionCode: {
+            type: 'string',
+            defaultsTo: null
+        },
         membershipPlan: {
             type: 'string',
             defaultsTo: null

@@ -91,6 +91,8 @@ module.exports.routes = {
 
     'GET /api/v1/searchuser/:searchTerm/:page/:limit': 'UserController.searchUser',
 
+    'POST /api/v1/unsubscribe': 'UserController.unsubscribe',
+
     'POST /api/v1/oldmember': 'UserController.getOldMember',
 
     'POST /api/v1/user/companyimage': 'UserController.addCompanyImage',

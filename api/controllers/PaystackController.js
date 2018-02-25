@@ -47,7 +47,7 @@ module.exports = {
                             var d = new Date();
                             var dueDate = d.getDate + ' / ' + d.getMonth + ' / ' + d.getFullYear;
 
-                            User.update({ email: event.data.customer.email }, { membershipDue: 'paid', dueDate: dueDate }).exec(function(err, info) {
+                            User.update({ email: event.data.customer.email }, { membershipDue: 'paid', dueDate: dueDate, dueSubscriptionCode: event.data.subscription_code }).exec(function(err, info) {
                                 if (err) {
                                     sails.log.error(err);
                                 }
@@ -279,7 +279,7 @@ module.exports = {
                     break;
 
                 case 'subscription.disable':
-                    User.update({ email: event.data.customer.email }, { membershipDue: 'unpaid' }).exec(function(err, data) {
+                    User.update({ email: event.data.customer.email }, { membershipDue: 'unpaid', dueSubscriptionCode: null }).exec(function(err, data) {
                             if (err) {
                                 sails.log.error(err);
                             }

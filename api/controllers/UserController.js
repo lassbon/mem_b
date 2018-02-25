@@ -1141,4 +1141,49 @@ module.exports = {
             });
         }
     },
+
+    /**
+     * `UserController.unsubscribe()`
+     *
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/unsubscrbe Get User count
+     * @apiName Unsubscribe
+     * @apiDescription This is where a user unsubscribes from a membership plan.
+     * @apiGroup User
+     */
+    unsubscribe: function(req, res) {
+        User.findOne({id: req.param('id')}).then(function(user, err) {
+            if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { status: 'error', err: err });
+            }
+
+            if (user) {
+                paystack.subscription.get({
+                    id_or_subscription_code: user.dueSubscriptionCode
+                })
+                .then(function(subscriptionData) {
+                    return paystack.subscription.disable({
+                        code: user.dueSubscriptionCode,
+                        toke: user.subscriptionData.email_token
+                    });
+                })
+                .then(function(data) {
+                    User.update({ id: user.id}, { dueSubscriptionCode: null, membershipDue: 'unpaid', membershipStatus: 'inactive'}).exec(function(err, data) {
+                        if (err) {
+                            sails.log.error(err);
+                            return res.json(err.status, { status: 'error', err: err });
+                        }
+
+                        sails.log.info('${user.id} successfully unsubscribed. ');
+                        return res.json(200, { status: 'success', message: '${user.id} successfully unsubscribed.' });
+                    });
+                })
+            }
+        })
+        .catch(function(err) {
+            sails.log.error(err);
+            return res.json(500, { err: err });
+        });
+    },
 };
