@@ -747,6 +747,46 @@ module.exports = {
         }
     },
 
+    /**
+     * `UserController.getActiveUsers()`
+     *
+     * ----------------------------------------------------------------------------------
+     * @api {get} /api/v1/activeusers Get User(s)
+     * @apiName GetUser(s)
+     * @apiDescription This is where active users are retrieved.
+     * @apiGroup User
+     *
+     * @apiParam {Number} id user ID.
+     *
+     * @apiSuccess {String} comment Post response from API.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "id": "59dce9d56b54d91c38847825",
+     *       ".........": "...................."
+     *        .................................
+     *     }
+     *
+     * @apiUse UserNotFoundError
+     */
+    getActiveUsers: function(req, res) {
+        
+
+        User.find({membershipStatus: 'active', membershipDue: 'paid', membershipFee: 'paid', referred1: true, referred2: true, }).sort('createdAt DESC').then(function(user, err) {
+                if (err) {
+                    sails.log.error(err);
+                    return res.json(500, { err: err });
+                }
+
+                return res.json(200, user);
+            })
+            .catch(function(err) {
+                sails.log.error(err);
+                return res.json(500, { err: err });
+            });
+    },
+
     getOldMember: function(req, res) {
         User.findOne({ membershipId: req.param('membershipId'), oldMember: true }).sort('createdAt DESC').then(function(user, err) {
                 if (err) {

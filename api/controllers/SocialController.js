@@ -535,29 +535,57 @@ module.exports = {
                     return res.json(err.status, { err: err });
                 }
 
-                (async (requests) => {
-                    for(let request in requests){
-                        if (err) {
+                async.each(requests, (request, cb) => {
+                    User.findOne({ select: ['companyName', 'email'], where: { id: request.requester } })
+                      .then((user) => {
+                        request = user;
+                        cb();
+                      })
+                  }, (error) => {
+                        if (error) {
                             sails.log.error(err);
+                            //return res.json(500, { err: err });
                         }
 
-                        await (() => {
-                            SocialPosts.findOne({ select: ['postText', 'postImage'], where: { id: request.id } }).exec(function(err, user) {
-                                request.requester = user;
-                                console.log(post);
-                            });
-                        })();
-                    }
+                        return res.json(200, requests);
+                    });
 
-                    return res.json(200, requests);
-                })().catch(err => {
-                    console.error(err);
-                });
+                   // return res.json(200, requests);
             })
             .catch(function(err) {
                 sails.log.error(err);
                 return res.json(500, { err: err });
             });
+
+
+            // User.find().sort('createdAt DESC').then((requests, err) => {
+            //     if (err) {
+            //         sails.log.error(err);
+            //         return res.json(err.status, { err: err });
+            //     }
+
+            //     async.each(requests, (request, cb) => {
+            //         User.findOne({ select: ['companyName', 'email'], where: { id: request.id } })
+            //           .then((user) => {
+            //             //post.attachedComments = comments;
+            //             //console.log(user.companyName);
+            //             request = user;
+            //             cb();
+            //           })
+            //       }, (error) => {
+            //             if (error) {
+            //                 sails.log.error(err);
+            //                 return res.json(500, { err: err });
+            //             }
+
+            //             return res.json(200, requests);
+            //         });
+
+            // })
+            // .catch((err) => {
+            //     sails.log.error(err);
+            //     return res.json(500, { err: err });
+            // });
     },
 
     /**

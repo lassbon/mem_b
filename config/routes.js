@@ -81,6 +81,8 @@ module.exports.routes = {
     'GET /api/v1/user': 'UserController.get',
     'GET /api/v1/usercount': 'UserController.getCount',
 
+    'GET /api/v1/activeusers': 'UserController.getActiveUsers',
+
     'GET /api/v1/useractivity/:id': 'UserController.getActivity',
     'GET /api/v1/userfriends/:id': 'UserController.getFriends',
 
