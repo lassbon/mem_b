@@ -181,7 +181,8 @@ module.exports = {
             err: "Friend request already sent."
           });
         }
-        SocialConnections.create(req.body).exe(function(err, friendRequest) {
+
+        SocialConnections.create(req.body).exec((err, friendRequest) => {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
@@ -202,7 +203,7 @@ module.exports = {
                 err: "No User with such id existing"
               });
             }
-            
+
             Notifications.create({
               id: req.param("requestee"),
               message: `${user.companyName} sent you a friend request`
@@ -581,7 +582,7 @@ module.exports = {
   },
 
   /**
-   * `SocialController.getRequets()`
+   * `SocialController.getRequests()`
    *
    * ----------------------------------------------------------------------------------
    * @api {get} /api/v1/social/requests/:id Get post(s)
