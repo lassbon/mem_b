@@ -138,7 +138,7 @@ module.exports = {
      * @apiDescription This is where the friend request is registered to the database
      * @apiGroup Social
      *
-     * @apiParam {Number} requester ID of the requester.
+     * @apiParam {Number} requester ID of the requester. 
      * @apiParam {Number} requestee ID of the requestee.
      *
      * @apiSuccess {String} status Status of the response from API.
