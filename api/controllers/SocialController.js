@@ -295,7 +295,7 @@ module.exports = {
             }
 
             return res.json(200, {
-              message: "success",
+              status: "success",
               message: "Friend request canceled"
             });
           });
@@ -631,7 +631,7 @@ module.exports = {
           error => {
             if (error) {
               sails.log.error(err);
-              //return res.json(500, { err: err });
+              return res.json(500, { err: err });
             }
 
             return res.json(200, requests);
