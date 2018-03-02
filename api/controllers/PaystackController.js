@@ -201,7 +201,7 @@ module.exports = {
               select: ["membershipId", "companyName"],
               where: { email: event.data.customer.email }
             })
-              .the((user, err) => {
+              .then((user, err) => {
                 if (err) {
                   sails.log.error(err);
                 }
