@@ -5,29 +5,30 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-var regexp = require("node-regexp");
-var donation = regexp()
+const regexp = require("node-regexp");
+const crypto = require("crypto");
+
+const donation = regexp()
   .start("donation_")
   .toRegExp();
-var events = regexp()
+const events = regexp()
   .start("event_")
   .toRegExp();
-var project = regexp()
+const project = regexp()
   .start("project_")
   .toRegExp();
-var training = regexp()
+const training = regexp()
   .start("training_")
   .toRegExp();
-var register = regexp()
+const register = regexp()
   .start("registration")
   .toRegExp();
-var membership = regexp()
+const membership = regexp()
   .start("membership")
   .toRegExp();
 
 module.exports = {
   verify: function(req, res) {
-    var crypto = require("crypto");
     var secret = process.env.PAYSTACK_SECRET_KEY;
 
     //validate event
@@ -48,7 +49,7 @@ module.exports = {
             select: ["companyName", "membershipId"],
             where: { email: event.data.customer.email }
           })
-            .then(function(user, err) {
+            .then((user, err) => {
               if (err) {
                 sails.log.error(err);
               }
@@ -61,17 +62,17 @@ module.exports = {
               }
 
               var d = new Date();
-              var dueDate =
-                d.getDate + " / " + d.getMonth + " / " + d.getFullYear;
+              var dueDate = `${d.getDate} ${d.getMonth} ${d.getFullYear}`;
 
               User.update(
                 { email: event.data.customer.email },
                 {
                   membershipDue: "paid",
                   dueDate: dueDate,
+                  membershipLevel: event.data.plan.name,
                   dueSubscriptionCode: event.data.subscription_code
                 }
-              ).exec(function(err, info) {
+              ).exec((err, info) => {
                 if (err) {
                   sails.log.error(err);
                 }
@@ -84,9 +85,7 @@ module.exports = {
                 // this block of code is written to take care of the double zero
                 // added to the amount paid by the paystack people
                 var amountPaid = event.data.amount;
-                amountPaid = amountPaid.toString();
-                amountPaid = amountPaid.slice(0, -2);
-                amountPaid = parseInt(amountPaid);
+                amountPaid = amountPaid / 100;
 
                 var data = {
                   memberID: user.membershipId,
@@ -100,7 +99,7 @@ module.exports = {
                 DuePayments.create({
                   amount: amountPaid,
                   payer: memberId
-                }).exec(function(err, info) {
+                }).exec((err, info) => {
                   if (err) {
                     sails.log.error(err);
                   }
@@ -115,7 +114,7 @@ module.exports = {
                   );
                 });
 
-                Payment.create(data).exec(function(err, level) {
+                Payment.create(data).exec((err, level) => {
                   if (err) {
                     sails.log.error(err);
                   }
@@ -124,7 +123,7 @@ module.exports = {
                 });
               });
             })
-            .catch(function(err) {
+            .catch((err) => {
               sails.log.error(err);
               return res.json(500, { err: err });
             });
@@ -133,8 +132,8 @@ module.exports = {
 
         case "charge.success":
           /*
-                     *Check to see if charge is subscription based or a one time payment
-                     */
+          *Check to see if charge is subscription based or a one time payment
+          */
 
           // when charge is subscription based
           if (event.data.plan.id) {
@@ -142,7 +141,7 @@ module.exports = {
               select: ["companyName", "membershipId"],
               where: { email: event.data.customer.email }
             })
-              .then(function(user, err) {
+              .then((user, err) => {
                 if (err) {
                   sails.log.error(err);
                 }
@@ -154,13 +153,17 @@ module.exports = {
                   memberId = user.membershipId;
                 }
 
+                var d = new Date();
+                var dueDate = `${d.getDate} ${d.getMonth} ${d.getFullYear}`;
+
                 User.update(
                   { email: event.data.customer.email },
                   {
                     membershipDue: "paid",
+                    dueDate: dueDate,
                     membershipLevel: event.data.plan.name
                   }
-                ).exec(function(err, info) {
+                ).exec((err, info) => {
                   if (err) {
                     sails.log.error(err);
                   }
@@ -168,9 +171,7 @@ module.exports = {
                   // this block of code is written to take care of the double zero
                   // added to the amount paid by the paystack people
                   var amountPaid = event.data.amount;
-                  amountPaid = amountPaid.toString();
-                  amountPaid = amountPaid.slice(0, -2);
-                  amountPaid = parseInt(amountPaid);
+                  amountPaid = amountPaid / 100
 
                   audit.log(
                     "membership",
@@ -186,7 +187,7 @@ module.exports = {
                     data: event
                   };
 
-                  Payment.create(data).exec(function(err, level) {
+                  Payment.create(data).exec((err, level) => {
                     if (err) {
                       sails.log.error(err);
                     }
@@ -195,7 +196,7 @@ module.exports = {
                   });
                 });
               })
-              .catch(function(err) {
+              .catch((err) => {
                 sails.log.error(err);
                 return res.json(500, { err: err });
               });
@@ -204,7 +205,7 @@ module.exports = {
               select: ["membershipId", "companyName"],
               where: { email: event.data.customer.email }
             })
-              .the(function(user, err) {
+              .the((user, err) => {
                 if (err) {
                   sails.log.error(err);
                 }
@@ -219,9 +220,7 @@ module.exports = {
                 // this block of code is written to take care of the double zero
                 // added to the amount paid by the paystack people
                 var amountPaid = event.data.amount;
-                amountPaid = amountPaid.toString();
-                amountPaid = amountPaid.slice(0, -2);
-                amountPaid = parseInt(amountPaid);
+                amountPaid = amountPaid / 100
 
                 var payment_for = event.data.metadata.custom_fields[0].value;
                 var memberId = event.data.metadata.custom_fields[1].value;
@@ -238,8 +237,8 @@ module.exports = {
                 };
 
                 /*
-                                 * Check what the payment is meant for
-                                 */
+                * Check what the payment is meant for
+                */
 
                 // Check if payment is towards a donation
                 if (donation.test(payment_for) === true) {
@@ -248,7 +247,7 @@ module.exports = {
                     amount: amountPaid,
                     donator: memberId,
                     donationId: donationId
-                  }).exec(function(err, info) {
+                  }).exec((err, info) => {
                     if (err) {
                       sails.log.error(err);
                     }
@@ -271,7 +270,7 @@ module.exports = {
                     amount: amountPaid,
                     payer: memberId,
                     trainingId: trainingId
-                  }).exec(function(err, info) {
+                  }).exec((err, info) => {
                     if (err) {
                       sails.log.error(err);
                     }
@@ -294,7 +293,7 @@ module.exports = {
                     amount: amountPaid,
                     payer: memberId,
                     eventId: eventId
-                  }).exec(function(err, info) {
+                  }).exec((err, info) => {
                     if (err) {
                       sails.log.error(err);
                     }
@@ -316,7 +315,7 @@ module.exports = {
                   MembershipPayments.create({
                     amount: amountPaid,
                     payer: memberId
-                  }).exec(function(err, info) {
+                  }).exec((err, info) => {
                     if (err) {
                       sails.log.error(err);
                     }
@@ -324,7 +323,7 @@ module.exports = {
                     User.update(
                       { id: user.id },
                       { membershipFee: "paid" }
-                    ).exec(function(err, data) {
+                    ).exec((err, data) => {
                       if (err) {
                         sails.log.error(err);
                       }
@@ -347,7 +346,7 @@ module.exports = {
                   RegistrationPayments.create({
                     amount: amountPaid,
                     payer: memberId
-                  }).exec(function(err, info) {
+                  }).exec((err, info) => {
                     if (err) {
                       sails.log.error(err);
                     }
@@ -355,7 +354,7 @@ module.exports = {
                     User.update(
                       { id: user.id },
                       { registrationFee: "paid" }
-                    ).exec(function(err, data) {
+                    ).exec((err, data) => {
                       if (err) {
                         sails.log.error(err);
                       }
@@ -373,16 +372,16 @@ module.exports = {
                 }
 
                 /*
-                                 * Record payment details to main payment ledger
-                                 */
-                Payment.create(data).exec(function(err, level) {
+                * Record payment details to main payment ledger
+                */
+                Payment.create(data).exec((err, level) => {
                   if (err) {
                     sails.log.error(err);
                   }
                   return res.json(200);
                 });
               })
-              .catch(function(err) {
+              .catch((err) => {
                 sails.log.error(err);
                 return res.json(500, { err: err });
               });
@@ -394,7 +393,7 @@ module.exports = {
             { email: event.data.customer.email },
             { membershipDue: "unpaid", dueSubscriptionCode: null }
           )
-            .exec(function(err, data) {
+            .exec((err, data) => {
               if (err) {
                 sails.log.error(err);
               }
@@ -406,7 +405,7 @@ module.exports = {
 
               return res.json(200);
             })
-            .catch(function(err) {
+            .catch((err) => {
               sails.log.error(err);
               return res.json(500, { err: err });
             });

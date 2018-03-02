@@ -80,7 +80,7 @@ module.exports = {
                 if (level) {
                     paystack.plan.create({
                             name: req.body.name,
-                            amount: req.body.due,
+                            amount: Number(req.body.due) * 100,
                             interval: 'annually'
                         })
                         .then(function(body) {
@@ -215,7 +215,7 @@ module.exports = {
 
                             paystack.plan.update({
                                     name: req.body.name,
-                                    amount: req.body.due,
+                                    amount: Number(req.body.due) * 100,
                                     interval: 'annually'
                                 })
                                 .then(function(body) {
