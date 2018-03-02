@@ -1,4 +1,4 @@
-var nestedPop = require("nested-pop");
+var nestedPop = require('nested-pop')
 
 /**
  * SocialController
@@ -153,77 +153,84 @@ module.exports = {
    *
    * @apiUse UserNotFoundError
    */
-  request: function(req, res) {
-    if (!req.param("requester")) {
+  request: function (req, res) {
+    if (!req.param('requester')) {
       return res.json(401, {
-        status: "error",
-        err: "No Requester id provided!"
-      });
+        status: 'error',
+        err: 'No Requester id provided!'
+      })
     }
 
-    if (!req.param("requestee")) {
+    if (!req.param('requestee')) {
       return res.json(401, {
-        status: "error",
-        err: "No Requestee id provided!"
-      });
+        status: 'error',
+        err: 'No Requestee id provided!'
+      })
     }
 
     SocialConnections.findOne(req.body)
-      .then(function(request, err) {
+      .then(function (request, err) {
         if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
         }
 
         if (request) {
           return res.json(409, {
-            status: "error",
-            err: "Friend request already sent."
-          });
+            status: 'error',
+            err: 'Friend request already sent.'
+          })
         }
 
         SocialConnections.create(req.body).exec((err, friendRequest) => {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
-          User.findOne({ id: req.param("requester") }).exec(function(
-            err,
-            user
-          ) {
+          User.findOne({
+            id: req.param('requester')
+          }).exec(function (err, user) {
             if (err) {
-              sails.log.error(err);
-              return res.json(err.status, { err: err });
+              sails.log.error(err)
+              return res.json(err.status, {
+                err: err
+              })
             }
 
             if (!user) {
               return res.json(404, {
-                status: "error",
-                err: "No User with such id existing"
-              });
+                status: 'error',
+                err: 'No User with such id existing'
+              })
             }
 
             Notifications.create({
-              id: req.param("requestee"),
+              id: req.param('requestee'),
               message: `${user.companyName} sent you a friend request`
-            }).exec(function(err, info) {
+            }).exec(function (err, info) {
               if (err) {
-                sails.log.error(err);
+                sails.log.error(err)
               }
-            });
+            })
 
             return res.json(200, {
-              status: "success",
-              message: "Friend request sent"
-            });
-          });
-        });
+              status: 'success',
+              message: 'Friend request sent'
+            })
+          })
+        })
       })
-      .catch(function(err) {
-        sails.log.error(err);
-        return res.json(500, { err: err });
-      });
+      .catch(function (err) {
+        sails.log.error(err)
+        return res.json(500, {
+          err: err
+        })
+      })
   },
 
   /**
@@ -254,57 +261,66 @@ module.exports = {
    *
    * @apiUse UserNotFoundError
    */
-  cancel: function(req, res) {
-    if (!req.param("requester")) {
-      return res.json(401, { status: "error", err: "No User id provided!" });
+  cancel: function (req, res) {
+    if (!req.param('requester')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No User id provided!'
+      })
     }
 
-    if (!req.param("requestee")) {
+    if (!req.param('requestee')) {
       return res.json(401, {
-        status: "error",
-        err: "No Requestee id provided!"
-      });
+        status: 'error',
+        err: 'No Requestee id provided!'
+      })
     }
 
     SocialConnections.findOne({
-      select: "requester",
+      select: 'requester',
       where: {
-        requester: req.param("requester"),
-        requestee: req.param("requestee")
+        requester: req.param('requester'),
+        requestee: req.param('requestee')
       }
     })
-      .then(function(requester, err) {
+      .then((requester, err) => {
         if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
         }
 
         if (!requester) {
           return res.json(404, {
-            status: "error",
-            err: "No User with such requester id existing"
-          });
-        } else {
-          SocialConnections.destroy({
-            requester: req.param("requester"),
-            requestee: req.param("requestee")
-          }).exec(function(err) {
-            if (err) {
-              sails.log.error(err);
-              return res.json(err.status, { err: err });
-            }
-
-            return res.json(200, {
-              status: "success",
-              message: "Friend request canceled"
-            });
-          });
+            status: 'error',
+            err: 'No User with such requester id existing'
+          })
         }
+
+        SocialConnections.destroy({
+          requester: req.param('requester'),
+          requestee: req.param('requestee')
+        }).exec(err => {
+          if (err) {
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
+          }
+
+          return res.json(200, {
+            status: 'success',
+            message: 'Friend request canceled'
+          })
+        })
       })
-      .catch(function(err) {
-        sails.log.error(err);
-        return res.json(500, { err: err });
-      });
+      .catch(err => {
+        sails.log.error(err)
+        return res.json(500, {
+          err: err
+        })
+      })
   },
 
   /**
@@ -335,53 +351,64 @@ module.exports = {
    *
    * @apiUse UserNotFoundError
    */
-  remove: function(req, res) {
-    if (!req.param("requester")) {
+  remove: function (req, res) {
+    if (!req.param('requester')) {
       return res.json(401, {
-        status: "error",
-        err: "No Requester id provided!"
-      });
+        status: 'error',
+        err: 'No Requester id provided!'
+      })
     }
 
-    if (!req.param("requestee")) {
+    if (!req.param('requestee')) {
       return res.json(401, {
-        status: "error",
-        err: "No Requestee id provided!"
-      });
+        status: 'error',
+        err: 'No Requestee id provided!'
+      })
     }
 
-    User.findOne({ select: "username", where: { id: req.param("requestee") } })
-      .populate("friends")
-      .then(function(user, err) {
+    User.findOne({
+      select: 'username',
+      where: {
+        id: req.param('requestee')
+      }
+    })
+      .populate('friends')
+      .then(function (user, err) {
         if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
         }
 
         if (!user) {
           return res.json(404, {
-            status: "error",
-            err: "No User with such requestee id existing"
-          });
+            status: 'error',
+            err: 'No User with such requestee id existing'
+          })
         } else {
-          user.friends.remove(req.param("requester"));
-          user.save(function(err) {
+          user.friends.remove(req.param('requester'))
+          user.save(function (err) {
             if (err) {
-              sails.log.error(err);
-              return res.json(err.status, { err: err });
+              sails.log.error(err)
+              return res.json(err.status, {
+                err: err
+              })
             }
 
             return res.json(200, {
-              status: "success",
-              message: "Friendship terminated"
-            });
-          });
+              status: 'success',
+              message: 'Friendship terminated'
+            })
+          })
         }
       })
-      .catch(function(err) {
-        sails.log.error(err);
-        return res.json(500, { err: err });
-      });
+      .catch(function (err) {
+        sails.log.error(err)
+        return res.json(500, {
+          err: err
+        })
+      })
   },
 
   /**
@@ -412,88 +439,100 @@ module.exports = {
    *
    * @apiUse UserNotFoundError
    */
-  accept: function(req, res) {
-    if (!req.param("requester")) {
+  accept: function (req, res) {
+    if (!req.param('requester')) {
       return res.json(401, {
-        status: "error",
-        err: "No Requester id provided!"
-      });
+        status: 'error',
+        err: 'No Requester id provided!'
+      })
     }
 
-    if (!req.param("requestee")) {
+    if (!req.param('requestee')) {
       return res.json(401, {
-        status: "error",
-        err: "No Requestee id provided!"
-      });
+        status: 'error',
+        err: 'No Requestee id provided!'
+      })
     }
 
-    User.findOne({ select: "email", where: { id: req.param("requestee") } })
-      .populate("friends")
-      .then(function(user, err) {
+    User.findOne({
+      select: 'email',
+      where: {
+        id: req.param('requestee')
+      }
+    })
+      .populate('friends')
+      .then(function (user, err) {
         if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
         }
 
         if (!user) {
           return res.json(404, {
-            status: "error",
-            err: "No User with such id existing"
-          });
+            status: 'error',
+            err: 'No User with such id existing'
+          })
         } else {
-          user.friends.add(req.param("requester"));
-          user.save(function(err) {
+          user.friends.add(req.param('requester'))
+          user.save(function (err) {
             if (err) {
-              sails.log.error(err);
-              return res.json(err.status, { err: err });
+              sails.log.error(err)
+              return res.json(err.status, {
+                err: err
+              })
             }
 
             SocialConnections.destroy({
-              requester: req.param("requester"),
-              requestee: req.param("requestee")
-            }).exec(function(err) {
+              requester: req.param('requester'),
+              requestee: req.param('requestee')
+            }).exec(function (err) {
               if (err) {
-                sails.log.error(err);
+                sails.log.error(err)
               }
-            });
+            })
 
-            User.findOne({ id: req.param("requester") }).exec(function(
-              err,
-              requester
-            ) {
+            User.findOne({
+              id: req.param('requester')
+            }).exec(function (err, requester) {
               if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
+                sails.log.error(err)
+                return res.json(err.status, {
+                  err: err
+                })
               }
 
               if (!requester) {
                 return res.json(404, {
-                  status: "error",
-                  err: "No User with such id existing"
-                });
+                  status: 'error',
+                  err: 'No User with such id existing'
+                })
               } else {
                 Notifications.create({
-                  id: req.param("requester"),
-                  message: requester.companyName + " sent you a friend request"
-                }).exec(function(err, info) {
+                  id: req.param('requester'),
+                  message: requester.companyName + ' sent you a friend request'
+                }).exec(function (err, info) {
                   if (err) {
-                    sails.log.error(err);
+                    sails.log.error(err)
                   }
-                });
+                })
               }
-            });
+            })
 
             return res.json(200, {
-              status: "success",
-              message: "Friend request accepted"
-            });
-          });
+              status: 'success',
+              message: 'Friend request accepted'
+            })
+          })
         }
       })
-      .catch(function(err) {
-        sails.log.error(err);
-        return res.json(500, { err: err });
-      });
+      .catch(function (err) {
+        sails.log.error(err)
+        return res.json(500, {
+          err: err
+        })
+      })
   },
 
   /**
@@ -537,48 +576,59 @@ module.exports = {
    *       "err": "No post content provided!"
    *     }
    */
-  createPost: function(req, res) {
-    if (!req.param("owner")) {
+  createPost: function (req, res) {
+    if (!req.param('owner')) {
       return res.json(401, {
-        status: "error",
-        err: "No Creator/Owner user id provided!"
-      });
+        status: 'error',
+        err: 'No Creator/Owner user id provided!'
+      })
     }
 
-    if (!req.param("postText")) {
+    if (!req.param('postText')) {
       return res.json(401, {
-        status: "error",
-        err: "No post content provided!"
-      });
+        status: 'error',
+        err: 'No post content provided!'
+      })
     }
 
     User.findOne({
-      select: ["companyName", "membershipId"],
-      where: { id: req.param("owner") }
+      select: ['companyName', 'membershipId'],
+      where: {
+        id: req.param('owner')
+      }
     })
-      .then(function(user, err) {
+      .then(function (user, err) {
         if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
         }
 
-        req.body.companyName = user.companyName;
+        req.body.companyName = user.companyName
 
-        SocialPosts.create(req.body).exec(function(err, post) {
+        SocialPosts.create(req.body).exec(function (err, post) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (post) {
-            res.json(200, { status: "success", id: post.id });
+            res.json(200, {
+              status: 'success',
+              id: post.id
+            })
           }
-        });
+        })
       })
-      .catch(function(err) {
-        sails.log.error(err);
-        return res.json(500, { err: err });
-      });
+      .catch(function (err) {
+        sails.log.error(err)
+        return res.json(500, {
+          err: err
+        })
+      })
   },
 
   /**
@@ -604,46 +654,69 @@ module.exports = {
    *
    * @apiUse PostNotFoundError
    */
-  getRequests: function(req, res) {
-    if (!req.param("id")) {
-      return res.json(401, { status: "error", err: "No user id provided!" });
+  getRequests: function (req, res) {
+    if (!req.param('id')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No user id provided!'
+      })
     }
 
-    SocialConnections.find({ requestee: req.param("id") })
-      .sort("createdAt DESC")
-      .then(function(requests, err) {
+    SocialConnections.find({
+      requestee: req.param('id')
+    })
+      .sort('createdAt DESC')
+      .then(function (requests, err) {
         if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
         }
 
-        async.each(
-          requests,
-          (request, cb) => {
-            User.findOne({
-              select: ["companyName", "email"],
-              where: { id: request.requester }
-            }).then(user => {
-              request = user;
-              cb();
-            });
-          },
-          error => {
-            if (error) {
-              sails.log.error(err);
-              return res.json(500, { err: err });
-            }
+        const friendRequests = []
 
-            return res.json(200, requests);
+        async.forEachOf(
+          requests,
+          (request, callback) => {
+            User.findOne({
+              select: ['companyName', 'email'],
+              where: {
+                id: request.requester
+              }
+            }).exec((err, user) => {
+              if (error) {
+                sails.log.error(err)
+                return res.json(500, {
+                  err: err
+                })
+              }
+
+              request.requester = user
+              friendRequests.push(request)
+              callback()
+            })
+          },
+          err => {
+            if (err) {
+              sails.log.error(err)
+              return res.json(500, {
+                err: err
+              })
+            } else {
+              return res.json(200, friendRequests)
+            }
           }
-        );
+        )
 
         // return res.json(200, requests);
       })
-      .catch(function(err) {
-        sails.log.error(err);
-        return res.json(500, { err: err });
-      });
+      .catch(function (err) {
+        sails.log.error(err)
+        return res.json(500, {
+          err: err
+        })
+      })
 
     // User.find().sort('createdAt DESC').then((requests, err) => {
     //     if (err) {
@@ -705,36 +778,39 @@ module.exports = {
    *       "err": "No image uploaded!"
    *     }
    */
-  uploadImage: function(req, res) {
-    if (req.method != "POST") return res.notFound();
+  uploadImage: function (req, res) {
+    if (req.method != 'POST') return res.notFound()
 
-    var container = "social";
+    var container = 'social';
 
-    req.file("image").upload(
+    req.file('image').upload(
       {
         maxBytes: 5000000,
-        adapter: require("skipper-azure"),
+        adapter: require('skipper-azure'),
         key: process.env.AZURE_STORAGE_ACCOUNT,
         secret: process.env.AZURE_STORAGE_ACCESS_KEY,
         container: container
       },
-      function whenDone(err, uploadedFiles) {
+      function whenDone (err, uploadedFiles) {
         if (err) {
-          sails.log.error(err);
-          return res.negotiate(err);
+          sails.log.error(err)
+          return res.negotiate(err)
         } else if (uploadedFiles.length === 0) {
-          return res.json(401, { status: "error", err: "No image uploaded!" });
+          return res.json(401, {
+            status: 'error',
+            err: 'No image uploaded!'
+          })
         } else
-          return res.ok({
+          {return res.ok({
             status: "success",
             bannerUrl:
               process.env.AZURE_STORAGE_ACCOUNT_URL +
               container +
               "/" +
               uploadedFiles[0].fd
-          });
+          });}
       }
-    );
+    )
   },
 
   /**
@@ -764,51 +840,64 @@ module.exports = {
    *
    * @apiUse PostNotFoundError
    */
-  updatePost: function(req, res) {
-    if (!req.param("id")) {
-      return res.json(401, { status: "error", err: "No Post id provided!" });
+  updatePost: function (req, res) {
+    if (!req.param('id')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No Post id provided!'
+      })
     } else {
       SocialPosts.findOne({
-        select: ["postText", "postImage"],
-        where: { id: req.param("id") }
+        select: ['postText', 'postImage'],
+        where: {
+          id: req.param('id')
+        }
       })
-        .then(function(post, err) {
+        .then(function (post, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (!post) {
             return res.json(404, {
-              status: "error",
-              message: "No Post with such id existing"
-            });
+              status: 'error',
+              message: 'No Post with such id existing'
+            })
           } else {
-            if (post.postImage && post.postImage !== req.param("postImage")) {
-              var image = post.postImage;
-              azureBlob.delete("social", image.split("/").reverse()[0]);
+            if (post.postImage && post.postImage !== req.param('postImage')) {
+              var image = post.postImage
+              azureBlob.delete('social', image.split('/').reverse()[0])
             }
 
-            SocialPosts.update({ id: req.param("id") }, req.body).exec(function(
-              err,
-              data
-            ) {
+            SocialPosts.update(
+              {
+                id: req.param('id')
+              },
+              req.body
+            ).exec(function (err, data) {
               if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
+                sails.log.error(err)
+                return res.json(err.status, {
+                  err: err
+                })
               }
 
               return res.json(200, {
-                status: "success",
-                message: "Post with id " + req.param("id") + " has been updated"
-              });
-            });
+                status: 'success',
+                message: 'Post with id ' + req.param('id') + ' has been updated'
+              })
+            })
           }
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -837,51 +926,64 @@ module.exports = {
    *
    * @apiUse PostNotFoundError
    */
-  deletePost: function(req, res) {
-    if (!req.param("id")) {
-      return res.json(401, { status: "error", err: "No Post id provided!" });
+  deletePost: function (req, res) {
+    if (!req.param('id')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No Post id provided!'
+      })
     } else {
       SocialPosts.findOne({
-        select: ["postText", "postImage"],
-        where: { id: req.param("id") }
+        select: ['postText', 'postImage'],
+        where: {
+          id: req.param('id')
+        }
       })
-        .then(function(post, err) {
+        .then(function (post, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (!post) {
             return res.json(404, {
-              status: "error",
-              message: "No Post with such id existing"
-            });
+              status: 'error',
+              message: 'No Post with such id existing'
+            })
           } else {
-            SocialPosts.destroy({ id: req.param("id") }, req.body).exec(
-              function(err, data) {
-                if (err) {
-                  sails.log.error(err);
-                  return res.json(err.status, { err: err });
-                }
-
-                if (post.postImage) {
-                  var image = post.postImage;
-                  azureBlob.delete("social", image.split("/").reverse()[0]);
-                }
-
-                return res.json(200, {
-                  status: "success",
-                  message:
-                    "Post with id " + req.param("id") + " has been deleted"
-                });
+            SocialPosts.destroy(
+              {
+                id: req.param('id')
+              },
+              req.body
+            ).exec(function (err, data) {
+              if (err) {
+                sails.log.error(err)
+                return res.json(err.status, {
+                  err: err
+                })
               }
-            );
+
+              if (post.postImage) {
+                var image = post.postImage
+                azureBlob.delete('social', image.split('/').reverse()[0])
+              }
+
+              return res.json(200, {
+                status: 'success',
+                message: 'Post with id ' + req.param('id') + ' has been deleted'
+              })
+            })
           }
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
+        })
     }
   },
 
@@ -908,58 +1010,75 @@ module.exports = {
    *
    * @apiUse PostNotFoundError
    */
-  getPost: function(req, res) {
-    var page = 0;
-    var limit = 10;
+  getPost: function (req, res) {
+    var page = 0
+    var limit = 10
 
-    if (req.param("page") > 1) {
-      page = req.param("page");
+    if (req.param('page') > 1) {
+      page = req.param('page')
     }
 
-    if (req.param("limit") > 1) {
-      limit = req.param("limit");
+    if (req.param('limit') > 1) {
+      limit = req.param('limit')
     }
 
-    if (req.param("id")) {
-      SocialPosts.findOne({ id: req.param("id") })
-        .sort("createdAt DESC")
-        .populate("comments", { sort: "createdAt DESC" })
-        .then(function(post, err) {
+    if (req.param('id')) {
+      SocialPosts.findOne({
+        id: req.param('id')
+      })
+        .sort('createdAt DESC')
+        .populate('comments', {
+          sort: 'createdAt DESC'
+        })
+        .then(function (post, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (!post) {
             return res.json(204, {
-              status: "error",
-              err: "No Post with such id existing"
-            });
+              status: 'error',
+              err: 'No Post with such id existing'
+            })
           } else {
-            return res.json(200, post);
+            return res.json(200, post)
           }
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     } else {
       SocialPosts.find()
-        .populate("comments", { sort: "createdAt DESC" })
-        .sort("createdAt DESC")
-        .paginate({ page: page, limit: limit })
-        .then(function(posts, err) {
+        .populate('comments', {
+          sort: 'createdAt DESC'
+        })
+        .sort('createdAt DESC')
+        .paginate({
+          page: page,
+          limit: limit
+        })
+        .then(function (posts, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
-          return res.json(200, posts);
+          return res.json(200, posts)
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -991,40 +1110,57 @@ module.exports = {
    * @apiUse SearchTermNotProvidedError
    *
    */
-  searchPost: function(req, res) {
-    var page = 1;
-    var limit = 25;
+  searchPost: function (req, res) {
+    var page = 1
+    var limit = 25
 
-    if (req.param("page") && req.param("page") > 1) {
-      page = req.param("page");
+    if (req.param('page') && req.param('page') > 1) {
+      page = req.param('page')
     }
 
-    if (req.param("limit")) {
-      limit = req.param("limit");
+    if (req.param('limit')) {
+      limit = req.param('limit')
     }
 
-    if (!req.param("searchTerm")) {
+    if (!req.param('searchTerm')) {
       return res.json(401, {
-        status: "error",
-        err: "No search term provided!"
-      });
+        status: 'error',
+        err: 'No search term provided!'
+      })
     } else {
-      SocialPosts.find({ postText: { contains: req.param("searchTerm") } })
-        .sort("createdAt DESC")
-        .populate("comments", { sort: "createdAt DESC" })
-        .paginate({ page: page, limit: limit })
-        .then(function(posts, err) {
+      SocialPosts.find({
+        postText: {
+          contains: req.param('searchTerm')
+        }
+      })
+        .sort('createdAt DESC')
+        .populate('comments', {
+          sort: 'createdAt DESC'
+        })
+        .paginate({
+          page: page,
+          limit: limit
+        })
+        .then(function (posts, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
-          return res.json(200, { page: page, limit: limit, result: posts });
+          return res.json(200, {
+            page: page,
+            limit: limit,
+            result: posts
+          })
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -1054,66 +1190,79 @@ module.exports = {
    *
    * @apiUse PostNotFoundError
    */
-  unlikePost: function(req, res) {
-    if (!req.param("id")) {
-      return res.json(401, { status: "error", err: "No Post id provided!" });
+  unlikePost: function (req, res) {
+    if (!req.param('id')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No Post id provided!'
+      })
     } else {
       SocialPosts.findOne({
-        select: ["postText", "likes"],
-        where: { id: req.param("id") }
+        select: ['postText', 'likes'],
+        where: {
+          id: req.param('id')
+        }
       })
-        .then(function(post, err) {
+        .then(function (post, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (!post) {
             return res.json(404, {
-              status: "error",
-              err: "No Post with such id existing"
-            });
+              status: 'error',
+              err: 'No Post with such id existing'
+            })
           } else {
-            var likes = post.likes ? post.likes : [];
+            var likes = post.likes ? post.likes : []
 
-            var stat = false;
+            var stat = false
 
             for (var i = 0; i < likes.length; i++) {
-              var name = likes[i];
-              if (name == req.param("liker")) {
-                stat = true;
+              var name = likes[i]
+              if (name == req.param('liker')) {
+                stat = true
                 break;
               }
             }
 
             if (stat == false) {
               return res.json(403, {
-                status: "error",
-                err: "Post not previously liked"
-              });
+                status: 'error',
+                err: 'Post not previously liked'
+              })
             } else {
-              for (var i = post.likes.length; i--; ) {
-                if (post.likes[i] === req.param("liker")) {
-                  post.likes.splice(i, 1);
+              for (var i = post.likes.length; i--;) {
+                if (post.likes[i] === req.param('liker')) {
+                  post.likes.splice(i, 1)
                 }
               }
 
               SocialPosts.update(
-                { id: req.param("id") },
-                { likes: post.likes }
-              ).exec(function(err, post) {
+                {
+                  id: req.param('id')
+                },
+                {
+                  likes: post.likes
+                }
+              ).exec(function (err, post) {
                 return res.json(200, {
-                  status: "success",
-                  message: "Post unliked"
-                });
-              });
+                  status: 'success',
+                  message: 'Post unliked'
+                })
+              })
             }
           }
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -1143,62 +1292,75 @@ module.exports = {
    *
    * @apiUse PostNotFoundError
    */
-  likePost: function(req, res) {
-    if (!req.param("id")) {
-      return res.json(401, { status: "error", err: "No Post id provided!" });
+  likePost: function (req, res) {
+    if (!req.param('id')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No Post id provided!'
+      })
     } else {
       SocialPosts.findOne({
-        select: ["postText", "likes"],
-        where: { id: req.param("id") }
+        select: ['postText', 'likes'],
+        where: {
+          id: req.param('id')
+        }
       })
-        .then(function(post, err) {
+        .then(function (post, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (!post) {
             return res.json(404, {
-              status: "error",
-              message: "No Post with such id existing"
-            });
+              status: 'error',
+              message: 'No Post with such id existing'
+            })
           } else {
-            var likes = post.likes ? post.likes : [];
+            var likes = post.likes ? post.likes : []
 
-            var stat = true;
+            var stat = true
 
             for (var i = 0; i < likes.length; i++) {
-              var name = likes[i];
-              if (name == req.param("liker")) {
-                stat = false;
+              var name = likes[i]
+              if (name == req.param('liker')) {
+                stat = false
                 break;
               }
             }
 
             if (stat == false) {
               return res.json(403, {
-                status: "error",
-                err: "Post already liked"
-              });
+                status: 'error',
+                err: 'Post already liked'
+              })
             } else {
-              likes.push(req.param("liker"));
+              likes.push(req.param('liker'))
 
               SocialPosts.update(
-                { id: req.param("id") },
-                { likes: likes }
-              ).exec(function(err, post) {
+                {
+                  id: req.param('id')
+                },
+                {
+                  likes: likes
+                }
+              ).exec(function (err, post) {
                 return res.json(200, {
-                  status: "success",
-                  message: "Post liked"
-                });
-              });
+                  status: 'success',
+                  message: 'Post liked'
+                })
+              })
             }
           }
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -1224,28 +1386,34 @@ module.exports = {
    *
    * @apiUse RequesteeNotFoundError
    */
-  getRequsts: function(req, res) {
-    if (!req.param("requestee")) {
+  getRequsts: function (req, res) {
+    if (!req.param('requestee')) {
       return res.json(401, {
-        status: "error",
-        err: "No Requestee id provided!"
-      });
+        status: 'error',
+        err: 'No Requestee id provided!'
+      })
     }
 
-    SocialConnections.find({ requestee: req.param("requestee") })
-      .sort("createdAt DESC")
-      .then(function(requests, err) {
+    SocialConnections.find({
+      requestee: req.param('requestee')
+    })
+      .sort('createdAt DESC')
+      .then(function (requests, err) {
         if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
         }
 
-        return res.json(200, requests);
+        return res.json(200, requests)
       })
-      .catch(function(err) {
-        sails.log.error(err);
-        return res.json(500, { err: err });
-      });
+      .catch(function (err) {
+        sails.log.error(err)
+        return res.json(500, {
+          err: err
+        })
+      })
   },
 
   /**
@@ -1292,46 +1460,63 @@ module.exports = {
    *       "err": "No comment provided!"
    *     }
    */
-  createComment: function(req, res) {
-    if (!req.param("post")) {
-      return res.json(401, { status: "error", err: "No Post id provided!" });
+  createComment: function (req, res) {
+    if (!req.param('post')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No Post id provided!'
+      })
     }
 
-    if (!req.param("owner")) {
-      return res.json(401, { status: "error", err: "No Owner id provided!" });
+    if (!req.param('owner')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No Owner id provided!'
+      })
     }
 
-    if (!req.param("comment")) {
-      return res.json(401, { status: "error", err: "No Comment provided!" });
+    if (!req.param('comment')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No Comment provided!'
+      })
     }
 
     User.findOne({
-      select: ["companyName", "membershipId"],
-      where: { id: req.param("owner") }
+      select: ['companyName', 'membershipId'],
+      where: {
+        id: req.param('owner')
+      }
     })
-      .then(function(user, err) {
+      .then(function (user, err) {
         if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
         }
 
-        req.body.companyName = user.companyName;
+        req.body.companyName = user.companyName
 
-        SocialComments.create(req.body).exec(function(err, comment) {
+        SocialComments.create(req.body).exec(function (err, comment) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (comment) {
-            res.json(200, comment);
+            res.json(200, comment)
           }
-        });
+        })
       })
-      .catch(function(err) {
-        sails.log.error(err);
-        return res.json(500, { err: err });
-      });
+      .catch(function (err) {
+        sails.log.error(err)
+        return res.json(500, {
+          err: err
+        })
+      })
   },
 
   /**
@@ -1360,46 +1545,60 @@ module.exports = {
    *
    * @apiUse CommentNotFoundError
    */
-  updateComment: function(req, res) {
-    if (!req.param("id")) {
-      return res.json(401, { status: "error", err: "No Comment id provided!" });
+  updateComment: function (req, res) {
+    if (!req.param('id')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No Comment id provided!'
+      })
     } else {
       SocialComments.findOne({
-        select: "comment",
-        where: { id: req.param("id") }
+        select: 'comment',
+        where: {
+          id: req.param('id')
+        }
       })
-        .then(function(comment, err) {
+        .then(function (comment, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (!comment) {
             return res.json(404, {
-              status: "error",
-              err: "No Comment with such id existing"
-            });
+              status: 'error',
+              err: 'No Comment with such id existing'
+            })
           } else {
-            SocialComments.update({ id: req.param("id") }, req.body).exec(
-              function(err, data) {
-                if (err) {
-                  sails.log.error(err);
-                  return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, {
-                  status: "success",
-                  message:
-                    "Comment with id " + req.param("id") + " has been updated"
-                });
+            SocialComments.update(
+              {
+                id: req.param('id')
+              },
+              req.body
+            ).exec(function (err, data) {
+              if (err) {
+                sails.log.error(err)
+                return res.json(err.status, {
+                  err: err
+                })
               }
-            );
+
+              return res.json(200, {
+                status: 'success',
+                message:
+                  'Comment with id ' + req.param('id') + ' has been updated'
+              })
+            })
           }
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -1428,46 +1627,60 @@ module.exports = {
    *
    * @apiUse CommentNotFoundError
    */
-  deleteComment: function(req, res) {
-    if (!req.param("id")) {
-      return res.json(401, { status: "error", err: "No Comment id provided!" });
+  deleteComment: function (req, res) {
+    if (!req.param('id')) {
+      return res.json(401, {
+        status: 'error',
+        err: 'No Comment id provided!'
+      })
     } else {
       SocialComments.findOne({
-        select: "comment",
-        where: { id: req.param("id") }
+        select: 'comment',
+        where: {
+          id: req.param('id')
+        }
       })
-        .then(function(comment, err) {
+        .then(function (comment, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (!comment) {
             return res.json(404, {
-              status: "error",
-              err: "No Comment with such id existing"
-            });
+              status: 'error',
+              err: 'No Comment with such id existing'
+            })
           } else {
-            SocialComments.destroy({ id: req.param("id") }, req.body).exec(
-              function(err, data) {
-                if (err) {
-                  sails.log.error(err);
-                  return res.json(err.status, { err: err });
-                }
-
-                return res.json(200, {
-                  status: "success",
-                  message:
-                    "Comment with id " + req.param("id") + " has been deleted"
-                });
+            SocialComments.destroy(
+              {
+                id: req.param('id')
+              },
+              req.body
+            ).exec(function (err, data) {
+              if (err) {
+                sails.log.error(err)
+                return res.json(err.status, {
+                  err: err
+                })
               }
-            );
+
+              return res.json(200, {
+                status: 'success',
+                message:
+                  'Comment with id ' + req.param('id') + ' has been deleted'
+              })
+            })
           }
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -1495,44 +1708,54 @@ module.exports = {
    * @apiUse CommentNotFoundError
    *
    */
-  getComment: function(req, res) {
-    if (req.param("id")) {
-      SocialComments.findOne({ id: req.param("id") })
-        .sort("createdAt DESC")
-        .then(function(comment, err) {
+  getComment: function (req, res) {
+    if (req.param('id')) {
+      SocialComments.findOne({
+        id: req.param('id')
+      })
+        .sort('createdAt DESC')
+        .then(function (comment, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (!comment) {
             return res.json(204, {
-              status: "error",
-              err: "No Comment with such id existing"
-            });
+              status: 'error',
+              err: 'No Comment with such id existing'
+            })
           } else {
-            return res.json(200, comment);
+            return res.json(200, comment)
           }
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     } else {
       SocialComments.find()
-        .sort("createdAt DESC")
-        .then(function(posts, err) {
+        .sort('createdAt DESC')
+        .then(function (posts, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
-          return res.json(200, posts);
+          return res.json(200, posts)
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -1558,73 +1781,81 @@ module.exports = {
    *     }
    *
    */
-  getFeed: function(req, res) {
+  getFeed: function (req, res) {
     var offset,
-      limit = 0;
+      limit = 0
 
-    if (req.param("offset")) {
-      offset = req.param("offset");
+    if (req.param('offset')) {
+      offset = req.param('offset')
     }
 
-    if (req.param("limit")) {
-      limit = req.param("limit");
+    if (req.param('limit')) {
+      limit = req.param('limit')
     }
 
-    if (req.param("id")) {
+    if (req.param('id')) {
       User.findOne({
-        select: ["username", "friends"],
-        where: { id: req.param("id") }
+        select: ['username', 'friends'],
+        where: {
+          id: req.param('id')
+        }
       })
-        .populate("friends")
+        .populate('friends')
         .limit(limit)
         .skip(offset)
-        .sort("createdAt DESC")
-        .then(function(user, err) {
+        .sort('createdAt DESC')
+        .then(function (user, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
           if (!user) {
             return res.json(204, {
-              status: "error",
-              err: "No user with such id existing"
-            });
+              status: 'error',
+              err: 'No user with such id existing'
+            })
           } else {
-            var friends = [];
-            user.friends.forEach(function(friend) {
-              friends.push(friend.id);
-            });
+            var friends = []
+            user.friends.forEach(function (friend) {
+              friends.push(friend.id)
+            })
 
             // check if the user has any friends yet
             if (friends.length > 0) {
               SocialPosts.find({
                 id: friends
               })
-                .populate("comments")
+                .populate('comments')
                 .limit(limit)
                 .skip(offset)
-                .sort("createdAt DESC")
-                .exec(function(err, posts) {
+                .sort('createdAt DESC')
+                .exec(function (err, posts) {
                   if (err) {
-                    sails.log.error(err);
-                    return res.json(err.status, { err: err });
+                    sails.log.error(err)
+                    return res.json(err.status, {
+                      err: err
+                    })
                   }
 
-                  return res.json(200, posts);
-                });
+                  return res.json(200, posts)
+                })
             } else {
               return res.json(204, {
-                status: "error",
-                err: "User has no friends yet"
-              });
+                status: 'error',
+                err: 'User has no friends yet'
+              })
             }
           }
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -1655,39 +1886,54 @@ module.exports = {
    *
    * @apiUse SearchTermNotProvidedError
    */
-  searchComment: function(req, res) {
-    var page = 1;
-    var limit = 25;
+  searchComment: function (req, res) {
+    var page = 1
+    var limit = 25
 
-    if (req.param("page") && req.param("page") > 1) {
-      page = req.param("page");
+    if (req.param('page') && req.param('page') > 1) {
+      page = req.param('page')
     }
 
-    if (req.param("limit")) {
-      limit = req.param("limit");
+    if (req.param('limit')) {
+      limit = req.param('limit')
     }
 
-    if (!req.param("searchTerm")) {
+    if (!req.param('searchTerm')) {
       return res.json(401, {
-        status: "error",
-        err: "No search term provided!"
-      });
+        status: 'error',
+        err: 'No search term provided!'
+      })
     } else {
-      SocialComments.find({ comment: { contains: req.param("searchTerm") } })
-        .sort("createdAt DESC")
-        .paginate({ page: page, limit: limit })
-        .then(function(comments, err) {
+      SocialComments.find({
+        comment: {
+          contains: req.param('searchTerm')
+        }
+      })
+        .sort('createdAt DESC')
+        .paginate({
+          page: page,
+          limit: limit
+        })
+        .then(function (comments, err) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
-          return res.json(200, { page: page, limit: limit, result: comments });
+          return res.json(200, {
+            page: page,
+            limit: limit,
+            result: comments
+          })
         })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
+        .catch(function (err) {
+          sails.log.error(err)
+          return res.json(500, {
+            err: err
+          })
+        })
     }
   },
 
@@ -1700,32 +1946,38 @@ module.exports = {
    * @apiDescription This is where social counts are obtained.
    * @apiGroup Social
    */
-  getCount: function(req, res) {
-    var socialCounts = {};
+  getCount: function (req, res) {
+    var socialCounts = {}
 
     SocialPosts.count()
-      .then(function(posts, err) {
+      .then(function (posts, err) {
         if (err) {
-          sails.log.error(err);
-          return res.json(err.status, { err: err });
+          sails.log.error(err)
+          return res.json(err.status, {
+            err: err
+          })
         }
 
-        socialCounts.posts = posts;
+        socialCounts.posts = posts
 
-        SocialComments.count().exec(function(err, comments) {
+        SocialComments.count().exec(function (err, comments) {
           if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
+            sails.log.error(err)
+            return res.json(err.status, {
+              err: err
+            })
           }
 
-          socialCounts.comments = comments;
+          socialCounts.comments = comments
 
-          return res.json(200, socialCounts);
-        });
+          return res.json(200, socialCounts)
+        })
       })
-      .catch(function(err) {
-        sails.log.error(err);
-        return res.json(500, { err: err });
-      });
+      .catch(function (err) {
+        sails.log.error(err)
+        return res.json(500, {
+          err: err
+        })
+      })
   }
-};
+}

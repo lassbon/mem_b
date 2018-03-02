@@ -56,6 +56,7 @@
         "sails-service-mailer": "^3.2.1",
         "skipper": "^0.8.2",
         "skipper-azure": "^0.1.2",
+        "waterline-cursor": "0.0.7",
         "winston-azuretable": "^1.0.8"
     },
     "scripts": {

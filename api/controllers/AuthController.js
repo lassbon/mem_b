@@ -177,7 +177,7 @@ module.exports = {
             return res.json(401, { status: 'error', err: 'membershipId and password required' });
         }
 
-        User.findOne({ email: email }).then(function(user, err) {
+        User.findOne({ membershipId: membershipId }).then(function(user, err) {
                 if (!user) {
                     return res.json(401, { status: 'error', err: 'invalid membershipId or password' });
                 }

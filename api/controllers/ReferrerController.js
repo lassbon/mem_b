@@ -32,8 +32,6 @@
  */
 
 module.exports = {
-
-
   /**
    * `ReferrerController.confirm()`
    *
@@ -61,76 +59,90 @@ module.exports = {
    * @apiUse UserNotFoundError
    */
   confirm: function(req, res) {
-    if (!req.param('id')) {
-      return res.json(401, { status: 'error', err: 'No User id provided!' });
+    if (!req.param("id")) {
+      return res.json(401, { status: "error", err: "No User id provided!" });
     }
 
-    if (!req.param('refereeId')) {
-      return res.json(401, { status: 'error', err: 'No referee id provided!' });
+    if (!req.param("refereeId")) {
+      return res.json(401, { status: "error", err: "No referee id provided!" });
     }
 
-    User.findOne({ id: req.param('id') }).then(function(user, err) {
+    User.findOne({ id: req.param("id") })
+      .then(function(user, err) {
         if (err) {
           sails.log.error(err);
           return res.json(err.status, { err: err });
         }
 
         if (!user) {
-          return res.json(404, { status: 'error', message: 'No User with such id existing' });
+          return res.json(404, {
+            status: "error",
+            message: "No User with such id existing"
+          });
         }
 
-        User.findOne({ select: ['email', 'membershipId'], where: { id: req.param('refereeId') } }).exec(function(err, referee) {
+        User.findOne({
+          select: ["email", "membershipId"],
+          where: { id: req.param("refereeId") }
+        }).exec(function(err, referee) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
           }
 
-          sails.log.info(req.param('id') + ' is about to be confirmed by a referee.');
+          sails.log.info(
+            req.param("id") + " is about to be confirmed by a referee."
+          );
 
           if (user.referee1 === referee.email) {
-
-            console.log('yes')
+            console.log("yes");
 
             user.referred1 = true;
 
-            User.update({ id: req.param('id') }, { referred1: true }).exec(function(err, data) {
-              if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-              }
+            User.update({ id: req.param("id") }, { referred1: true }).exec(
+              function(err, data) {
+                if (err) {
+                  sails.log.error(err);
+                  return res.json(err.status, { err: err });
+                }
 
-              sails.log.info(req.param('id') + ' has been confirmed by the first referee.');
-            });
+                sails.log.info(
+                  req.param("id") + " has been confirmed by the first referee."
+                );
+              }
+            );
 
             if (user.referred1 === true && user.referred2 === true) {
               // alert the verifier about a new user to be verified
-              sails.log.info('Verifiers about to be alerted.');
+              sails.log.info("Verifiers about to be alerted.");
               alert.verifier(user.companyName);
             }
           }
 
           if (user.referee2 === referee.email) {
-
             user.referred2 = true;
 
-            User.update({ id: req.param('id') }, { referred2: true }).exec(function(err, data) {
-              if (err) {
-                sails.log.error(err);
-                return res.json(err.status, { err: err });
-              }
+            User.update({ id: req.param("id") }, { referred2: true }).exec(
+              function(err, data) {
+                if (err) {
+                  sails.log.error(err);
+                  return res.json(err.status, { err: err });
+                }
 
-              sails.log.info(req.param('id') + ' has been confirmed by the second referee.');
-            });
+                sails.log.info(
+                  req.param("id") + " has been confirmed by the second referee."
+                );
+              }
+            );
 
             if (user.referred1 === true && user.referred2 === true) {
               // alert the verifier about a new user to be verified
-              sails.log.info('Verifiers about to be alerted.');
+              sails.log.info("Verifiers about to be alerted.");
               alert.verifier(user.companyName);
             }
           }
 
-          return res.json(200, { status: 'success', message: 'Success' });
-
+          return res.json(200, { status: "success", message: "Success" });
         });
       })
       .catch(function(err) {
@@ -138,7 +150,6 @@ module.exports = {
         return res.json(500, { err: err });
       });
   },
-
 
   /**
    * `ReferrerController.reject()`
@@ -167,58 +178,88 @@ module.exports = {
    * @apiUse UserNotFoundError
    */
   reject: function(req, res) {
-    if (!req.param('id')) {
-      return res.json(401, { status: 'error', err: 'No User id provided!' });
+    if (!req.param("id")) {
+      return res.json(401, { status: "error", err: "No User id provided!" });
     }
 
-    if (!req.param('refereeId')) {
-      return res.json(401, { status: 'error', err: 'No referee id provided!' });
+    if (!req.param("refereeId")) {
+      return res.json(401, { status: "error", err: "No referee id provided!" });
     }
 
-    User.findOne({ id: req.param('id') }).then(function(user, err) {
+    User.findOne({ id: req.param("id") })
+      .then(function(user, err) {
         if (err) {
           sails.log.error(err);
           return res.json(err.status, { err: err });
         }
 
-        sails.log.info(req.param('id') + ' is about to be rejected by a referee.');
+        sails.log.info(
+          req.param("id") + " is about to be rejected by a referee."
+        );
 
-        User.findOne({ select: ['email', 'membershipId'], where: { id: req.param('refereeId') } }).exec(function(err, referee) {
+        User.findOne({
+          select: ["email", "membershipId"],
+          where: { id: req.param("refereeId") }
+        }).exec(function(err, referee) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
           }
 
           if (!user) {
-            return res.json(404, { status: 'error', message: 'No User with such id existing' });
+            return res.json(404, {
+              status: "error",
+              message: "No User with such id existing"
+            });
           } else {
-
             if (user.referee1 == referee.email) {
+              User.update({ id: req.param("id") }, { referred1: false }).exec(
+                function(err, data) {
+                  if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                  }
 
-              User.update({ id: req.param('id') }, { referred1: false }).exec(function(err, data) {
-                if (err) {
-                  sails.log.error(err);
-                  return res.json(err.status, { err: err });
+                  sails.log.info(
+                    req.param("id") + " has been rejected by the first referee."
+                  );
+
+                  alert.rejected(
+                    res,
+                    user.companyName,
+                    user.email,
+                    referee.email,
+                    1
+                  );
                 }
-
-                sails.log.info(req.param('id') + ' has been rejected by the first referee.');
-
-                alert.rejected(res, user.companyName, user.email, referee.email, 1)
-              });
+              );
             } else if (user.referee2 == referee.email) {
+              User.update({ id: req.param("id") }, { referred2: false }).exec(
+                function(err, data) {
+                  if (err) {
+                    sails.log.error(err);
+                    return res.json(err.status, { err: err });
+                  }
 
-              User.update({ id: req.param('id') }, { referred2: false }).exec(function(err, data) {
-                if (err) {
-                  sails.log.error(err);
-                  return res.json(err.status, { err: err });
+                  sails.log.info(
+                    req.param("id") +
+                      " has been rejected by the second referee."
+                  );
+
+                  alert.rejected(
+                    res,
+                    user.companyName,
+                    user.email,
+                    referee.email,
+                    2
+                  );
                 }
-
-                sails.log.info(req.param('id') + ' has been rejected by the second referee.');
-
-                alert.rejected(res, user.companyName, user.email, referee.email, 2);
-              });
+              );
             } else {
-              return res.json(404, { status: 'error', message: 'No referee with such id existing' });
+              return res.json(404, {
+                status: "error",
+                message: "No referee with such id existing"
+              });
             }
           }
         });
@@ -228,7 +269,6 @@ module.exports = {
         return res.json(500, { err: err });
       });
   },
-
 
   /**
    * `ReferrerController.get()`
@@ -254,15 +294,23 @@ module.exports = {
    * @apiUse UserNotFoundError
    */
   get: function(req, res) {
-    if (req.param('id')) {
-      User.findOne().where({ id: req.param('id'), or: [{ referred1: false }, { referred2: false }] }).then(function(user, err) {
+    if (req.param("id")) {
+      User.findOne()
+        .where({
+          id: req.param("id"),
+          or: [{ referred1: false }, { referred2: false }]
+        })
+        .then(function(user, err) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
           }
 
           if (!user) {
-            return res.json(404, { status: 'error', message: 'No User with such id existing' });
+            return res.json(404, {
+              status: "error",
+              message: "No User with such id existing"
+            });
           } else {
             delete user.password; // delete the password from the returned user object
             return res.json(200, user);
@@ -272,17 +320,22 @@ module.exports = {
           sails.log.error(err);
           return res.json(500, { err: err });
         });
-
     } else {
-
-      User.find().where({ role: 'User', or: [{ referred1: false }, { referred2: false }] }).then(function(user, err) {
+      User.find()
+        .where({
+          role: "User",
+          or: [{ referred1: false }, { referred2: false }]
+        })
+        .then(function(user, err) {
           if (err) {
             sails.log.error(err);
             return res.json(err.status, { err: err });
           }
 
           // delete the password from the returned user objects
-          var userData = user.map(function(item) { return delete item.password; });
+          var userData = user.map(function(item) {
+            return delete item.password;
+          });
           return res.json(200, userData);
         })
         .catch(function(err) {

@@ -407,7 +407,7 @@ module.exports = {
             return res.negotiate(err);
           } else if (uploadedFiles.length === 0) {
             return res.json(401, { status: "error", err: "No file uploaded!" });
-          } else
+          } else {
             return res.ok({
               status: "success",
               bannerUrl:
@@ -416,6 +416,7 @@ module.exports = {
                 "/" +
                 uploadedFiles[0].fd
             });
+          }
         }
       );
     });
@@ -1354,10 +1355,10 @@ module.exports = {
                   return res.json(err.status, { status: "error", err: err });
                 }
 
-                sails.log.info("${user.id} successfully unsubscribed. ");
+                sails.log.info(`${user.id} successfully unsubscribed.`);
                 return res.json(200, {
                   status: "success",
-                  message: "${user.id} successfully unsubscribed."
+                  message: `${user.id} successfully unsubscribed.`
                 });
               });
             });
