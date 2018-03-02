@@ -79,7 +79,7 @@ module.exports = {
 
                 audit.log(
                   "membership",
-                  user.companyName + " paid membership due"
+                  `${user.companyName} paid membership due`
                 );
 
                 // this block of code is written to take care of the double zero
@@ -90,7 +90,7 @@ module.exports = {
                 var data = {
                   memberID: user.membershipId,
                   name: user.companyName,
-                  type: "Payment for" + event.data.plan.name,
+                  type: `Payment for ${event.data.plan.name}`,
                   source: event.data.authorization.channel,
                   amount: amountPaid,
                   data: event
@@ -106,11 +106,7 @@ module.exports = {
 
                   audit.log(
                     "Due",
-                    user.companyName +
-                      " paid " +
-                      data.amount +
-                      " for " +
-                      event.data.metadata.custom_fields[0].variable_name
+                    `${user.companyName} paid ${data.amount} their annual dues`
                   );
                 });
 
@@ -123,7 +119,7 @@ module.exports = {
                 });
               });
             })
-            .catch((err) => {
+            .catch(err => {
               sails.log.error(err);
               return res.json(500, { err: err });
             });
@@ -171,17 +167,17 @@ module.exports = {
                   // this block of code is written to take care of the double zero
                   // added to the amount paid by the paystack people
                   var amountPaid = event.data.amount;
-                  amountPaid = amountPaid / 100
+                  amountPaid = amountPaid / 100;
 
                   audit.log(
                     "membership",
-                    user.companyName + " paid membership annual due"
+                    `${user.companyName} paid membership annual due`
                   );
 
                   var data = {
                     memeberID: user.membershipId,
                     name: user.companyName,
-                    type: "Payment for " + event.data.plan.name,
+                    type: `Payment for ${event.data.plan.name}`,
                     source: event.data.authorization.channel,
                     amount: amountPaid,
                     data: event
@@ -196,7 +192,7 @@ module.exports = {
                   });
                 });
               })
-              .catch((err) => {
+              .catch(err => {
                 sails.log.error(err);
                 return res.json(500, { err: err });
               });
@@ -220,7 +216,7 @@ module.exports = {
                 // this block of code is written to take care of the double zero
                 // added to the amount paid by the paystack people
                 var amountPaid = event.data.amount;
-                amountPaid = amountPaid / 100
+                amountPaid = amountPaid / 100;
 
                 var payment_for = event.data.metadata.custom_fields[0].value;
                 var memberId = event.data.metadata.custom_fields[1].value;
@@ -381,7 +377,7 @@ module.exports = {
                   return res.json(200);
                 });
               })
-              .catch((err) => {
+              .catch(err => {
                 sails.log.error(err);
                 return res.json(500, { err: err });
               });
@@ -405,7 +401,7 @@ module.exports = {
 
               return res.json(200);
             })
-            .catch((err) => {
+            .catch(err => {
               sails.log.error(err);
               return res.json(500, { err: err });
             });
