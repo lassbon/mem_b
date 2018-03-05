@@ -424,7 +424,7 @@ module.exports = {
    * @apiGroup Payments
    */
   getTotals: function(req, res) {
-      
+
     var totals = {};
 
     DonationPayments.find()
@@ -535,12 +535,12 @@ module.exports = {
                     totals.due = dueTotal;
                     totals.dueCount = dues.length;
                   }
+
+                  return res.json(200, totals);
                 });
               });
             });
           });
-
-          return res.json(200, totals);
         });
       })
       .catch(function(err) {
