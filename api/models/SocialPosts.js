@@ -13,7 +13,7 @@ module.exports = {
 
         postText: {
             type: 'text',
-            required: true
+            //required: true
         },
         postImage: {
             type: 'string'
