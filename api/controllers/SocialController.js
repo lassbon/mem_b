@@ -584,12 +584,12 @@ module.exports = {
       })
     }
 
-    if (!req.param('postText')) {
-      return res.json(401, {
-        status: 'error',
-        err: 'No post content provided!'
-      })
-    }
+    // if (!req.param('postText')) {
+    //   return res.json(401, {
+    //     status: 'error',
+    //     err: 'No post content provided!'
+    //   })
+    // }
 
     User.findOne({
       select: ['companyName', 'membershipId'],
