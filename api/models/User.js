@@ -140,6 +140,10 @@ module.exports = {
             type: 'string',
             defaultsTo: null
         },
+        registrationFee: {
+            type: 'string',
+            defaultsTo: 'unpaid'
+        },
         dueDate: {
             type: 'string',
             defaultsTo: null

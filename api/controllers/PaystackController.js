@@ -61,8 +61,8 @@ module.exports = {
                 memberId = user.membershipId;
               }
 
-              var d = new Date();
-              var dueDate = `${d.getDate} ${d.getMonth} ${d.getFullYear}`;
+              const d = new Date();
+              const dueDate = `${d.getDate} / ${d.getMonth} / ${d.getFullYear}`;
 
               User.update(
                 { email: event.data.customer.email },
@@ -250,11 +250,9 @@ module.exports = {
 
                     audit.log(
                       "donation",
-                      user.companyName +
-                        " donated " +
-                        data.amount +
-                        " to " +
+                      `${user.companyName} paid ${data.amount} for ${
                         event.data.metadata.custom_fields[0].variable_name
+                      }`
                     );
                   });
                 }
@@ -273,11 +271,9 @@ module.exports = {
 
                     audit.log(
                       "training",
-                      user.companyName +
-                        " paid " +
-                        data.amount +
-                        " for " +
+                      `${user.companyName} paid ${data.amount} for ${
                         event.data.metadata.custom_fields[0].variable_name
+                      }`
                     );
                   });
                 }
@@ -296,18 +292,16 @@ module.exports = {
 
                     audit.log(
                       "event",
-                      user.companyName +
-                        " paid " +
-                        data.amount +
-                        " for " +
+                      `${user.companyName} paid ${data.amount} for ${
                         event.data.metadata.custom_fields[0].variable_name
+                      }`
                     );
                   });
                 }
 
                 // Check if payment is for a membership fee
                 if (membership.test(payment_for) === true) {
-                  var memId = payment_for.split("_")[1];
+                  //var memId = payment_for.split("_")[1];
                   MembershipPayments.create({
                     amount: amountPaid,
                     payer: memberId
@@ -327,18 +321,16 @@ module.exports = {
 
                     audit.log(
                       "membership",
-                      user.companyName +
-                        " paid " +
-                        data.amount +
-                        " for " +
+                      `${user.companyName} paid ${data.amount} for ${
                         event.data.metadata.custom_fields[0].variable_name
+                      }`
                     );
                   });
                 }
 
                 // Check if payment is for registration
                 if (register.test(payment_for) === true) {
-                  var regId = payment_for.split("_")[1];
+                  //var regId = payment_for.split("_")[1];
                   RegistrationPayments.create({
                     amount: amountPaid,
                     payer: memberId
@@ -358,11 +350,9 @@ module.exports = {
 
                     audit.log(
                       "registration",
-                      user.companyName +
-                        " paid " +
-                        data.amount +
-                        " for " +
+                      `${user.companyName} paid ${data.amount} for ${
                         event.data.metadata.custom_fields[0].variable_name
+                      }`
                     );
                   });
                 }
