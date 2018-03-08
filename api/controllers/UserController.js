@@ -684,7 +684,7 @@ module.exports = {
      * @apiUse UserNotFoundError
      */
   update: function(req, res) {
-    const container = 'userfiles'
+    const container = "userfiles";
 
     if (!req.param("id")) {
       return res.json(401, { status: "error", err: "No User id provided!" });
@@ -732,29 +732,156 @@ module.exports = {
               req.body.recommendedLevel = recommendedmembershipType;
             }
 
-            // if (req.param("profileImage")) {
-            //   azureBlob.upload(container, req.param("profileImage"), azureResponse => {
-            //     return res.json(200, {
-            //       status: "success",
-            //       message: azureResponse
-            //     });
+            // Handle profile image uploads
+            if (req.param("profileImage")) {
+              azureBlob.upload(
+                container,
+                req.param("profileImage"),
+                azureResponse => {
+                  User.update(
+                    { id: req.param("id") },
+                    { profileImage: azureResponse }
+                  ).exec((err, data) => {
+                    if (err) {
+                      sails.log.error(err);
+                    }
 
-            //     User.update({ id: req.param("id") }, req.body).exec((
-            //       err,
-            //       data
-            //     ) => {
-            //       if (err) {
-            //         sails.log.error(err);
-            //         return res.json(500, { err: err });
-            //       }
-                
-            //   });
-            // }
+                    delete req.body.profileImage;
 
-            if (user.profileImage && user.profileImage !== req.param("image")) {
-              var url = user.profileImage;
-              azureBlob.delete("user", url.split("/").reverse()[0]);
+                    if (user.profileImage && user.profileImage !== data.profileImage) {
+                      var url = user.profileImage;
+                      azureBlob.delete(container, url.split("/").reverse()[0]);
+                    }
+                  });
+                }
+              );
             }
+
+            // Handle companyCOIUrl image uploads
+            if (req.param("companyCOIUrl")) {
+              azureBlob.upload(
+                container,
+                req.param("companyCOIUrl"),
+                azureResponse => {
+                  User.update(
+                    { id: req.param("id") },
+                    { companyCOIUrl: azureResponse }
+                  ).exec((err, data) => {
+                    if (err) {
+                      sails.log.error(err);
+                    }
+
+                    delete req.body.companyCOIUrl;
+
+                    if (user.companyCOIUrl && user.companyCOIUrl !== data.companyCOIUrl) {
+                      var url = user.companyCOIUrl;
+                      azureBlob.delete(container, url.split("/").reverse()[0]);
+                    }
+                  });
+                }
+              );
+            }
+
+            // Handle companyRepPassportUrl1 image uploads
+            if (req.param("companyRepPassportUrl1")) {
+              azureBlob.upload(
+                container,
+                req.param("companyRepPassportUrl1"),
+                azureResponse => {
+                  User.update(
+                    { id: req.param("id") },
+                    { companyRepPassportUrl1: azureResponse }
+                  ).exec((err, data) => {
+                    if (err) {
+                      sails.log.error(err);
+                    }
+
+                    delete req.body.companyRepPassportUrl1;
+
+                    if (user.companyRepPassportUrl1 && user.companyRepPassportUrl1 !== data.companyRepPassportUrl1) {
+                      var url = user.companyRepPassportUrl1;
+                      azureBlob.delete(container, url.split("/").reverse()[0]);
+                    }
+                  });
+                }
+              );
+            }
+
+            // Handle companyRepPassportUrl2 image uploads
+            if (req.param("companyRepPassportUrl2")) {
+              azureBlob.upload(
+                container,
+                req.param("companyRepPassportUrl2"),
+                azureResponse => {
+                  User.update(
+                    { id: req.param("id") },
+                    { companyRepPassportUrl2: azureResponse }
+                  ).exec((err, data) => {
+                    if (err) {
+                      sails.log.error(err);
+                    }
+
+                    delete req.body.companyRepPassportUrl2;
+
+                    if (user.companyRepPassportUrl2 && user.companyRepPassportUrl2 !== data.companyRepPassportUrl2) {
+                      var url = user.companyRepPassportUrl2;
+                      azureBlob.delete(container, url.split("/").reverse()[0]);
+                    }
+                  });
+                }
+              );
+            }
+
+            // Handle companyRepCVUrl1 image uploads
+            if (req.param("companyRepCVUrl1")) {
+              azureBlob.upload(
+                container,
+                req.param("companyRepCVUrl1"),
+                azureResponse => {
+                  User.update(
+                    { id: req.param("id") },
+                    { companyRepCVUrl1: azureResponse }
+                  ).exec((err, data) => {
+                    if (err) {
+                      sails.log.error(err);
+                    }
+
+                    delete req.body.companyRepCVUrl1;
+
+                    if (user.companyRepCVUrl1 && user.companyRepCVUrl1 !== data.companyRepCVUrl1) {
+                      var url = user.companyRepCVUrl1;
+                      azureBlob.delete(container, url.split("/").reverse()[0]);
+                    }
+                  });
+                }
+              );
+            }
+
+            // Handle companyRepCVUrl2 image uploads
+            if (req.param("companyRepCVUrl2")) {
+              azureBlob.upload(
+                container,
+                req.param("companyRepCVUrl2"),
+                azureResponse => {
+                  User.update(
+                    { id: req.param("id") },
+                    { companyRepCVUrl2: azureResponse }
+                  ).exec((err, data) => {
+                    if (err) {
+                      sails.log.error(err);
+                    }
+
+                    delete req.body.companyRepCVUrl2;
+
+                    if (user.companyRepCVUrl2 && user.companyRepCVUrl2 !== data.companyRepCVUrl2) {
+                      var url = user.companyRepCVUrl2;
+                      azureBlob.delete(container, url.split("/").reverse()[0]);
+                    }
+                  });
+                }
+              );
+            }
+
 
             User.update({ id: req.param("id") }, req.body).exec(function(
               err,
