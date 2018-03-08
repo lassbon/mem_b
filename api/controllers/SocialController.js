@@ -239,7 +239,7 @@ module.exports = {
    * ----------------------------------------------------------------------------------
    * @api {post} /api/v1/social/cancel Cancel a friend request
    * @apiName Cancel
-   * @apiDescription This is where a friend request is canceled befor it is accepted by the requestee
+   * @apiDescription This is where a friend request is canceled before it is accepted by the requestee
    * @apiGroup Social
    *
    * @apiParam {Number} requester ID of the requester.
@@ -685,7 +685,7 @@ module.exports = {
                 id: request.requester
               }
             }).exec((err, user) => {
-              if (error) {
+              if (err) {
                 sails.log.error(err)
                 return res.json(500, {
                   err: err

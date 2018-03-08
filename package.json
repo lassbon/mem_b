@@ -46,6 +46,7 @@
         "node-mailjet": "^3.2.1",
         "node-regexp": "^0.1.1",
         "paystack": "^2.0.1",
+        "randomstring": "^1.1.5",
         "raven": "^2.4.1",
         "rc": "^1.0.1",
         "sails": "~0.12.14",

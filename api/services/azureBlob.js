@@ -7,13 +7,37 @@
 
 var azure = require('azure-storage');
 
+var randomString = require("randomstring");
+
 var blobSvc = azure.createBlobService(process.env.AZURE_STORAGE_ACCOUNT, process.env.AZURE_STORAGE_ACCESS_KEY);
 
+// Upload blob from a container
+module.exports.upload = (container, text, callback) => {
+
+    if (container && text) {
+        const blob = randomString.generate();
+
+        blobSvc.createBlockBlobFromText(container, blob, text, (error, result, response) => {
+            
+            if (!error) {
+                if (typeof callback === "function") {
+                    const url = blobSvc.getUrl(container, blob);
+                    callback(url);
+                }
+            } else {
+                if (typeof callback === "function") {
+                    callback(error);
+                }
+            }
+        });
+    }
+};
+
 // Delete blob from a container
-module.exports.delete = function(container, blob) {
+module.exports.delete = (container, blob) => {
 
     if (container && blob) {
-        blobSvc.deleteBlob(container, blob, function(error, response) {
+        blobSvc.deleteBlob(container, blob, (error, response) => {
             if (!error) {
                 return true;
             }
@@ -22,12 +46,11 @@ module.exports.delete = function(container, blob) {
 };
 
 // Create a container if not exist
-
 var access = { publicAccessLevel: 'blob' };
-module.exports.createContainerIfNotExists = function(container, callback) {
+module.exports.createContainerIfNotExists = (container, callback) => {
 
     if (container) {
-        blobSvc.createContainerIfNotExists(container, access, function(error, result, response) {
+        blobSvc.createContainerIfNotExists(container, access, (error, result, response) => {
             if (!error) {
                 if (typeof callback === "function") {
                     callback(true);

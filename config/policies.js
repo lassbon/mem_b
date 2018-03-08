@@ -177,6 +177,7 @@ module.exports.policies = {
         'testEmail': true,
         'oldData': true,
         'testPage': true,
+        'testOldmember': true,
     },
 
     /***************************************************************************

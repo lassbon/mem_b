@@ -392,35 +392,16 @@ module.exports = {
   uploadImage: function(req, res) {
     if (req.method != "POST") return res.notFound();
 
-    var container = "userfiles";
+    //Handle file uploads and updates
+    if(!req.param('file')){
+      return res.json(401, { status: "error", err: "No file provided!" });
+    }
 
-    azureBlob.createContainerIfNotExists(container, function() {
-      req.file("file").upload(
-        {
-          maxBytes: 5000000,
-          adapter: require("skipper-azure"),
-          key: process.env.AZURE_STORAGE_ACCOUNT,
-          secret: process.env.AZURE_STORAGE_ACCESS_KEY,
-          container: container
-        },
-        function whenDone(err, uploadedFiles) {
-          if (err) {
-            sails.log.error(err);
-            return res.negotiate(err);
-          } else if (uploadedFiles.length === 0) {
-            return res.json(401, { status: "error", err: "No file uploaded!" });
-          } else {
-            return res.ok({
-              status: "success",
-              bannerUrl:
-                process.env.AZURE_STORAGE_ACCOUNT_URL +
-                container +
-                "/" +
-                uploadedFiles[0].fd
-            });
-          }
-        }
-      );
+    azureBlob.upload(container, req.param('file'), (azureResponse) => {
+      return res.json(200, {
+        status: "success",
+        message: azureResponse
+      });
     });
   },
 
@@ -703,6 +684,7 @@ module.exports = {
      * @apiUse UserNotFoundError
      */
   update: function(req, res) {
+
     if (!req.param("id")) {
       return res.json(401, { status: "error", err: "No User id provided!" });
     } else {
@@ -719,7 +701,7 @@ module.exports = {
           if (!user) {
             return res.json(404, {
               status: "error",
-              err: "No User with such id existing"
+              err: "No User with such id existing" 
             });
           } else {
             // Recommend a membership type for the user based on annual profits
@@ -1279,7 +1261,7 @@ module.exports = {
             User.findOne({
               select: ["companyName", "email"],
               where: { email: token.email }
-            }).exec(function(user, err) {
+            }).exec(function(err, user) {
               var emailData = {
                 email: process.env.SITE_EMAIL,
                 from: process.env.SITE_NAME,
