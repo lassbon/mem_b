@@ -684,6 +684,8 @@ module.exports = {
      * @apiUse UserNotFoundError
      */
   update: function(req, res) {
+    const container = 'userfiles'
+
     if (!req.param("id")) {
       return res.json(401, { status: "error", err: "No User id provided!" });
     } else {
@@ -729,6 +731,25 @@ module.exports = {
 
               req.body.recommendedLevel = recommendedmembershipType;
             }
+
+            // if (req.param("profileImage")) {
+            //   azureBlob.upload(container, req.param("profileImage"), azureResponse => {
+            //     return res.json(200, {
+            //       status: "success",
+            //       message: azureResponse
+            //     });
+
+            //     User.update({ id: req.param("id") }, req.body).exec((
+            //       err,
+            //       data
+            //     ) => {
+            //       if (err) {
+            //         sails.log.error(err);
+            //         return res.json(500, { err: err });
+            //       }
+                
+            //   });
+            // }
 
             if (user.profileImage && user.profileImage !== req.param("image")) {
               var url = user.profileImage;
