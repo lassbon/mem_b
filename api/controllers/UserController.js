@@ -1,3 +1,5 @@
+var paystack = require("paystack")(process.env.PAYSTACK_SECRET_KEY);
+
 /**
  * UserController
  *
@@ -1330,39 +1332,65 @@ module.exports = {
           return res.json(err.status, { status: "error", err: err });
         }
 
-        if (user) {
-          paystack.subscription
-            .get({
-              id_or_subscription_code: user.dueSubscriptionCode
-            })
-            .then(function(subscriptionData) {
-              return paystack.subscription.disable({
+        if (!user) {
+          return res.json(404, {
+            status: "error",
+            message: "No user with such id existing"
+          });
+        }
+
+        paystack.subscription
+          .get({
+            id_or_subscription_code: user.dueSubscriptionCode
+          })
+          .then(subscriptionData => {
+            if (err) {
+              sails.log.error("Could not communicate with Paystack");
+              return res.json(500, {
+                err: "Could not communicate with Paystack"
+              });
+            }
+            console.log(subscriptionData);
+
+            if (subscriptionData.status && subscriptionData.status == false) {
+              return res.json(404, {
+                status: "error",
+                message: "Annual due subscription code not found."
+              });
+            }
+
+            const disableData = async () => {
+              await paystack.subscription.disable({
                 code: user.dueSubscriptionCode,
                 toke: user.subscriptionData.email_token
               });
-            })
-            .then(function(data) {
-              User.update(
-                { id: user.id },
-                {
-                  dueSubscriptionCode: null,
-                  membershipDue: "unpaid",
-                  membershipStatus: "inactive"
-                }
-              ).exec(function(err, data) {
-                if (err) {
-                  sails.log.error(err);
-                  return res.json(err.status, { status: "error", err: err });
-                }
+            };
 
-                sails.log.info(`${user.id} successfully unsubscribed.`);
-                return res.json(200, {
-                  status: "success",
-                  message: `${user.id} successfully unsubscribed.`
-                });
+            return disableData();
+          })
+          .then(data => {
+            console.log(data);
+            User.update(
+              { id: user.id },
+              {
+                dueSubscriptionCode: null,
+                membershipDue: "unpaid",
+                membershipStatus: "inactive"
+              }
+            ).exec((err, data) => {
+              if (err) {
+                sails.log.error(err);
+                return res.json(err.status, { status: "error", err: err });
+              }
+
+              sails.log.info(`${user.id} successfully unsubscribed.`);
+
+              return res.json(200, {
+                status: "success",
+                message: `${user.id} successfully unsubscribed.`
               });
             });
-        }
+          });
       })
       .catch(function(err) {
         sails.log.error(err);
