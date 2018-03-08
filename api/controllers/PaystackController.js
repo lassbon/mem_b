@@ -62,7 +62,7 @@ module.exports = {
               }
 
               const d = new Date();
-              const dueDate = `${d.getDate()} / ${d.getMonth()} / ${d.getFullYear()}`;
+              const dueDate = `${d.getDate()}/${d.getMonth()}/${d.getFullYear()}`;
 
               User.update(
                 { email: event.data.customer.email },
@@ -150,7 +150,7 @@ module.exports = {
                 }
 
                 var d = new Date();
-                var dueDate = `${d.getDate()} ${d.getMonth()} ${d.getFullYear()}`;
+                var dueDate = `${d.getDate()}/${d.getMonth()}/${d.getFullYear()}`;
 
                 User.update(
                   { email: event.data.customer.email },

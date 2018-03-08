@@ -393,11 +393,11 @@ module.exports = {
     if (req.method != "POST") return res.notFound();
 
     //Handle file uploads and updates
-    if(!req.param('file')){
+    if (!req.param("file")) {
       return res.json(401, { status: "error", err: "No file provided!" });
     }
 
-    azureBlob.upload(container, req.param('file'), (azureResponse) => {
+    azureBlob.upload(container, req.param("file"), azureResponse => {
       return res.json(200, {
         status: "success",
         message: azureResponse
@@ -684,7 +684,6 @@ module.exports = {
      * @apiUse UserNotFoundError
      */
   update: function(req, res) {
-
     if (!req.param("id")) {
       return res.json(401, { status: "error", err: "No User id provided!" });
     } else {
@@ -701,7 +700,7 @@ module.exports = {
           if (!user) {
             return res.json(404, {
               status: "error",
-              err: "No User with such id existing" 
+              err: "No User with such id existing"
             });
           } else {
             // Recommend a membership type for the user based on annual profits
@@ -1234,67 +1233,74 @@ module.exports = {
   changePassword: function(req, res) {
     if (!req.param("token")) {
       return res.json(401, { status: "error", err: "No token provided!" });
-    } else {
-      jwToken.verify(req.param("token"), function(err, token) {
-        if (err) {
-          sails.log.error(err);
-          return res.json(401, { status: "error", err: "Invalid Token!" });
-        }
+    }
 
-        if (req.param("password") !== req.param("confirmPassword")) {
-          return res.json(401, {
-            status: "error",
-            err: "Password doesn't match, What a shame!"
-          });
-        }
+    jwToken.verify(req.param("token"), function(err, token) {
+      if (err) {
+        sails.log.error(err);
+        return res.json(401, { status: "error", err: "Invalid Token!" });
+      }
 
-        User.update({ email: token.email }, { password: req.param("password") })
-          .then(function(data, err) {
-            if (err) {
-              sails.log.error(err);
-              return res.json(500, { err: err });
+      if (req.param("password") !== req.param("confirmPassword")) {
+        return res.json(401, {
+          status: "error",
+          err: "Password doesn't match, What a shame!"
+        });
+      }
+
+      User.update({ email: token.email }, { password: req.param("password") })
+        .then(function(data, err) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(500, { err: err });
+          }
+
+          var who = jwToken.who(req.headers.authorization);
+          audit.log("user", who + " changed password");
+
+          User.findOne({
+            select: ["companyName", "email"],
+            where: { email: token.email }
+          }).exec(function(err, user) {
+            if (!user) {
+              return res.json(404, {
+                status: "error",
+                err: "No User with such email existing"
+              });
             }
 
-            var who = jwToken.who(req.headers.authorization);
-            audit.log("user", who + " changed password");
+            var emailData = {
+              email: process.env.SITE_EMAIL,
+              from: process.env.SITE_NAME,
+              subject: "Your " + process.env.SITE_NAME + " password change.",
+              body:
+                "Hello " +
+                user.companyName +
+                "! <br><br> " +
+                "You have successfully changed your password. <br><br>" +
+                "Thank you. <br><br>" +
+                process.env.SITE_NAME,
 
-            User.findOne({
-              select: ["companyName", "email"],
-              where: { email: token.email }
-            }).exec(function(err, user) {
-              var emailData = {
-                email: process.env.SITE_EMAIL,
-                from: process.env.SITE_NAME,
-                subject: "Your " + process.env.SITE_NAME + " password change.",
-                body:
-                  "Hello " +
-                  user.companyName +
-                  "! <br><br> " +
-                  "You have successfully changed your password. <br><br>" +
-                  "Thank you. <br><br>" +
-                  process.env.SITE_NAME,
+              to: user.email
+            };
 
-                to: user.email
-              };
-
-              azureEmail.send(emailData, function(resp) {
-                if (resp === "error") {
-                  sails.log.error(resp);
-                }
-              });
+            azureEmail.send(emailData, function(resp) {
+              if (resp === "error") {
+                sails.log.error(resp);
+              }
             });
 
             return res.json(200, {
               status: "success",
               message: "Password successfully changed."
             });
-          })
-          .catch(function(err) {
-            sails.log.error(err);
-            return res.json(500, { err: err });
           });
-      });
-    }
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(500, { err: err });
+        });
+    });
   },
 
   /**

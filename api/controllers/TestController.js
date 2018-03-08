@@ -74,6 +74,8 @@ module.exports = {
 
       oldMembers.splice(0, 3);
 
+      let count = 0;
+
       oldMembers.forEach(oldMemberData => {
         try {
           const date = new Date();
@@ -113,8 +115,10 @@ module.exports = {
               oldMember.email = oldMemberData[8]
                 .split(",")[0]
                 .replace(/^\s+|\s+$/g, "");
-            } else if (oldMemberData[2].length !== 0) {
-              console.log(oldMemberData[2]);
+            }else{
+              if (oldMemberData[2].length !== 0) {
+                console.log(oldMemberData[2]);
+              }
             }
 
             if (oldMemberData[9].length !== 0) {
@@ -133,32 +137,33 @@ module.exports = {
 
             //console.log(oldMember);
 
-            User.findOne({ membershipId: oldMember.membershipId })
-              .then(function(user, err) {
-                if (err) {
-                  sails.log.error(err);
-                  //return res.json(err.status, { err: err });
-                }
+            // User.findOne({ membershipId: oldMember.membershipId })
+            //   .then(function(user, err) {
+            //     if (err) {
+            //       sails.log.error(err);
+            //       return res.json(err.status, { err: err });
+            //     }
 
-                if (user) {
-                  console.log(oldMember.companyName);
-                }
+            //     if (!user) {
+            //       console.log(oldMember.companyName);
+            //       //console.log(count++);
+            //     }
 
-                // if (!user) {
-                //   User.create(oldMember).exec(function(err, member) {
-                //     if (err) {
-                //       sails.log.error(err);
-                //       //return res.json(err.status, { err: err });
-                //     }
+            //     // if (!user) {
+            //     //   User.create(oldMember).exec(function(err, member) {
+            //     //     if (err) {
+            //     //       sails.log.error(err);
+            //     //       //return res.json(err.status, { err: err });
+            //     //     }
 
-                //     console.log(member);
-                //   });
-                // }
-              })
-              .catch(function(err) {
-                sails.log.error(err);
-                return res.json(500, { err: err });
-              });
+            //     //     console.log(member);
+            //     //   });
+            //     // }
+            //   })
+            //   .catch(function(err) {
+            //     sails.log.error(err);
+            //     //return res.json(500, { err: err });
+            //   });
           }
         } catch (err) {
           sails.log.error(err);
@@ -323,7 +328,7 @@ module.exports = {
       companyAddress: "P.O. Box 2808 Abuja.",
       email: "sogbolutoluwalase@gmail.com",
       tradeGroup: "Gen Merch, Small Scale Bus",
-      dueDate: "22/04/2019",
+      dueDate: "22/04/2019"
     };
 
     User.create(userData)
@@ -339,7 +344,7 @@ module.exports = {
           email: process.env.SITE_EMAIL,
           from: process.env.SITE_NAME,
           subject: "Your " + process.env.SITE_NAME + " membership onboarding.",
-  
+
           body:
             "Hello " +
             userData.companyName +
@@ -358,10 +363,10 @@ module.exports = {
             "<strong>Kindly change your password once logged on.</strong><br><br>" +
             "Thank you for your time.<br><br>" +
             process.env.SITE_NAME,
-  
+
           to: userData.email
         };
-  
+
         azureEmail.send(emailData, function(resp) {
           if (resp === "success") {
             sails.log.info(resp);
@@ -371,7 +376,7 @@ module.exports = {
               message: member
             });
           }
-  
+
           if (resp === "error") {
             sails.log.error(resp);
           }
