@@ -624,7 +624,7 @@ module.exports = {
               req.param("postImage"),
               azureResponse => {
                 SocialPosts.update(
-                  { id: req.post.id },
+                  { id: post.id },
                   { postImage: azureResponse }
                 ).exec((err, data) => {
                   if (err) {
