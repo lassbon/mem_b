@@ -65,15 +65,15 @@ module.exports.connections = {
   //   database: 'acci'
   // },
 
-  someMongodbServer: {
-    adapter: 'sails-mongo',
-    url: 'mongodb://acci:acci@ds159187.mlab.com:59187/acci',
-  },
-
   // someMongodbServer: {
   //   adapter: 'sails-mongo',
-  //   url: process.env.AZURE_MONGO
+  //   url: 'mongodb://acci:acci@ds159187.mlab.com:59187/acci',
   // },
+
+  someMongodbServer: {
+    adapter: 'sails-mongo',
+    url: process.env.AZURE_MONGO
+  },
 
   /***************************************************************************
    *                                                                          *
