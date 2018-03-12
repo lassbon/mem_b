@@ -21,10 +21,6 @@
  */
 
 module.exports.routes = {
-	
-	cors: {
-    methods: 'GET,PUT,POST,OPTIONS,HEAD'
-  }
 
     /***************************************************************************
      *                                                                          *
