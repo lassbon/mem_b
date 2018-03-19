@@ -147,6 +147,19 @@ module.exports.routes = {
     'GET /api/v1/gettrainings/:id': 'TrainingController.getTrainings',
 
     /**
+     * News routes
+     */
+    'POST /api/v1/news': 'NewsController.createNews',
+    'PUT /api/v1/news/:id': 'NewsController.updateNews',
+    'DELETE /api/v1/news/:id': 'NewsController.deleteNews',
+
+    'GET /api/v1/mynews/:id': 'NewsController.myNews',
+    'GET /api/v1/searchnews/:id/:page/:limit': 'NewsController.searchNews',
+
+    'GET /api/v1/news': 'NewsController.getNews',
+    'GET /api/v1/news/:id': 'NewsController.getNews',
+
+    /**
      * Event routes
      */
     'POST /api/v1/events': 'EventsController.createEvent',

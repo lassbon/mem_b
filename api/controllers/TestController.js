@@ -6,52 +6,63 @@ module.exports = {
   testEmail: function(req, res) {
     User.find({
       select: ["membershipId", "email", "companyName"],
-      where: { oldMember: true, email: "sogbolutoluwalase@yahoo.com" }
-    }).exec(function(err, users) {
-      if (err) {
-        sails.log.error(err);
-        return res.json(404, { status: "error", err: err });
-      }
+      where: { oldMember: true }
+    })
+      .then(function(users, err) {
+        if (err) {
+          sails.log.error(err);
+          return res.json(404, { status: "error", err: err });
+        }
 
-      users.forEach(function(user) {
-        var emailData = {
-          email: process.env.SITE_EMAIL,
-          from: process.env.SITE_NAME,
-          subject: "Your " + process.env.SITE_NAME + " membership onboarding.",
+        users.forEach(function(user) {
+          var emailData = {
+            email: process.env.SITE_EMAIL,
+            from: process.env.SITE_NAME,
+            subject:
+              "Your " + process.env.SITE_NAME + " membership onboarding.",
 
-          body:
-            "Hello " +
-            user.companyName +
-            "!<br><br>" +
-            "Welcome to " +
-            process.env.SITE_NAME +
-            " Membership platform.<br><br>" +
-            "You can now easily access your membership account with ease and get all information on on-going, completed and past events/projects.<br><br>" +
-            "You can also track your financial reports and pay your annual dues on the go.<br><br>" +
-            'Kindly click on the "Onboard" button to be redirected to the onboarding form.<br><br>' +
-            '<a href=" ' +
-            process.env.ONBOARD_LINK +
-            base64.encode(user.membershipId) +
-            ' " style="color: green;">Onboard</a>.<br><br>' +
-            'Your generic password is <strong>"password"</strong>.<br><br>' +
-            "<strong>Kindly change your password once logged on.</strong><br><br>" +
-            "Thank you for your time.<br><br>" +
-            process.env.SITE_NAME,
+            body:
+              "Hello " +
+              user.companyName +
+              "!<br><br>" +
+              "Welcome to " +
+              process.env.SITE_NAME +
+              " Membership platform.<br><br>" +
+              "You can now easily access your membership account with ease and get all information on on-going, completed and past events/projects.<br><br>" +
+              "You can also track your financial reports and pay your annual dues on the go.<br><br>" +
+              'Kindly click on the "Onboard" button to be redirected to the on-boarding form.<br><br>' +
+              '<a href=" ' +
+              process.env.ONBOARD_LINK +
+              base64.encode(user.membershipId) +
+              ' " style="color: green;">Onboard</a>.<br><br>' +
+              'Your generic password is <strong>"password"</strong>.<br><br>' +
+              "<strong>Kindly change your password once logged on.</strong><br><br>" +
+              "Thank you for your time.<br><br>" +
+              process.env.SITE_NAME,
 
-          to: user.email
-        };
+            to: user.email
+          };
 
-        azureEmail.send(emailData, function(resp) {
-          if (resp === "success") {
-            return sails.log.info(resp);
-          }
+          azureEmail.send(emailData, function(resp) {
+            if (resp === "success") {
+              return sails.log.info(resp);
+            }
 
-          if (resp === "error") {
-            sails.log.error(resp);
-          }
+            if (resp === "error") {
+              sails.log.error(resp);
+            }
+          });
         });
+
+        return res.json(200, {
+          status: "success",
+          message: "Broadcast successful"
+        });
+      })
+      .catch(function(err) {
+        sails.log.error(err);
+        return res.json(500, { err: err });
       });
-    });
   },
 
   oldData: function(req, res) {
@@ -115,7 +126,7 @@ module.exports = {
               oldMember.email = oldMemberData[8]
                 .split(",")[0]
                 .replace(/^\s+|\s+$/g, "");
-            }else{
+            } else {
               if (oldMemberData[2].length !== 0) {
                 console.log(oldMemberData[2]);
               }
@@ -135,35 +146,35 @@ module.exports = {
               }/${date.getFullYear() + 1}`;
             }
 
-            //console.log(oldMember);
+            console.log(oldMember);
 
-            // User.findOne({ membershipId: oldMember.membershipId })
-            //   .then(function(user, err) {
-            //     if (err) {
-            //       sails.log.error(err);
-            //       return res.json(err.status, { err: err });
-            //     }
+            User.findOne({ membershipId: oldMember.membershipId })
+              .then(function(user, err) {
+                if (err) {
+                  sails.log.error(err);
+                  return res.json(err.status, { err: err });
+                }
 
-            //     if (!user) {
-            //       console.log(oldMember.companyName);
-            //       //console.log(count++);
-            //     }
+                if (!user) {
+                  console.log(oldMember.companyName);
+                  //console.log(count++);
+                }
 
-            //     // if (!user) {
-            //     //   User.create(oldMember).exec(function(err, member) {
-            //     //     if (err) {
-            //     //       sails.log.error(err);
-            //     //       //return res.json(err.status, { err: err });
-            //     //     }
+                if (!user) {
+                  User.create(oldMember).exec(function(err, member) {
+                    if (err) {
+                      sails.log.error(err);
+                      //return res.json(err.status, { err: err });
+                    }
 
-            //     //     console.log(member);
-            //     //   });
-            //     // }
-            //   })
-            //   .catch(function(err) {
-            //     sails.log.error(err);
-            //     //return res.json(500, { err: err });
-            //   });
+                    console.log(member);
+                  });
+                }
+              })
+              .catch(function(err) {
+                sails.log.error(err);
+                //return res.json(500, { err: err });
+              });
           }
         } catch (err) {
           sails.log.error(err);
