@@ -54,6 +54,7 @@ module.exports.routes = {
     'POST /api/v1/auth/oldmember': 'AuthController.oldMemberLogin',
     'POST /api/v1/auth/admin': 'AuthController.adminLogin',
     '/api/v1/auth/': 'AuthController.index',
+	
 
     /**
      * Admin routes
