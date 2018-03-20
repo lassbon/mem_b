@@ -14,11 +14,11 @@ module.exports = {
         title: {
             type: 'string',
             required: true,
-            unique: true
+            //unique: true
         },
         image: {
             type: 'string',
-            required: true
+            //required: true
         },
         body: {
             type: 'text',

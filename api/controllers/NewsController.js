@@ -92,7 +92,12 @@ module.exports = {
    *     }
    */
   createNews: function(req, res) {
-    News.create(req.body)
+      const formData = {
+          title: req.body.title,
+          body: req.body.body,
+          author: req.body.author
+      }
+    News.create(formData)
       .then(function(news, err) {
         if (err) {
           sails.log.error(err);
@@ -102,27 +107,48 @@ module.exports = {
         const container = "news";
 
         // Handle image image uploads
-        if (req.param("image")) {
+
+        if (req.file("image")) {
           azureBlob.createContainerIfNotExists(container, function() {
-            azureBlob.upload(container, req.param("image"), azureResponse => {
-              delete req.body.image;
-              News.update({ id: news.id }, { image: azureResponse }).exec(
-                (err, data) => {
-                  if (err) {
-                    sails.log.error(err);
-                  }
+            req.file("image").upload(
+              {
+                maxBytes: 5000000,
+                adapter: require("skipper-azure"),
+                key: process.env.AZURE_STORAGE_ACCOUNT,
+                secret: process.env.AZURE_STORAGE_ACCESS_KEY,
+                container: container
+              },
+              function whenDone(err, uploadedFiles) {
+                if (err) {
+                  sails.log.error(err);
+                  return res.negotiate(err);
+                } else if (uploadedFiles.length === 0) {
+                  sails.log.error("No image uploaded!");
+                } else {
+                  const imageUrl =
+                    process.env.AZURE_STORAGE_ACCOUNT_URL +
+                    container +
+                    "/" +
+                    uploadedFiles[0].fd;
+
+                  News.update({ id: news.id }, { image: imageUrl }).exec(
+                    (err, data) => {
+                      if (err) {
+                        sails.log.error(err);
+                      }
+                    }
+                  );
                 }
-              );
-            });
+              }
+            );
           });
         }
 
-        // If news is created successfuly we return news id and title
+        // If news is created successfully we return news id and title
         if (news) {
           var who = jwToken.who(req.headers.authorization);
           audit.log("news", who + " created " + news.title);
 
-          // NOTE: payload is { id: news.id}
           res.json(200, {
             status: "success",
             id: news.id
