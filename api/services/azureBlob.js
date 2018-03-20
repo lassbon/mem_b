@@ -40,7 +40,7 @@ module.exports.delete = (container, blob) => {
         blobSvc.deleteBlob(container, blob, (error, response) => {
             if (!error) {
                 return true;
-            }
+            } 
         });
     }
 };

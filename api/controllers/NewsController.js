@@ -103,16 +103,17 @@ module.exports = {
 
         // Handle image image uploads
         if (req.param("image")) {
-          azureBlob.upload(container, req.param("image"), azureResponse => {
-            News.update({ id: post.id }, { image: azureResponse }).exec(
-              (err, data) => {
-                if (err) {
-                  sails.log.error(err);
+          azureBlob.createContainerIfNotExists(container, function() {
+            azureBlob.upload(container, req.param("image"), azureResponse => {
+              delete req.body.image;
+              News.update({ id: news.id }, { image: azureResponse }).exec(
+                (err, data) => {
+                  if (err) {
+                    sails.log.error(err);
+                  }
                 }
-
-                delete req.body.image;
-              }
-            );
+              );
+            });
           });
         }
 
@@ -268,9 +269,12 @@ module.exports = {
 
         // Handle image image uploads
         if (req.param("image")) {
-          azureBlob.upload(container, req.param("image"), azureResponse => {
-            News.update({ id: req.param("id") }, { image: azureResponse }).exec(
-              (err, data) => {
+          azureBlob.createContainerIfNotExists(container, function() {
+            azureBlob.upload(container, req.param("image"), azureResponse => {
+              News.update(
+                { id: req.param("id") },
+                { image: azureResponse }
+              ).exec((err, data) => {
                 if (err) {
                   sails.log.error(err);
                 }
@@ -281,8 +285,8 @@ module.exports = {
                   var url = news.image;
                   azureBlob.delete(container, url.split("/").reverse()[0]);
                 }
-              }
-            );
+              });
+            });
           });
         }
 
