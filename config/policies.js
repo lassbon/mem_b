@@ -110,6 +110,13 @@ module.exports.policies = {
         'getTrainings': ['isUser', 'isAuthenticated'],
     },
 
+    'NewsController': {
+        '*': ['isAdmin', 'isContent', 'isAuthenticated'],
+        'myNews': ['isUser', 'isAuthenticated'],
+        'searchNews': ['isUser', 'isAuthenticated'],
+        'getNews': ['isUser', 'isAuthenticated'],
+    },
+
     'EventsController': {
         '*': ['isAdmin', 'isContent', 'isAuthenticated'],
         'getCompleted': ['isUser', 'isAuthenticated'],

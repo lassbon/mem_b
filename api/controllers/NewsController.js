@@ -355,23 +355,23 @@ module.exports = {
         status: "error",
         err: "No search term provided!"
       });
-    } else {
-      News.find({ title: { contains: req.param("searchTerm") } })
-        .sort("createdAt DESC")
-        .paginate({ page: page, limit: limit })
-        .then(function(news, err) {
-          if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
-          }
-
-          return res.json(200, { page: page, limit: limit, result: news });
-        })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
     }
+
+    News.find({ title: { contains: req.param("searchTerm") } })
+      .sort("createdAt DESC")
+      .paginate({ page: page, limit: limit })
+      .then(function(news, err) {
+        if (err) {
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
+        }
+
+        return res.json(200, { page: page, limit: limit, result: news });
+      })
+      .catch(function(err) {
+        sails.log.error(err);
+        return res.json(500, { err: err });
+      });
   },
 
   /**
