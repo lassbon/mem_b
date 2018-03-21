@@ -92,11 +92,11 @@ module.exports = {
    *     }
    */
   createNews: function(req, res) {
-      const formData = {
-          title: req.body.title,
-          body: req.body.body,
-          author: req.body.author
-      }
+    const formData = {
+      title: req.body.title,
+      body: req.body.body,
+      author: req.body.author
+    };
     News.create(formData)
       .then(function(news, err) {
         if (err) {
