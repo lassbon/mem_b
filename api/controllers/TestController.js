@@ -16,7 +16,7 @@ module.exports = {
 
         users.forEach(function(user) {
           var emailData = {
-            email: process.env.SITE_EMAIL,
+            email: process.env.SITE_EMAIL, 
             from: process.env.SITE_NAME,
             subject:
               "Your " + process.env.SITE_NAME + " membership onboarding.",
