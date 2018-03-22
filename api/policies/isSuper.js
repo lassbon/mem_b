@@ -18,7 +18,6 @@ module.exports = function(req, res, next) {
         return res.json(401, { status: 'error', err: 'No Authorization header was found' });
     }
     
-
     jwToken.verify(token, function(err, token) {
         if (err) {
             sails.log.error(err);

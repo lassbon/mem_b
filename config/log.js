@@ -11,6 +11,8 @@
  */
 
 var winston = require('winston');
+require('winston-loggly-bulk');
+
 var customLogger = new winston.Logger();
 
 // A console transport logging debug and above.
@@ -24,6 +26,13 @@ customLogger.add(winston.transports.File, {
   level: 'error',
   filename: 'applogs.log',
   json: true
+});
+
+customLogger.add(winston.transports.Loggly, {
+  token: "9f7cd679-171a-464c-b7e9-5d468286bcb6",
+  subdomain: "accinigeria",
+  tags: ["Winston-NodeJS"],
+  json:true
 });
 
 module.exports.log = {

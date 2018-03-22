@@ -58,7 +58,9 @@
         "skipper": "^0.8.2",
         "skipper-azure": "^0.1.2",
         "waterline-cursor": "0.0.7",
-        "winston-azuretable": "^1.0.8"
+        "winston": "^2.4.1",
+        "winston-azuretable": "^1.0.8",
+        "winston-loggly-bulk": "^2.0.2"
     },
     "scripts": {
         "debug": "node debug app.js",
