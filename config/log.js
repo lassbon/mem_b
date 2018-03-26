@@ -17,7 +17,7 @@ var customLogger = new winston.Logger();
 
 // A console transport logging debug and above.
 customLogger.add(winston.transports.Console, {
-  level: 'debug',
+  level: 'info',
   colorize: true
 });
 

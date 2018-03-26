@@ -274,7 +274,7 @@ module.exports.routes = {
      * Social routes
      */
     'GET /api/v1/socialcount': 'SocialController.getCount',
-    'GET /api/v1/social/requests/:id': 'SocialController.getRequests',
+    //'GET /api/v1/social/requests/:id': 'SocialController.getRequests',
 
     'POST /api/v1/social/request': 'SocialController.request',
     'POST /api/v1/social/accept': 'SocialController.accept',

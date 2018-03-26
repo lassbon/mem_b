@@ -676,7 +676,7 @@ module.exports = {
    *
    * @apiUse PostNotFoundError
    */
-  getRequests: function(req, res) {
+  getRequests: function(req, res) { 
     if (!req.param("id")) {
       return res.json(401, {
         status: "error",
