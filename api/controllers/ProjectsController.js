@@ -94,7 +94,7 @@ module.exports = {
           // NOTE: payload is { id: project.id}
           res.json(200, {
             status: "success",
-            id: project.title
+            id: project.id
           });
         }
       })
