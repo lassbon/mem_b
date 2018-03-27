@@ -390,6 +390,7 @@ module.exports = {
     News.find({ title: { contains: req.param("searchTerm") } })
       .sort("createdAt DESC")
       .paginate({ page: page, limit: limit })
+      .populate("comments", { sort: "createdAt DESC" })
       .then(function(news, err) {
         if (err) {
           sails.log.error(err);
@@ -434,6 +435,7 @@ module.exports = {
 
     News.find({ id: req.param("id") })
       .sort("createdAt DESC")
+      .populate("comments", { sort: "createdAt DESC" })
       .exec(function(news, err) {
         if (err) {
           sails.log.error(err);
@@ -452,6 +454,7 @@ module.exports = {
     if (req.param("id")) {
       News.findOne({ id: req.param("id") })
         .sort("createdAt DESC")
+        .populate("comments", { sort: "createdAt DESC" })
         .then(function(news, err) {
           if (err) {
             sails.log.error(err);
@@ -475,6 +478,7 @@ module.exports = {
 
     News.find()
       .sort("createdAt DESC")
+      .populate("comments", { sort: "createdAt DESC" })
       .then(function(news, err) {
         if (err) {
           sails.log.error(err);

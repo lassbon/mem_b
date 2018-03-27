@@ -421,6 +421,7 @@ module.exports = {
     if (req.param("id")) {
       Projects.findOne({ id: req.param("id"), status: "ongoing" })
         .sort("createdAt DESC")
+        .populate("comments", { sort: "createdAt DESC" })
         .then(function(project, err) {
           if (err) {
             sails.log.error(err);
@@ -443,6 +444,7 @@ module.exports = {
     } else {
       Projects.find({ status: "completed" })
         .sort("createdAt DESC")
+        .populate("comments", { sort: "createdAt DESC" })
         .then(function(project, err) {
           if (err) {
             sails.log.error(err);
@@ -485,6 +487,7 @@ module.exports = {
     if (req.param("id")) {
       Projects.findOne({ id: req.param("id"), status: "ongoing" })
         .sort("createdAt DESC")
+        .populate("comments", { sort: "createdAt DESC" })
         .then(function(project, err) {
           if (err) {
             sails.log.error(err);
@@ -507,6 +510,7 @@ module.exports = {
     } else {
       Projects.find({ status: "ongoing" })
         .sort("createdAt DESC")
+        .populate("comments", { sort: "createdAt DESC" })
         .then(function(project, err) {
           if (err) {
             sails.log.error(err);
