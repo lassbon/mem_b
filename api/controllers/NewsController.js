@@ -487,5 +487,396 @@ module.exports = {
         sails.log.error(err);
         return res.json(500, { err: err });
       });
-  }
+  },
+
+  /**
+   * `NewsController.createComment()`
+   *
+   * ----------------------------------------------------------------------------------
+   * @api {post} /api/v1/news/comment Create a new comment
+   * @apiName CreateComment
+   * @apiDescription This is where a comment on post is created
+   * @apiGroup News
+   *
+   * @apiParam {String} comment The comment to be made on a news post.
+   * @apiParam {Number} owner User id of the commentator.
+   * @apiParam {Number} news News id of the news to be commented on.
+   */
+  createComment: function(req, res) {
+    if (!req.param("news")) {
+      return res.json(401, { status: "error", err: "No News id provided!" });
+    }
+
+    if (!req.param("owner")) {
+      return res.json(401, { status: "error", err: "No Owner id provided!" });
+    }
+
+    if (!req.param("comment")) {
+      return res.json(401, { status: "error", err: "No Comment provided!" });
+    }
+
+    User.findOne({
+      select: ["companyName", "membershipId"],
+      where: { id: req.param("owner") }
+    })
+      .then(function(user, err) {
+        if (err) {
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
+        }
+
+        req.body.companyName = user.companyName;
+
+        NewsComments.create(req.body).exec(function(err, comment) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          if (comment) {
+            res.json(200, comment);
+          }
+        });
+      })
+      .catch(function(err) {
+        sails.log.error(err);
+        return res.json(500, { err: err });
+      });
+  },
+
+  /**
+   * `NewsController.updateComment()`
+   *
+   * ----------------------------------------------------------------------------------
+   * @api {put} /api/v1/news/comment Update a comment
+   * @apiName UpdateComment
+   * @apiDescription This is where a comment on news is updated.
+   * @apiGroup News
+   *
+   * @apiParam {Number} id Comment ID.
+   * @apiParam {String} comment The comment to be made on a post.
+   */
+  updateComment: function(req, res) {
+    if (!req.param("id")) {
+      return res.json(401, { status: "error", err: "No Comment id provided!" });
+    } else {
+      NewsComments.findOne({
+        select: "comment",
+        where: { id: req.param("id") }
+      })
+        .then(function(comment, err) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          if (!comment) {
+            return res.json(404, {
+              status: "error",
+              err: "No Comment with such id existing"
+            });
+          }
+
+          NewsComments.update({ id: req.param("id") }, req.body).exec(function(
+            err,
+            data
+          ) {
+            if (err) {
+              sails.log.error(err);
+              return res.json(err.status, { err: err });
+            }
+
+            return res.json(200, {
+              status: "success",
+              message:
+                "Comment with id " + req.param("id") + " has been updated"
+            });
+          });
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(500, { err: err });
+        });
+    }
+  },
+
+  /**
+   * `NewsController.deleteComment()`
+   *
+   * ----------------------------------------------------------------------------------
+   * @api {delete} /api/v1/news/comment/:id Delete a comment
+   * @apiName DeleteComment
+   * @apiDescription This is where a comment on post is deleted.
+   * @apiGroup News
+   *
+   * @apiParam {Number} id Comment ID.
+   */
+  deleteComment: function(req, res) {
+    if (!req.param("id")) {
+      return res.json(401, { status: "error", err: "No Comment id provided!" });
+    } else {
+      NewsComments.findOne({
+        select: "comment",
+        where: { id: req.param("id") }
+      })
+        .then(function(comment, err) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          if (!comment) {
+            return res.json(404, {
+              status: "error",
+              err: "No Comment with such id existing"
+            });
+          }
+
+          NewsComments.destroy({ id: req.param("id") }, req.body).exec(function(
+            err,
+            data
+          ) {
+            if (err) {
+              sails.log.error(err);
+              return res.json(err.status, { err: err });
+            }
+
+            return res.json(200, {
+              status: "success",
+              message:
+                "Comment with id " + req.param("id") + " has been deleted"
+            });
+          });
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(500, { err: err });
+        });
+    }
+  },
+
+  /**
+   * `NewsController.getComment()`
+   *
+   * ----------------------------------------------------------------------------------
+   * @api {get} /api/v1/news/comment/:id Get comment(s)
+   * @apiName GetComment
+   * @apiDescription This is where a comment on an news is retrieved.
+   * @apiGroup News
+   *
+   * @apiParam {Number} id Comment ID.
+   */
+  getComment: function(req, res) {
+    if (req.param("id")) {
+      NewsComments.findOne({ id: req.param("id") })
+        .sort("createdAt DESC")
+        .then(function(comment, err) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          if (!comment) {
+            return res.json(204, {
+              status: "error",
+              err: "No Comment with such id existing"
+            });
+          }
+            return res.json(200, comment);
+          
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(500, { err: err });
+        });
+    } else {
+      NewsComments.find()
+        .sort("createdAt DESC")
+        .then(function(posts, err) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          return res.json(200, posts);
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(500, { err: err });
+        });
+    }
+  }, 
+
+  /**
+   * `NewsController.likeNews()`
+   *
+   * ----------------------------------------------------------------------------------
+   * @api {post} /api/v1/news/like Like an news
+   * @apiName LikeNews
+   * @apiDescription This is where a news is liked
+   * @apiGroup News
+   *
+   * @apiParam {String} id News ID.
+   * @apiParam {String} liker User id of the news liker.
+   *
+   * @apiSuccess {String} status Status of the response from API.
+   * @apiSuccess {String} message  Success message response from API.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "status": "success",
+   *       "message": "News liked"
+   *     }
+   *
+   * @apiUse NewsIdNotProvidedError
+   *
+   * @apiUse NewsNotFoundError
+   */
+  likeNews: function(req, res) {
+    if (!req.param("id")) {
+      return res.json(401, { status: "error", err: "No News id provided!" });
+    } else {
+      News.findOne({
+        select: ["title", "description", "likes"],
+        where: { id: req.param("id") }
+      })
+        .then(function(news, err) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          if (!news) {
+            return res.json(404, {
+              status: "error",
+              message: "No News with such id existing"
+            });
+          } else {
+            var likes = news.likes ? news.likes : [];
+
+            var stat = true;
+
+            for (var i = 0; i < likes.length; i++) {
+              var name = likes[i];
+              if (name == req.param("liker")) {
+                stat = false;
+                break;
+              }
+            }
+
+            if (stat == false) {
+              return res.json(403, {
+                status: "error",
+                err: "News already liked"
+              });
+            } else {
+              likes.push(req.param("liker"));
+
+              Newss.update({ id: req.param("id") }, { likes: likes }).exec(
+                function(err, news) {
+                  return res.json(200, {
+                    status: "success",
+                    message: "News liked"
+                  });
+                }
+              );
+            }
+          }
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(500, { err: err });
+        });
+    }
+  },
+
+  /**
+   * `NewsController.unlikeNews()`
+   *
+   * ----------------------------------------------------------------------------------
+   * @api {post} /api/v1/news/unlike Unlike an news
+   * @apiName UnlikeNews
+   * @apiDescription This is where a news is unliked
+   * @apiGroup News
+   *
+   * @apiParam {String} id News ID.
+   * @apiParam {String} liker User id of the post liker.
+   *
+   * @apiSuccess {String} status Status of the response from API.
+   * @apiSuccess {String} message  Success message response from API.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "status": "success",
+   *       "message": "News unliked"
+   *     }
+   *
+   * @apiUse NewsIdNotProvidedError
+   *
+   * @apiUse NewsNotFoundError
+   */
+  unlikeNews: function(req, res) {
+    if (!req.param("id")) {
+      return res.json(401, { status: "error", err: "No News id provided!" });
+    } else {
+      News.findOne({
+        select: ["title", "description", "likes"],
+        where: { id: req.param("id") }
+      })
+        .then(function(news, err) {
+          if (err) {
+            sails.log.error(err);
+            return res.json(err.status, { err: err });
+          }
+
+          if (!news) {
+            return res.json(404, {
+              status: "error",
+              err: "No News with such id existing"
+            });
+          } else {
+            var likes = news.likes ? news.likes : [];
+
+            var stat = false;
+
+            for (var i = 0; i < likes.length; i++) {
+              var name = likes[i];
+              if (name == req.param("liker")) {
+                stat = true;
+                break;
+              }
+            }
+
+            if (stat == false) {
+              return res.json(403, {
+                status: "error",
+                err: "News not previously liked"
+              });
+            } else {
+              for (var i = news.likes.length; i--; ) {
+                if (news.likes[i] === req.param("liker")) {
+                  news.likes.splice(i, 1);
+                }
+              }
+
+              News.update(
+                { id: req.param("id") },
+                { likes: news.likes }
+              ).exec(function(err, news) {
+                return res.json(200, {
+                  status: "success",
+                  message: "Post unliked"
+                });
+              });
+            }
+          }
+        })
+        .catch(function(err) {
+          sails.log.error(err);
+          return res.json(500, { err: err });
+        });
+    }
+  },
 };

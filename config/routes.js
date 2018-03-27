@@ -160,6 +160,15 @@ module.exports.routes = {
     'GET /api/v1/news': 'NewsController.getNews',
     'GET /api/v1/news/:id': 'NewsController.getNews',
 
+    'POST /api/v1/news/like': 'NewsController.likeNews',
+    'POST /api/v1/news/unlike': 'NewsController.unlikeNews',
+
+    'POST /api/v1/news/comment': 'NewsController.createComment',
+    'DELETE /api/v1/news/comment/:id': 'NewsController.deleteComment',
+    'PUT /api/v1/news/comment/:id': 'NewsController.updateComment',
+    'GET /api/v1/news/comment/:id': 'NewsController.getComment',
+    'GET /api/v1/news/comment': 'NewsController.getComment',
+
     /**
      * Event routes
      */

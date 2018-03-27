@@ -26,6 +26,13 @@ module.exports = {
         },
         author: {
             type: 'string'
-        }
+        },
+        likes: {
+            type: 'array',
+        },
+        comments: {
+            collection: 'newsComments',
+            via: 'news'
+        },
     }
 };
