@@ -157,8 +157,8 @@ module.exports.routes = {
     'GET /api/v1/mynews/:id': 'NewsController.myNews',
     'GET /api/v1/searchnews/:id/:page/:limit': 'NewsController.searchNews',
 
-    'GET /api/v1/news': 'NewsController.getNews',
-    'GET /api/v1/news/:id': 'NewsController.getNews',
+    'GET /api/v1/getnews': 'NewsController.getNews',
+    'GET /api/v1/getnews/:id': 'NewsController.getNews',
 
     'POST /api/v1/news/like': 'NewsController.likeNews',
     'POST /api/v1/news/unlike': 'NewsController.unlikeNews',
