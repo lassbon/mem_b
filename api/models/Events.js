@@ -43,6 +43,10 @@ module.exports = {
             type: 'integer',
             defaultsTo: 0
         },
+        status: {
+            type: 'string',
+            defaultsTo: 'ongoing'
+        },
         eventsPayments: {
             collection: 'eventsPayments',
             via: 'event'

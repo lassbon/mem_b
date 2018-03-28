@@ -667,22 +667,22 @@ module.exports = {
           sails.log.error(err);
           return res.json(500, { err: err });
         });
-    } else {
-      Events.find({ status: "completed" })
-        .sort("createdAt DESC")
-        .then(function(events, err) {
-          if (err) {
-            sails.log.error(err);
-            return res.json(err.status, { err: err });
-          }
-
-          return res.json(200, events);
-        })
-        .catch(function(err) {
-          sails.log.error(err);
-          return res.json(500, { err: err });
-        });
     }
+
+    Events.find({ status: "completed" })
+      .sort("createdAt DESC")
+      .then(function(events, err) {
+        if (err) {
+          sails.log.error(err);
+          return res.json(err.status, { err: err });
+        }
+
+        return res.json(200, events);
+      })
+      .catch(function(err) {
+        sails.log.error(err);
+        return res.json(500, { err: err });
+      });
   },
 
   /**

@@ -461,14 +461,14 @@ module.exports = {
             return res.json(err.status, { err: err });
           }
 
-          if (!news.id) {
+          if (!news) {
             return res.json(404, {
               status: "error",
               message: "No news with such id existing"
             });
-          } else {
-            return res.json(200, news);
           }
+
+          return res.json(200, news);
         })
         .catch(function(err) {
           sails.log.error(err);
@@ -686,8 +686,7 @@ module.exports = {
               err: "No Comment with such id existing"
             });
           }
-            return res.json(200, comment);
-          
+          return res.json(200, comment);
         })
         .catch(function(err) {
           sails.log.error(err);
@@ -709,7 +708,7 @@ module.exports = {
           return res.json(500, { err: err });
         });
     }
-  }, 
+  },
 
   /**
    * `NewsController.likeNews()`
@@ -865,15 +864,14 @@ module.exports = {
                 }
               }
 
-              News.update(
-                { id: req.param("id") },
-                { likes: news.likes }
-              ).exec(function(err, news) {
-                return res.json(200, {
-                  status: "success",
-                  message: "Post unliked"
-                });
-              });
+              News.update({ id: req.param("id") }, { likes: news.likes }).exec(
+                function(err, news) {
+                  return res.json(200, {
+                    status: "success",
+                    message: "Post unliked"
+                  });
+                }
+              );
             }
           }
         })
@@ -882,5 +880,5 @@ module.exports = {
           return res.json(500, { err: err });
         });
     }
-  },
+  }
 };
