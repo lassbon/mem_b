@@ -25,8 +25,8 @@ module.exports.policies = {
      * access)                                                                  *
      *                                                                          *
      ***************************************************************************/
-    '*': ['isAuthenticated'], // Everything resctricted here
-    '*': ['isAdmin'], // Everything resctricted here
+    '*': ['isAuthenticated'], // Everything restricted here
+    '*': ['isAdmin'], // Everything restricted here
 
 
     /***************************************************************************
@@ -115,6 +115,13 @@ module.exports.policies = {
         'myNews': ['isUser', 'isAuthenticated'],
         'searchNews': ['isUser', 'isAuthenticated'],
         'getNews': ['isUser', 'isAuthenticated'],
+        'getEvents': ['isUser', 'isAuthenticated'],
+        'likeEvent': ['isUser', 'isAuthenticated'],
+        'unlikeEvent': ['isUser', 'isAuthenticated'],
+        'createComment': ['isUser', 'isAuthenticated'],
+        'deleteComment': ['isUser', 'isAuthenticated'],
+        'updateComment': ['isUser', 'isAuthenticated'],
+        'getComment': ['isUser', 'isAuthenticated'],
     },
 
     'EventsController': {

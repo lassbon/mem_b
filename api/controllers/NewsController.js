@@ -453,7 +453,6 @@ module.exports = {
   getNews: function(req, res) {
     if (req.param("id")) {
       News.findOne({ id: req.param("id") })
-        .sort("createdAt DESC")
         .populate("comments", { sort: "createdAt DESC" })
         .then(function(news, err) {
           if (err) {
