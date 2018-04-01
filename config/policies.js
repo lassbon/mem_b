@@ -28,7 +28,6 @@ module.exports.policies = {
     '*': ['isAuthenticated'], // Everything restricted here
     '*': ['isAdmin'], // Everything restricted here
 
-
     /***************************************************************************
      *                                                                          *
      * policy for excluding auth controller and actions from authentication check
