@@ -1,9 +1,9 @@
 {
-    "name": "accimembership-api",
+    "name": "api_m_b",
     "private": true,
     "version": "0.0.0",
-    "description": "API for the Abuja Chamber of Commerce and Industry membership plartform",
-    "author": "Lemuel Okoli, for Karixchange",
+    "description": "API for mem_b",
+    "author": "",
     "keywords": [],
     "engines": {
         "node": "8.5.0",
@@ -19,7 +19,6 @@
         "crypto": "^1.0.1",
         "documentdb": "^1.14.1",
         "dotenv": "^4.0.0",
-        "ejs": "2.3.4",
         "excel": "^0.1.7",
         "grunt": "1.0.1",
         "grunt-apidoc": "^0.11.0",
@@ -70,8 +69,8 @@
     "devDependencies": {},
     "repository": {
         "type": "git",
-        "url": "https://gitlab.com/kariXchange/membership-api.git"
+        "url": ""
     },
     "license": "ISC",
-    "homepage": "https://gitlab.com/kariXchange/membership-api#readme"
+    "homepage": "#readme"
 }
